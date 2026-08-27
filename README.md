@@ -22,10 +22,11 @@
 .
 ├── CODEBUDDY.md          # 项目宪章与协作基线
 ├── docs/                 # 需求文档 / PRD
-├── frontend/             # Vue 3 前端（规划中）
+├── frontend/             # Vue 3 前端（Vant + Tailwind）
+│   └── src/              # 源码（views/router/stores/api/components）
 ├── backend/              # FastAPI 后端
 │   ├── app/              # 应用源码（routers/models/schemas/services/core/db）
-│   ├── tests/            # 测试（规划中）
+│   ├── tests/            # pytest 冒烟测试
 │   ├── requirements.txt  # 运行依赖
 │   ├── requirements-dev.txt  # 开发依赖
 │   ├── run.py            # 启动入口
@@ -64,13 +65,23 @@ python run.py                       # 启动服务（默认 0.0.0.0:8000）
 
 > 注意：后端需使用 Python 3.12（pydantic-core 在 3.14 下无预编译 wheel，会构建失败）。
 
-### 前端（规划中）
+### 前端（Vue 3 + Vant + Tailwind）
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev     # 启动开发服务器（默认 127.0.0.1:5173）
 ```
+
+启动后访问：http://127.0.0.1:5173/
+
+### 前后端联调
+
+前端已配置 Vite 代理：`/api` 请求自动转发到 `http://127.0.0.1:8000`。
+**需先启动后端**，再启动前端，即可通过前端页面访问后端接口。
+
+> 提示：若 npm 安装或网络受限，需为 npm 配置代理（如本机 Clash）：
+> `npm config set proxy http://127.0.0.1:7897`、`npm config set https-proxy http://127.0.0.1:7897`
 
 ---
 
