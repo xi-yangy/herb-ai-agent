@@ -12,6 +12,8 @@ class Herb(Base):
     """药材条目。
 
     safety_level 为 PRD 红线字段（普通/慎用/毒性），必填。
+    以下为 P0 主链路补充的 PRD 知识字段：
+    性味归经、功效主治、用法用量、禁忌、毒性说明等。
     """
 
     __tablename__ = "herbs"
@@ -22,9 +24,21 @@ class Herb(Base):
     safety_level: Mapped[str] = mapped_column(
         Enum("普通", "慎用", "毒性", name="safety_level"), nullable=False
     )
-    # 数据来源标注（如《中国药典》2020 年版）
+    # 数据来源标注（如《中国药典》2020 年版 / 示例(编撰)）
     source: Mapped[str] = mapped_column(String(255), nullable=False, default="")
-    # 预留：性味归经 / 功效主治等字段在 P0 阶段逐步补齐
+
+    # ==== P0 新增知识字段 ====
+    # 性味归经，如“甘、微苦；温。归脾、肺经”
+    nature_flavor: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    # 功效主治
+    effects: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # 用法用量
+    usage: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # 禁忌（含人群禁忌、食物相克等）
+    contraindications: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # 毒性说明（普通药材可留空/写“无毒”）
+    toxicity: Mapped[str] = mapped_column(Text, nullable=False, default="")
+
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

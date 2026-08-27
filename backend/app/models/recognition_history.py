@@ -14,6 +14,8 @@ class RecognitionHistory(Base):
     __tablename__ = "recognition_history"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    # 匿名设备标识（本批主键），第二批登录接入后迁移到 user_id
+    device_id: Mapped[str] = mapped_column(String(128), nullable=False, default="")
     user_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )

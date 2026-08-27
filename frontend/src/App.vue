@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -13,6 +14,11 @@ const tabs = [
 
 // 当前激活 tab（路由名）
 const active = () => route.name
+
+// 子页面（识别结果/详情/收藏）隐藏底部导航，获得全屏沉浸体验
+const hideTabbar = computed(() => {
+  return ['result', 'herb-detail', 'favorites'].includes(route.name)
+})
 </script>
 
 <template>
@@ -21,8 +27,8 @@ const active = () => route.name
       <router-view />
     </main>
 
-    <!-- 底部导航 -->
-    <van-tabbar :model-value="active()" route>
+    <!-- 底部导航（子页面隐藏） -->
+    <van-tabbar v-if="!hideTabbar" :model-value="active()" route>
       <van-tabbar-item
         v-for="tab in tabs"
         :key="tab.name"

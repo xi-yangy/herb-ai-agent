@@ -1,16 +1,37 @@
 """识别接口模型。
 
-注意：本阶段识别接口为占位实现（返回 501），此处仅预留响应结构，
-供后续接入百度 API / 自建模型时使用。
+识别接口契约与真实引擎保持一致：
+前端上传 base64 图片 → 后端调用 RecognitionService → 返回药材结果。
+本阶段由 MockRecognizer 返回写死示例药材。
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from app.schemas.herb import HerbResponse
+
+
+class RecognizeRequest(BaseModel):
+    """识别请求：前端上传的图片（base64，可含 data:image 前缀）。"""
+
+    image_base64: str = Field(..., description="图片 base64 编码")
+    # 触发通道：camera / album
+    channel: str = Field(default="camera", description="触发通道：camera 或 album")
+
+
+class RecognizeResult(BaseModel):
+    """单条识别结果（含完整药材知识）。"""
+
+    name: str
+    confidence: float
+    safety_level: str
+    herb: HerbResponse | None = None
 
 
 class RecognizeResponse(BaseModel):
-    """识别结果响应（预留结构，P0 阶段实现）。"""
+    """识别响应。"""
 
     name: str
     confidence: float
     channel: str
     safety_level: str
+    herb: HerbResponse | None = None
