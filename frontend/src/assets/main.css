@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 全局基础样式（Vant 已做基础重置，这里仅补充项目级约定） */
+:root {
+  --herb-primary: #2e7d32;
+  --herb-primary-light: #388e3c;
+  --herb-primary-lighter: #a5d6a7;
+  --herb-bg: #f5f7f4;
+  --herb-danger: #d32f2f;
+  --herb-warning: #f57c00;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--herb-bg);
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  color: #1b1f1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* 桌面端内容居中限宽 */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
