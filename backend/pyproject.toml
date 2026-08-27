@@ -1,0 +1,18 @@
+[project]
+name = "herb-ai-backend"
+version = "0.1.0"
+description = "多模态中草药图像识别智能体 - 后端服务"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008: FastAPI 的 Depends 作为默认参数是官方标准用法，属已知误报
+ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

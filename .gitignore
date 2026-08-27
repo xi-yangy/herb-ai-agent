@@ -218,3 +218,32 @@ __marimo__/
 .streamlit/secrets.toml
 
 requirements-clarity/
+
+# ===== 项目补充规则 =====
+# CodeBuddy IDE 内部协作数据（不入库）
+.codebuddy/
+
+# Node / 前端
+node_modules/
+dist/
+.vite/
+*.local
+
+# SQLite 数据库（运行时生成）
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境变量样例保留，其余 .env 忽略
+.env.*
+!.env.example
+
+# 数据集与模型（生成物/临时文件，不提交）
+datasets/
+*.ckpt
+*.pth
+*.onnx
+
+# 内网穿透日志
+frpc*.log
+
