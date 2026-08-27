@@ -26,6 +26,10 @@ class Herb(Base):
     )
     # 数据来源标注（如《中国药典》2020 年版 / 示例(编撰)）
     source: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    # 药材分类（如：根茎类 / 花类 / 果实类 / 全草类 / 动物类 等）
+    category: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    # 相似/易混淆品种（逗号分隔，用于 F4 易混淆辨析提示）
+    similar_herbs: Mapped[str] = mapped_column(String(255), nullable=False, default="")
 
     # ==== P0 新增知识字段 ====
     # 性味归经，如“甘、微苦；温。归脾、肺经”

@@ -8,6 +8,16 @@ const http = axios.create({
   timeout: 10000,
 })
 
+// 请求拦截：注入 Authorization Bearer token（登录态）
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('herb_token')
+  if (token) {
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 // 响应拦截：统一错误提示（骨架阶段仅记录，不打断调用方）
 http.interceptors.response.use(
   (response) => response,

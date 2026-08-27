@@ -30,6 +30,40 @@ const safetyMeta = computed(() => {
 const safetyLevel = computed(() => result.value?.safety_level || '')
 const herb = computed(() => result.value?.herb || null)
 
+// 识别通道可读文案映射
+const channelLabel = computed(() => {
+  const map = {
+    local: '本地模型识别',
+    baidu: '百度识别',
+    mock: '模拟识别',
+  }
+  return map[result.value?.channel] || result.value?.channel || '未知通道'
+})
+
+// 是否低置信度（后端判定：不直接给结论，改判相似品种 + 引导重拍）
+const lowConfidence = computed(() => !!result.value?.low_confidence)
+// 相似品种候选列表
+const similarList = computed(() => result.value?.similar || [])
+
+// 「重新拍摄」：清空当前识别并返回首页（相机/相册入口）
+function retake() {
+  store.clearRecognition()
+  router.push({ name: 'home' })
+}
+
+/** 相似品种安全等级小标签样式。 */
+function similarTagMeta(level) {
+  const map = {
+    普通: { color: '#2E7D52', bg: '#E6F4EC' },
+    慎用: { color: '#F2A33C', bg: '#FDF3E4' },
+    毒性: { color: '#E5484D', bg: '#FDE9E9' },
+  }
+  return map[level] || map.普通
+}
+
+// 是否未收录本地知识库（无本地详情）
+const notInKb = computed(() => !!result.value && !result.value.herb)
+
 // 初始化：识别进入优先读 store，否则按 herbId 从知识库取（简单场景从 store/query）
 onMounted(async () => {
   const storeResult = store.lastRecognition?.result
@@ -39,6 +73,13 @@ onMounted(async () => {
     result.value = storeResult
     image.value = storeImage || ''
     herbId.value = storeResult.herb?.id ?? null
+
+    // F4 高危强制警示：毒性药材且未确认时，先路由到强制全屏警示页（不可跳过）
+    if (storeResult.safety_level === '毒性' && route.query.confirmed !== '1') {
+      router.replace({ name: 'warning-gate' })
+      return
+    }
+
     await writeHistory(storeResult)
     // 保留 store 供返回首页时复用，不主动清除
   }
@@ -128,6 +169,53 @@ async function onClearRecognition() {
       </div>
     </div>
 
+    <!-- 低置信度降级：相似品种 + 引导重拍（PRD 硬性要求：低于阈值不直接给结论） -->
+    <section
+      v-if="lowConfidence"
+      class="mt-5 rounded-2xl border border-[#F2A33C]/40 bg-[#FDF3E4] p-4"
+    >
+      <div class="flex items-center gap-2">
+        <van-icon name="warning-o" size="20" color="#F2A33C" />
+        <h2 class="text-sm font-bold text-[#B45309]">识别置信度较低，请核对</h2>
+      </div>
+      <p class="mt-2 text-xs leading-relaxed text-[#5B6B62]">
+        系统未能高置信度确认该药材，以下为相似品种候选，请对照实物或调整拍摄后重试。
+      </p>
+
+      <ul v-if="similarList.length" class="mt-3 space-y-2">
+        <li
+          v-for="(item, idx) in similarList"
+          :key="idx"
+          class="flex items-center justify-between rounded-xl bg-white/80 px-3 py-2.5"
+        >
+          <span class="text-sm font-medium text-[#1F2A24]">{{ item.name }}</span>
+          <span class="flex items-center gap-2">
+            <span
+              class="rounded px-1.5 py-0.5 text-[11px]"
+              :style="{ color: similarTagMeta(item.safety_level).color, backgroundColor: similarTagMeta(item.safety_level).bg }"
+            >
+              {{ item.safety_level }}
+            </span>
+            <span class="text-xs text-[#5B6B62]">
+              {{ ((item.confidence || 0) * 100).toFixed(0) }}%
+            </span>
+          </span>
+        </li>
+      </ul>
+
+      <button
+        type="button"
+        class="mt-4 w-full rounded-2xl bg-[#2E7D52] py-3 text-sm font-medium text-white transition active:scale-95"
+        @click="retake"
+      >
+        <van-icon name="photograph" size="16" class="mr-1 align-[-2px]" />
+        重新拍摄
+      </button>
+      <p class="mt-3 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+        本结果为软件自动识别，仅供参考，不构成诊断或处方建议。
+      </p>
+    </section>
+
     <!-- 药材主体 -->
     <section class="mt-5 overflow-hidden rounded-3xl bg-white shadow-sm">
       <!-- 图片预览 -->
@@ -141,7 +229,7 @@ async function onClearRecognition() {
             <h1 class="text-[22px] font-semibold text-[#1F2A24]">{{ result?.name || '识别中…' }}</h1>
             <p class="mt-1 text-xs text-[#5B6B62]">
               置信度 {{ ((result?.confidence || 0) * 100).toFixed(0) }}% ·
-              识别通道 {{ result?.channel || 'mock' }}
+              识别通道 {{ channelLabel }}
             </p>
           </div>
           <button
@@ -154,11 +242,16 @@ async function onClearRecognition() {
           </button>
         </div>
 
-        <p class="mt-2 text-sm leading-relaxed text-[#5B6B62]">
-          {{ herb?.description || result?.name + '：请以知识库详情为准。' }}
+        <!-- 已收录：展示描述；未收录：降级提示 -->
+        <p v-if="herb" class="mt-2 text-sm leading-relaxed text-[#5B6B62]">
+          {{ herb.description || result.name + '：请以知识库详情为准。' }}
         </p>
+        <div v-else-if="notInKb" class="mt-3 rounded-xl bg-[#FDF3E4] p-3 text-xs leading-relaxed text-[#B45309]">
+          识别到「{{ result?.name }}」，但该品种暂未收录本地知识库。识别结果仅供参考，请勿作为用药依据。
+        </div>
 
         <button
+          v-if="herb"
           type="button"
           class="mt-4 w-full rounded-2xl border border-[#2E7D52]/20 bg-white py-3 text-sm font-medium text-[#2E7D52] transition active:scale-95"
           @click="goDetail"

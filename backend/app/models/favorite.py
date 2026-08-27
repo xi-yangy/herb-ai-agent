@@ -19,8 +19,9 @@ class Favorite(Base):
     __table_args__ = (UniqueConstraint("device_id", "herb_id", name="uq_device_herb"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    # 匿名设备标识（本批主键），第二批接入登录后可迁移到 user_id
-    device_id: Mapped[str] = mapped_column(String(128), nullable=False, default="")
+    # 匿名设备标识（未登录时使用）；登录后置空，以 user_id 维度为准。
+    # device_id 可空：SQLite 中 UNIQUE 允许多个 NULL，故不同用户的收藏不会冲突。
+    device_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     user_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )

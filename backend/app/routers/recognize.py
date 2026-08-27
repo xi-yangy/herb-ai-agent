@@ -1,7 +1,7 @@
 """识别路由。
 
-调用可插拔识别服务（当前为 MockRecognizer），返回药材结果。
-真实引擎接入后，仅需替换 services/recognizer.py 中的实现实例。
+调用混合双通道识别服务（本地模型 → 百度 → Mock），返回药材结果与相似品种降级信息。
+实际命中通道由识别器结果回传（local/baidu/mock）。
 """
 
 import logging
@@ -20,13 +20,21 @@ router = APIRouter(tags=["recognize"])
 
 @router.post("/api/recognize", response_model=RecognizeResponse)
 def recognize(req: RecognizeRequest, db: Session = Depends(get_db)) -> RecognizeResponse:
-    """图片识别：调用 RecognitionService 返回药材结果。"""
+    """图片识别：调用混合调度器返回药材结果。"""
     result = recognizer.recognize(req.image_base64, db)
-    logger.info("识别完成：%s (置信度 %.2f)", result.name, result.confidence)
+    logger.info(
+        "识别完成：%s (置信度 %.2f, 通道 %s, 低置信 %s)",
+        result.name,
+        result.confidence,
+        result.channel,
+        result.low_confidence,
+    )
     return RecognizeResponse(
         name=result.name,
         confidence=result.confidence,
-        channel=recognizer.channel,
+        channel=result.channel,
         safety_level=result.safety_level,
+        similar=result.similar,
+        low_confidence=result.low_confidence,
         herb=result.herb,
     )

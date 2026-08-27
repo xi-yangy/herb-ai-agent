@@ -4,13 +4,16 @@ import { useRouter } from 'vue-router'
 import { showLoadingToast, showToast } from 'vant'
 import { checkHealth } from '@/api/health'
 import { recognize } from '@/api/herb'
+import { listConsents } from '@/api/privacy'
 import { useAppStore } from '@/stores/app'
+import CameraCapture from '@/components/CameraCapture.vue'
 
 const router = useRouter()
 const store = useAppStore()
 
 const checking = ref(true)
 const recognizing = ref(false)
+const showCamera = ref(false)
 
 onMounted(async () => {
   const online = await checkHealth()
@@ -28,18 +31,11 @@ function fileToBase64(file) {
   })
 }
 
-/** 拍照或相册上传后统一处理。 */
-async function handleFile(event) {
-  const file = event.target.files?.[0]
-  if (!file) return
-  // 重置，便于重复选择同一文件
-  event.target.value = ''
-  const channel = file.type.startsWith('image/') ? 'album' : 'album'
-
+/** 统一识别入口：收到 base64 与通道后发起识别并跳转结果页。 */
+async function handleRecognize(base64, channel) {
   recognizing.value = true
   showLoadingToast({ message: '识别中…', forbidClick: true, duration: 0 })
   try {
-    const base64 = await fileToBase64(file)
     const result = await recognize(base64, channel)
     store.setLastRecognition(base64, result)
     router.push({ name: 'result' })
@@ -52,9 +48,50 @@ async function handleFile(event) {
   }
 }
 
-/** 触发拍照（capture 优先相机）。 */
-function triggerCapture() {
-  document.getElementById('capture-input')?.click()
+/** 相册上传：选择图片 → 识别（channel=album）。 */
+async function handleFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  // 重置，便于重复选择同一文件
+  event.target.value = ''
+  try {
+    const base64 = await fileToBase64(file)
+    await handleRecognize(base64, 'album')
+  } catch (err) {
+    console.error('[read file]', err)
+    showToast('读取图片失败，请重试')
+  }
+}
+
+/** 点「拍照识别」：先校验相机授权，已授权则打开相机弹层，否则降级相册选图。 */
+async function triggerCapture() {
+  let consented = true
+  try {
+    const consents = await listConsents()
+    const camera = (consents || []).find((c) => c.consent_type === 'camera')
+    consented = camera ? !!camera.granted : false
+  } catch (err) {
+    console.error('[consents]', err)
+    consented = true
+  }
+
+  if (!consented) {
+    showToast('未获得相机授权，已切换为从相册选择')
+    triggerAlbum()
+    return
+  }
+  showCamera.value = true
+}
+
+/** 相机拍照成功：channel=camera。 */
+function onCaptured(base64) {
+  handleRecognize(base64, 'camera')
+}
+
+/** 相机不可用降级：回落相册选图。 */
+function onCameraDegrade() {
+  showCamera.value = false
+  triggerAlbum()
 }
 
 /** 触发相册。 */
@@ -122,9 +159,15 @@ function triggerAlbum() {
       <p v-if="recognizing" class="mt-4 text-xs text-[#5B6B62]">正在分析图片特征…</p>
     </section>
 
-    <!-- 隐藏的 file 输入 -->
-    <input id="capture-input" type="file" accept="image/*" capture="environment" class="hidden" @change="handleFile" />
+    <!-- 隐藏的相册 file 输入 -->
     <input id="album-input" type="file" accept="image/*" class="hidden" @change="handleFile" />
+
+    <!-- 相机拍照弹层 -->
+    <CameraCapture
+      v-model:show="showCamera"
+      @captured="onCaptured"
+      @degrade="onCameraDegrade"
+    />
 
     <!-- 安全提示 -->
     <p class="mt-8 text-center text-xs leading-relaxed text-[#5B6B62]/70">

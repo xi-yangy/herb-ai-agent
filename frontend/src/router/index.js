@@ -7,6 +7,8 @@ import MineView from '@/views/MineView.vue'
 import ResultView from '@/views/ResultView.vue'
 import HerbDetailView from '@/views/HerbDetailView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
+import LoginView from '@/views/LoginView.vue'
+import WarningGateView from '@/views/WarningGateView.vue'
 
 const routes = [
   { path: '/', redirect: '/home' },
@@ -18,6 +20,9 @@ const routes = [
   { path: '/result', name: 'result', component: ResultView },
   { path: '/herb/:id', name: 'herb-detail', component: HerbDetailView, props: true },
   { path: '/favorites', name: 'favorites', component: FavoritesView },
+  { path: '/login', name: 'login', component: LoginView },
+  // F4 高危强制全屏警示确认页（不可跳过）
+  { path: '/warning', name: 'warning-gate', component: WarningGateView },
 ]
 
 const router = createRouter({

@@ -75,3 +75,85 @@ def test_recognize_safety_level(client: TestClient) -> None:
     data = resp.json()
     assert data["name"] == "附子"
     assert data["safety_level"] == "毒性"
+
+
+def test_recognize_falls_back_to_mock_when_baidu_disabled(client: TestClient) -> None:
+    """百度识别未启用时，识别接口回退 Mock 仍返回结果（不中断链路）。"""
+    # conftest 已设置 BAIDU_ENABLED=false
+    resp = client.post("/api/recognize", json={"image_base64": "fake", "channel": "camera"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["name"]  # 有识别名称
+    assert data["safety_level"] in {"普通", "慎用", "毒性"}
+
+
+def test_herb_category_and_similar_fields(client: TestClient) -> None:
+    """知识库药材返回新增字段 category 与 similar_herbs。"""
+    herbs = client.get("/api/herbs").json()
+    assert herbs  # 知识库非空
+    sample = herbs[0]
+    assert "category" in sample
+    assert "similar_herbs" in sample
+
+
+def test_history_migrate_anonymous_to_user(client: TestClient) -> None:
+    """登录后匿名历史合并到用户维度，且以 user_id 读取。"""
+    dev = "migrate-dev-001"
+    headers = {"X-Device-Id": dev}
+
+    # 匿名写入一条历史
+    client.post(
+        "/api/history",
+        json={"result_name": "黄芪", "confidence": 0.9, "channel": "mock", "herb_id": None},
+        headers=headers,
+    )
+    assert len(client.get("/api/history", headers=headers).json()) == 1
+
+    # 注册并登录
+    reg = client.post(
+        "/api/auth/register", json={"username": "mig", "password": "secret123"}
+    ).json()
+    auth = {"Authorization": f"Bearer {reg['token']}", "X-Device-Id": dev}
+
+    # 登录后（未迁移）用户维度应为空
+    assert client.get("/api/history", headers=auth).json() == []
+
+    # 迁移
+    migrate = client.post("/api/history/migrate", headers=auth)
+    assert migrate.status_code == 200
+    assert migrate.json()["migrated"] == 1
+
+    # 迁移后用户维度可见，匿名维度不再可见
+    assert len(client.get("/api/history", headers=auth).json()) == 1
+    assert client.get("/api/history", headers=headers).json() == []
+
+
+def test_favorite_migrate_anonymous_to_user(client: TestClient) -> None:
+    """登录后匿名收藏合并到用户维度（含 herb_id 去重）。"""
+    dev = "migrate-dev-002"
+    headers = {"X-Device-Id": dev}
+
+    # 匿名收藏一株药材
+    herb_id = client.get("/api/herbs").json()[0]["id"]
+    client.post("/api/favorites", json={"herb_id": herb_id}, headers=headers)
+    assert len(client.get("/api/favorites", headers=headers).json()) == 1
+
+    # 注册登录
+    reg = client.post(
+        "/api/auth/register", json={"username": "mig2", "password": "secret123"}
+    ).json()
+    auth = {"Authorization": f"Bearer {reg['token']}", "X-Device-Id": dev}
+
+    migrate = client.post("/api/favorites/migrate", headers=auth)
+    assert migrate.status_code == 200
+    assert migrate.json()["migrated"] == 1
+
+    # 迁移后用户维度可见，匿名维度清空
+    assert len(client.get("/api/favorites", headers=auth).json()) == 1
+    assert client.get("/api/favorites", headers=headers).json() == []
+
+
+def test_migrate_requires_login(client: TestClient) -> None:
+    """未登录时调用迁移接口返回 401。"""
+    resp = client.post("/api/history/migrate", headers={"X-Device-Id": "some-dev"})
+    assert resp.status_code == 401

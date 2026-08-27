@@ -1,6 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { showToast } from 'vant'
+import { updateConsent } from '@/api/privacy'
+import PrivacyDialog from '@/components/PrivacyDialog.vue'
 
 const route = useRoute()
 
@@ -15,10 +18,39 @@ const tabs = [
 // 当前激活 tab（路由名）
 const active = () => route.name
 
-// 子页面（识别结果/详情/收藏）隐藏底部导航，获得全屏沉浸体验
+// 子页面（识别结果/详情/收藏/登录/警示）隐藏底部导航，获得全屏沉浸体验
 const hideTabbar = computed(() => {
-  return ['result', 'herb-detail', 'favorites'].includes(route.name)
+  return ['result', 'herb-detail', 'favorites', 'login', 'warning-gate'].includes(route.name)
 })
+
+// 首次隐私授权说明
+const PRIVACY_ACK_KEY = 'herb_privacy_ack'
+const showPrivacy = ref(false)
+
+onMounted(async () => {
+  // 已确认过首次说明则不再弹出
+  if (localStorage.getItem(PRIVACY_ACK_KEY) === '1') return
+  showPrivacy.value = true
+})
+
+/** 处理首次授权结果：记录持久化状态 + 同步后端授权。 */
+async function onPrivacyResult({ consent }) {
+  localStorage.setItem(PRIVACY_ACK_KEY, '1')
+  if (!consent) {
+    showToast('已进入降级模式：可浏览百科，但需授权才能拍照识别')
+    return
+  }
+  try {
+    // 默认授予相机/相册（麦克风为预留，标记未启用可授予）
+    await Promise.all([
+      updateConsent('camera', true),
+      updateConsent('album', true),
+      updateConsent('microphone', false),
+    ])
+  } catch (err) {
+    console.error('[privacy consent]', err)
+  }
+}
 </script>
 
 <template>
@@ -38,6 +70,9 @@ const hideTabbar = computed(() => {
         {{ tab.label }}
       </van-tabbar-item>
     </van-tabbar>
+
+    <!-- 首次隐私授权说明弹窗 -->
+    <PrivacyDialog v-model:show="showPrivacy" @result="onPrivacyResult" />
   </div>
 </template>
 

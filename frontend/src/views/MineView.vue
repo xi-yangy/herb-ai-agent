@@ -1,29 +1,114 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { showConfirmDialog, showToast } from 'vant'
 import { listFavorites } from '@/api/herb'
+import { listConsents, updateConsent } from '@/api/privacy'
+import { useAppStore } from '@/stores/app'
 
 const router = useRouter()
-const favoriteCount = ref(0)
+const store = useAppStore()
 
-onMounted(async () => {
+const favoriteCount = ref(0)
+// 授权状态：{ camera, album, microphone }
+const consents = ref({})
+const showPrivacySheet = ref(false)
+
+// 授权项定义
+const consentMeta = [
+  { key: 'camera', title: '相机', desc: '用于拍摄识别中草药' },
+  { key: 'album', title: '相册', desc: '用于选择图片识别' },
+  { key: 'microphone', title: '麦克风', desc: '（预留）语音输入' },
+]
+
+onMounted(load)
+
+async function load() {
   try {
     const favs = await listFavorites()
     favoriteCount.value = favs.length
   } catch (err) {
     console.error('[favorites]', err)
   }
-})
+}
+
+/** 加载授权状态并打开管理面板。 */
+async function openPrivacy() {
+  try {
+    const list = await listConsents()
+    const map = {}
+    for (const c of list) map[c.consent_type] = c.granted
+    consents.value = map
+  } catch (err) {
+    console.error('[consents]', err)
+  }
+  showPrivacySheet.value = true
+}
+
+/** 切换某一项授权。 */
+async function toggleConsent(key, value) {
+  try {
+    await updateConsent(key, value)
+    consents.value[key] = value
+    if (key === 'camera' && !value) {
+      showToast('关闭相机后无法拍照识别，可随时重新开启')
+    }
+  } catch (err) {
+    console.error('[update consent]', err)
+    showToast('操作失败')
+  }
+}
+
+/** 退出登录。 */
+async function onLogout() {
+  await showConfirmDialog({ title: '退出登录', message: '确定退出当前账号吗？' }).then(() => {
+    store.logout()
+    showToast('已退出登录')
+  })
+}
 </script>
 
 <template>
   <div class="page-container px-4 pb-28 pt-6">
     <header class="mb-5">
       <h1 class="text-[22px] font-semibold text-[#1F2A24]">我的</h1>
-      <p class="mt-1 text-sm text-[#5B6B62]">收藏与隐私设置</p>
+      <p class="mt-1 text-sm text-[#5B6B62]">收藏、账号与隐私设置</p>
     </header>
 
-    <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <!-- 用户信息 / 登录入口 -->
+    <section
+      class="overflow-hidden rounded-2xl bg-white p-4 shadow-sm"
+      :class="store.isLoggedIn ? 'brand-gradient' : ''"
+    >
+      <div class="flex items-center gap-3">
+        <span
+          class="flex h-11 w-11 items-center justify-center rounded-2xl text-white"
+          :class="store.isLoggedIn ? 'bg-white/20' : 'bg-[#E6F4EC]'"
+        >
+          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#2E7D52'" />
+        </span>
+        <div v-if="store.isLoggedIn" class="flex-1">
+          <p class="text-base font-semibold text-white">{{ store.user.username }}</p>
+          <p class="mt-0.5 text-xs text-white/80">已登录，历史与收藏已同步</p>
+        </div>
+        <template v-else>
+          <div class="flex-1">
+            <p class="text-base font-semibold text-[#1F2A24]">未登录</p>
+            <p class="mt-0.5 text-xs text-[#5B6B62]">登录后同步识别历史与收藏</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-full border border-[#2E7D52]/30 bg-[#E6F4EC] px-4 py-1.5 text-sm font-medium text-[#2E7D52] transition active:scale-95"
+            @click="router.push({ name: 'login' })"
+          >
+            登录 / 注册
+          </button>
+        </template>
+      </div>
+    </section>
+
+    <!-- 功能入口 -->
+    <div class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
       <button
         type="button"
         class="flex w-full items-center gap-3 px-4 py-4 text-left transition active:bg-[#F4F8F5]"
@@ -36,16 +121,63 @@ onMounted(async () => {
         <span class="text-sm text-[#5B6B62]">{{ favoriteCount }} 味</span>
         <van-icon name="arrow" color="#C0C8C3" />
       </button>
-    </div>
-
-    <!-- 占位提示：登录/隐私第二批 -->
-    <div class="mt-5 overflow-hidden rounded-2xl bg-white shadow-sm">
-      <van-cell-group :border="false">
-        <van-cell title="登录 / 注册" value="第二批" is-link />
-        <van-cell title="隐私与授权" value="第二批" is-link />
-      </van-cell-group>
+      <button
+        type="button"
+        class="flex w-full items-center gap-3 border-t border-[#F0F3F1] px-4 py-4 text-left transition active:bg-[#F4F8F5]"
+        @click="openPrivacy"
+      >
+        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FDF3E4]">
+          <van-icon name="shield-o" size="20" color="#F2A33C" />
+        </span>
+        <span class="flex-1 text-sm font-medium text-[#1F2A24]">隐私与授权</span>
+        <van-icon name="arrow" color="#C0C8C3" />
+      </button>
+      <button
+        v-if="store.isLoggedIn"
+        type="button"
+        class="flex w-full items-center gap-3 border-t border-[#F0F3F1] px-4 py-4 text-left transition active:bg-[#F4F8F5]"
+        @click="onLogout"
+      >
+        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FDE9E9]">
+          <van-icon name="sign" size="20" color="#E5484D" />
+        </span>
+        <span class="flex-1 text-sm font-medium text-[#E5484D]">退出登录</span>
+      </button>
     </div>
 
     <p class="mt-6 text-center text-xs text-[#5B6B62]/70">灵草 · 中草药识别智能体</p>
+
+    <!-- 隐私授权管理面板 -->
+    <van-popup v-model:show="showPrivacySheet" position="bottom" round>
+      <div class="px-6 pb-8 pt-6">
+        <h2 class="text-center text-lg font-semibold text-[#1F2A24]">隐私与授权</h2>
+        <p class="mt-2 text-center text-xs text-[#5B6B62]">
+          管理本设备的功能权限，关闭后对应功能将受限
+        </p>
+
+        <div class="mt-5 space-y-3">
+          <div
+            v-for="item in consentMeta"
+            :key="item.key"
+            class="flex items-center justify-between rounded-2xl bg-[#F4F8F5] px-4 py-3.5"
+          >
+            <div>
+              <p class="text-sm font-semibold text-[#1F2A24]">{{ item.title }}</p>
+              <p class="mt-0.5 text-xs text-[#5B6B62]">{{ item.desc }}</p>
+            </div>
+            <van-switch
+              :model-value="!!consents[item.key]"
+              size="24"
+              active-color="#2E7D52"
+              @update:model-value="toggleConsent(item.key, $event)"
+            />
+          </div>
+        </div>
+
+        <p class="mt-4 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+          图片数据仅用于本次识别，前端完成后即清除。
+        </p>
+      </div>
+    </van-popup>
   </div>
 </template>

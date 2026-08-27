@@ -7,7 +7,7 @@
 
 from pydantic import BaseModel, Field
 
-from app.schemas.herb import HerbResponse
+from app.schemas.herb import HerbResponse, SimilarHerb
 
 
 class RecognizeRequest(BaseModel):
@@ -19,11 +19,18 @@ class RecognizeRequest(BaseModel):
 
 
 class RecognizeResult(BaseModel):
-    """单条识别结果（含完整药材知识）。"""
+    """单条识别结果（含完整药材知识）。
+
+    channel 为实际命中通道（local/baidu/mock）；similar 为低置信度降级用的
+    相似品种候选列表；low_confidence 标记是否触发"改判相似品种"。
+    """
 
     name: str
     confidence: float
     safety_level: str
+    channel: str = "mock"
+    similar: list[SimilarHerb] = []
+    low_confidence: bool = False
     herb: HerbResponse | None = None
 
 
@@ -34,4 +41,6 @@ class RecognizeResponse(BaseModel):
     confidence: float
     channel: str
     safety_level: str
+    similar: list[SimilarHerb] = []
+    low_confidence: bool = False
     herb: HerbResponse | None = None
