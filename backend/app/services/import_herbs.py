@@ -40,7 +40,9 @@ DEFAULT_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "da
 SAFETY_LEVEL_MAP = {
     "无毒": "普通",
     "小毒": "慎用",
+    "有小毒": "慎用",
     "有毒": "毒性",
+    "有大毒": "毒性",
 }
 
 # 数据来源标注
