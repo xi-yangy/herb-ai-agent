@@ -254,6 +254,10 @@ def main() -> int:
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
+    # 提前创建输出目录，保证训练过程中保存 best 权重时目录存在
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     best_acc = 0.0
     for epoch in range(1, args.epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader, criterion, optimizer, device)
@@ -270,15 +274,14 @@ def main() -> int:
             # 立即保存当前最优权重（覆盖），并记住类别映射
             torch.save(
                 {"state_dict": model.state_dict(), "class_to_idx": full_train.class_to_idx},
-                Path(args.out) / "model.pth",
+                out_dir / "model.pth",
             )
             logger.info("  -> 保存新的最优权重（val acc %.2f%%）", best_acc * 100)
 
-    Path(args.out).mkdir(parents=True, exist_ok=True)
     # 最终导出 classes.txt（无论是否保存了 best，确保类别清单一定产出）
     idx_to_class = {idx: name for name, idx in full_train.class_to_idx.items()}
     classes = [idx_to_class[i] for i in range(len(idx_to_class))]
-    (Path(args.out) / "classes.txt").write_text("\n".join(classes) + "\n", encoding="utf-8")
+    (out_dir / "classes.txt").write_text("\n".join(classes) + "\n", encoding="utf-8")
 
     logger.info("训练完成，最终最优验证准确率：%.2f%%", best_acc * 100)
     logger.info("产物位置：%s（model.pth + classes.txt）", args.out)
