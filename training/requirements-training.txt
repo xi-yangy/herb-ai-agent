@@ -1,0 +1,5 @@
+# 训练侧依赖（独立于后端 requirements.txt，仅供 PyCharm 本地训练使用）
+torch>=2.0.0
+torchvision>=0.15.0
+pillow>=9.0.0
+numpy>=1.24.0
