@@ -189,8 +189,11 @@ def _match_herb(db: Session, name: str) -> Herb | None:
     匹配顺序：
     1. 精确匹配（「枸杞子」→「枸杞子」）；
     2. 去常见后缀匹配（如「黄芪片」→「黄芪」）；
-    3. 补常见后缀匹配（如「枸杞」→「枸杞子」，兼容识别返回简写而知识库存全称）。
-    仅做单层补全，不递归，避免过度归一化造成误匹配。
+    3. 补常见后缀匹配（如「枸杞」→「枸杞子」，兼容识别返回简写而知识库存全称）；
+    4. 别名兜底匹配（如百度返回植物学名「忍冬」→ 命中别名配置了「忍冬」的金银花）。
+
+    仅做单层补全，不递归，避免过度归一化造成误匹配。别名匹配用整词匹配
+    （alias 字段逗号分隔，避免「人参」误中「人参果」这类子串误判）。
     """
     if not name:
         return None
@@ -215,6 +218,26 @@ def _match_herb(db: Session, name: str) -> Herb | None:
             continue
         herb = db.scalar(select(Herb).where(Herb.name == expanded))
         if herb is not None:
+            return herb
+
+    # 别名兜底匹配：alias 为逗号分隔列表，识别返回名恰好是某药材别名即命中
+    herb = _match_by_alias(db, name)
+    if herb is not None:
+        return herb
+    return None
+
+
+def _match_by_alias(db: Session, name: str) -> Herb | None:
+    """按别名整词匹配：识别返回的名称 name 若正好是某药材的别名之一，则命中该药材。
+
+    alias 存的是"该药材自己的别名"（逗号分隔，如金银花→"忍冬"）。语义是：
+    百度/本地识别返回 name，若 name 是某药材的别名（如「忍冬」），即匹配到该药材。
+    用 LIKE 粗筛 + 整词精筛，兼顾性能与避免子串误判（避免「人参」误中「人参果」）。
+    """
+    if not name:
+        return None
+    for herb in db.scalars(select(Herb).where(Herb.alias.like(f"%{name}%"))).all():
+        if any(name == a.strip() for a in herb.alias.split(",")):
             return herb
     return None
 

@@ -28,6 +28,8 @@ class HerbResponse(BaseModel):
     # 鉴别防雷警报字段（知识库数据驱动，非空即触发前端防雷警报卡）
     warning_label: str = ""
     warning_message: str = ""
+    # 别名/俗名/植物学名（逗号分隔），识别匹配别名兜底用
+    alias: str = ""
     nature_flavor: str
     effects: str
     usage: str

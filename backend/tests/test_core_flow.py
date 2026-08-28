@@ -169,3 +169,39 @@ def test_migrate_requires_login(client: TestClient) -> None:
     """未登录时调用迁移接口返回 401。"""
     resp = client.post("/api/history/migrate", headers={"X-Device-Id": "some-dev"})
     assert resp.status_code == 401
+
+
+def test_match_herb_by_alias(client: TestClient) -> None:
+    """识别返回别名（如植物学名「忍冬」）能命中配置了该别名的知识库药材。
+
+    模拟百度把金银花识别为「忍冬」：_match_herb 应通过 alias 兜底命中金银花，
+    从而触发其防雷警报。使用测试库直接插入带别名的药材验证。
+    """
+    from sqlalchemy import select
+
+    from app.db.session import SessionLocal
+    from app.models.herb import Herb
+    from app.services.recognizer import _match_herb
+
+    with SessionLocal() as db:
+        # 若金银花不存在则插入带别名的示例
+        existing = db.scalar(select(Herb).where(Herb.name == "金银花"))
+        if existing is None:
+            db.add(
+                Herb(
+                    name="金银花",
+                    safety_level="普通",
+                    source="测试(编撰)",
+                    category="花类",
+                    alias="忍冬",
+                    warning_label="易与断肠草混淆",
+                    warning_message="测试辨析文案",
+                )
+            )
+            db.commit()
+
+        # 识别返回植物学名「忍冬」，应命中金银花
+        hit = _match_herb(db, "忍冬")
+        assert hit is not None
+        assert hit.name == "金银花"
+        assert hit.warning_label == "易与断肠草混淆"

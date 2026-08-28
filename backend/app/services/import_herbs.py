@@ -13,6 +13,7 @@ CSV 列与 Herb 模型字段映射：
 - similar_herbs   → similar_herbs（相似/易混淆品种，F4 用）
 - warning_label   → warning_label（鉴别防雷标签，非空触发前端防雷警报卡）
 - warning_message → warning_message（鉴别防雷辨析警示文案）
+- alias           → alias（别名/俗名/植物学名，逗号分隔，识别别名兜底匹配用）
 
 CSV 缺失的字段：source（来源）、toxicity（毒性说明）在此脚本补充/生成。
 
@@ -88,6 +89,7 @@ def build_herb(row: dict) -> Herb:
         similar_herbs=(row.get("similar_herbs") or "").strip(),
         warning_label=(row.get("warning_label") or "").strip(),
         warning_message=(row.get("warning_message") or "").strip(),
+        alias=(row.get("alias") or "").strip(),
         nature_flavor=(row.get("properties") or "").strip(),
         effects=(row.get("functions") or "").strip(),
         usage=(row.get("usage_dosage") or "").strip(),

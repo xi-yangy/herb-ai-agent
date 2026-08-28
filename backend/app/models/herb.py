@@ -34,6 +34,8 @@ class Herb(Base):
     warning_label: Mapped[str] = mapped_column(String(128), nullable=False, default="")
     # 鉴别防雷警报：辨析警示文案（外观/毒性差异要点，高危字段需专家复核后上线）
     warning_message: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # 别名/俗名/植物学名（逗号分隔，如金银花→忍冬），识别匹配别名兜底用
+    alias: Mapped[str] = mapped_column(String(255), nullable=False, default="")
 
     # ==== P0 新增知识字段 ====
     # 性味归经，如“甘、微苦；温。归脾、肺经”

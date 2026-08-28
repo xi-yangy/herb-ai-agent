@@ -77,6 +77,18 @@ def test_build_herb_anti_deception_fields() -> None:
     herb = build_herb(row)
     assert herb.warning_label == "易与断肠草混淆"
     assert "断肠草" in herb.warning_message
+    assert herb.alias == ""  # 未配置别名时为空
+
+
+def test_build_herb_alias_field() -> None:
+    """CSV 别名（alias）字段正确映射到 Herb。"""
+    row = {
+        "name": "金银花",
+        "safety_level": "无毒",
+        "alias": "忍冬,金银藤",
+    }
+    herb = build_herb(row)
+    assert herb.alias == "忍冬,金银藤"
 
 
 def test_build_herb_toxicity_generated() -> None:
