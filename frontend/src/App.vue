@@ -28,6 +28,16 @@ const PRIVACY_ACK_KEY = 'herb_privacy_ack'
 const showPrivacy = ref(false)
 
 onMounted(async () => {
+  // 每次启动将三项授权重置为默认开启：手动关闭仅当前会话生效，刷新/重启后恢复开启
+  try {
+    await Promise.all([
+      updateConsent('camera', true),
+      updateConsent('album', true),
+      updateConsent('microphone', true),
+    ])
+  } catch (err) {
+    console.error('[privacy reset]', err)
+  }
   // 已确认过首次说明则不再弹出
   if (localStorage.getItem(PRIVACY_ACK_KEY) === '1') return
   showPrivacy.value = true
