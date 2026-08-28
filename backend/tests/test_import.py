@@ -61,6 +61,22 @@ def test_build_herb_field_mapping() -> None:
     assert herb.similar_herbs == "人参、白术、防风"
     assert herb.source  # source 已补充
     assert herb.toxicity == ""  # 普通药材毒性说明为空
+    assert herb.warning_label == ""  # 未配置防雷字段时为空
+    assert herb.warning_message == ""
+
+
+def test_build_herb_anti_deception_fields() -> None:
+    """CSV 防雷字段（warning_label/warning_message）正确映射到 Herb。"""
+    row = {
+        "name": "金银花",
+        "safety_level": "无毒",
+        "similar_herbs": "连翘、蒲公英",
+        "warning_label": "易与断肠草混淆",
+        "warning_message": "金银花与剧毒植物断肠草（钩吻）在野外极易混淆，切勿自行采食。",
+    }
+    herb = build_herb(row)
+    assert herb.warning_label == "易与断肠草混淆"
+    assert "断肠草" in herb.warning_message
 
 
 def test_build_herb_toxicity_generated() -> None:

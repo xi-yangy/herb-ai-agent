@@ -25,6 +25,9 @@ class HerbResponse(BaseModel):
     source: str
     category: str
     similar_herbs: str
+    # 鉴别防雷警报字段（知识库数据驱动，非空即触发前端防雷警报卡）
+    warning_label: str = ""
+    warning_message: str = ""
     nature_flavor: str
     effects: str
     usage: str

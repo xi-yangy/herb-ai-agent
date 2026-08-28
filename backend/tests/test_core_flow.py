@@ -77,6 +77,18 @@ def test_recognize_safety_level(client: TestClient) -> None:
     assert data["safety_level"] == "毒性"
 
 
+def test_recognize_returns_anti_deception_warning(client: TestClient) -> None:
+    """识别命中配置了防雷字段的药材（附子）时，响应携带鉴别防雷警报。"""
+    resp = client.post("/api/recognize", json={"image_base64": "fake", "channel": "camera"})
+    assert resp.status_code == 200
+    data = resp.json()
+    # 附子已配置防雷字段，warning 应为非空
+    assert data["herb"] is not None
+    assert data["warning"]["label"]
+    assert data["warning"]["message"]
+    assert data["warning"]["herb_name"] == "附子"
+
+
 def test_recognize_falls_back_to_mock_when_baidu_disabled(client: TestClient) -> None:
     """百度识别未启用时，识别接口回退 Mock 仍返回结果（不中断链路）。"""
     # conftest 已设置 BAIDU_ENABLED=false

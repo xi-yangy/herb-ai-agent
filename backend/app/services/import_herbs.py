@@ -11,6 +11,8 @@ CSV 列与 Herb 模型字段映射：
 - contraindications → contraindications（禁忌）
 - safety_level    → safety_level（值映射：无毒→普通 / 小毒→慎用 / 有毒→毒性）
 - similar_herbs   → similar_herbs（相似/易混淆品种，F4 用）
+- warning_label   → warning_label（鉴别防雷标签，非空触发前端防雷警报卡）
+- warning_message → warning_message（鉴别防雷辨析警示文案）
 
 CSV 缺失的字段：source（来源）、toxicity（毒性说明）在此脚本补充/生成。
 
@@ -84,6 +86,8 @@ def build_herb(row: dict) -> Herb:
         source=SOURCE,
         category=(row.get("category") or "").strip(),
         similar_herbs=(row.get("similar_herbs") or "").strip(),
+        warning_label=(row.get("warning_label") or "").strip(),
+        warning_message=(row.get("warning_message") or "").strip(),
         nature_flavor=(row.get("properties") or "").strip(),
         effects=(row.get("functions") or "").strip(),
         usage=(row.get("usage_dosage") or "").strip(),

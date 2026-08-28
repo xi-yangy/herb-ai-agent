@@ -45,6 +45,14 @@ const lowConfidence = computed(() => !!result.value?.low_confidence)
 // 相似品种候选列表
 const similarList = computed(() => result.value?.similar || [])
 
+// 鉴别防雷警报：识别命中配置了防雷字段的药材时，顶部弹出防雷警报卡
+// 仅当 herb 已收录知识库且 warning.label 非空时展示，避免低置信/未收录误触发
+const warning = computed(() => {
+  const w = result.value?.warning
+  if (!result.value?.herb || !w || !w.label) return null
+  return w
+})
+
 // 「重新拍摄」：清空当前识别并返回首页（相机/相册入口）
 function retake() {
   store.clearRecognition()
@@ -152,6 +160,55 @@ async function onClearRecognition() {
 
 <template>
   <div class="page-container px-4 pb-28 pt-6">
+    <!-- 鉴别防雷警报：识别命中易混淆高危药材时，顶部内嵌醒目警报卡 -->
+    <section
+      v-if="warning"
+      class="anti-deception-card mt-1 overflow-hidden rounded-3xl border border-[#E5484D]/30 bg-gradient-to-br from-[#7A0C12] via-[#B4330F] to-[#E5484D] p-5 shadow-lg shadow-[#E5484D]/20"
+    >
+      <!-- 头部：警示图标 + 标题 -->
+      <div class="flex items-center gap-3">
+        <div class="deception-halo relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15">
+          <van-icon name="shield-o" size="26" color="#FFF" />
+        </div>
+        <div>
+          <h2 class="text-lg font-bold leading-tight text-white">鉴别防雷警报</h2>
+          <p class="mt-0.5 text-xs text-white/75">该药材易与高危品种混淆，务必辨认后再使用</p>
+        </div>
+      </div>
+
+      <!-- 药材辨析区：本药材 vs 易混淆高危品种 -->
+      <div class="mt-4 space-y-2.5">
+        <div class="flex items-center justify-between rounded-xl bg-white/10 px-3.5 py-2.5">
+          <span class="text-xs text-white/70">本药材</span>
+          <span class="rounded-full bg-white/20 px-2.5 py-0.5 text-sm font-semibold text-white">
+            {{ warning.herb_name || result?.name }}
+          </span>
+        </div>
+        <div class="rounded-xl bg-white/10 px-3.5 py-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-white/70">易混淆高危品种</span>
+            <span class="rounded-full bg-[#E5484D] px-2.5 py-0.5 text-sm font-semibold text-white">
+              {{ warning.label }}
+            </span>
+          </div>
+          <p class="mt-2 text-xs leading-relaxed text-white/95">{{ warning.message }}</p>
+        </div>
+      </div>
+
+      <!-- 安全提示区 -->
+      <div class="mt-3 rounded-xl border border-[#F2A33C]/40 bg-[#FDF3E4]/90 px-3.5 py-3">
+        <p class="text-xs leading-relaxed text-[#B45309]">
+          <van-icon name="warning-o" size="14" class="mr-1 align-[-2px]" />
+          高危易混淆，宁严勿松。切勿仅凭外观自行采摘、辨认或服用，请交由专业药师/医师核对。
+        </p>
+      </div>
+
+      <!-- 免责声明 -->
+      <p class="mt-3 text-center text-[11px] leading-relaxed text-white/55">
+        本辨析信息仅供参考，不构成诊断或处方，如有不适请咨询执业医师/药师。
+      </p>
+    </section>
+
     <!-- 顶部安全等级色条 -->
     <div
       class="flex items-center gap-3 rounded-2xl px-4 py-3.5"
@@ -283,3 +340,37 @@ async function onClearRecognition() {
     </button>
   </div>
 </template>
+
+<style scoped>
+/* 鉴别防雷警报卡：进入动画（淡入 + 上移） */
+.anti-deception-card {
+  animation: deception-fade-in 0.5s ease-out both;
+}
+
+@keyframes deception-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 警示图标呼吸辉光 */
+.deception-halo {
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45);
+  animation: deception-halo-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes deception-halo-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+}
+</style>

@@ -30,6 +30,10 @@ class Herb(Base):
     category: Mapped[str] = mapped_column(String(64), nullable=False, default="")
     # 相似/易混淆品种（逗号分隔，用于 F4 易混淆辨析提示）
     similar_herbs: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    # 鉴别防雷警报：需防雷标签（如"易与断肠草混淆"，非空即触发前端防雷警报卡）
+    warning_label: Mapped[str] = mapped_column(String(128), nullable=False, default="")
+    # 鉴别防雷警报：辨析警示文案（外观/毒性差异要点，高危字段需专家复核后上线）
+    warning_message: Mapped[str] = mapped_column(Text, nullable=False, default="")
 
     # ==== P0 新增知识字段 ====
     # 性味归经，如“甘、微苦；温。归脾、肺经”
