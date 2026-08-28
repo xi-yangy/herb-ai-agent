@@ -9,9 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: '多模态中草药图像识别智能体',
-        short_name: '中草药识别',
-        description: '拍照识别中草药，提供功效、禁忌与安全提示',
+        name: 'herb-ai-agent',
+        short_name: 'herb-ai',
+        description: 'Multimodal Chinese herbal medicine image recognition agent',
         theme_color: '#2E7D32',
         background_color: '#F5F7F4',
         display: 'standalone',

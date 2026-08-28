@@ -1,7 +1,7 @@
 [project]
 name = "herb-ai-backend"
 version = "0.1.0"
-description = "多模态中草药图像识别智能体 - 后端服务"
+description = "herb-ai-agent - 后端服务"
 requires-python = ">=3.12"
 
 [tool.ruff]

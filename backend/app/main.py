@@ -18,8 +18,8 @@ def create_app() -> FastAPI:
     setup_logging()
 
     app = FastAPI(
-        title="多模态中草药图像识别智能体",
-        description="图像识别 + 用药安全 + 专业信息的一体化服务（骨架阶段）",
+        title="herb-ai-agent",
+        description="Multimodal Chinese herbal medicine recognition, safety warning and professional info service",
         version="0.1.0",
     )
 
