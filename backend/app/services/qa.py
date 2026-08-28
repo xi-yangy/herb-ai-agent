@@ -105,8 +105,8 @@ class QwenQAService(QAService):
 
         payload = {
             "model": settings.qwen_model,
-            # 限制回答长度，避免生成冗长内容，缩短单次回答耗时
-            "max_tokens": 600,
+            # 回答长度上限：约 1000 token，兼顾内容详实与响应耗时
+            "max_tokens": 1000,
             "temperature": 0.7,
             "messages": [
                 {"role": "system", "content": _SYSTEM_PROMPT},
