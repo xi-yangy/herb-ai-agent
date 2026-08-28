@@ -58,12 +58,12 @@ cd backend
 py -3.12 -m venv .venv              # 创建虚拟环境
 .venv\Scripts\activate              # 激活（Windows PowerShell）
 pip install -r requirements-dev.txt # 安装依赖（含测试）
-python run.py                       # 启动服务（默认 0.0.0.0:8000）
+python run.py                       # 启动服务（默认 0.0.0.0:8001）
 ```
 
 启动后访问：
-- 接口文档：http://127.0.0.1:8000/docs
-- 健康检查：http://127.0.0.1:8000/api/health
+- 接口文档：http://127.0.0.1:8001/docs
+- 健康检查：http://127.0.0.1:8001/api/health
 
 > 注意：后端需使用 Python 3.12（pydantic-core 在 3.14 下无预编译 wheel，会构建失败）。
 
