@@ -18,7 +18,7 @@ const showPrivacySheet = ref(false)
 const consentMeta = [
   { key: 'camera', title: '相机', desc: '用于拍摄识别中草药' },
   { key: 'album', title: '相册', desc: '用于选择图片识别' },
-  { key: 'microphone', title: '麦克风', desc: '（预留）语音输入' },
+  { key: 'microphone', title: '麦克风', desc: '用于语音输入提问' },
 ]
 
 onMounted(load)

@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.base import Base
 from app.db.session import engine
-from app.routers import auth, favorites, health, herbs, history, privacy, recognize
+from app.routers import auth, favorites, health, herbs, history, privacy, qa, recognize
 
 
 def create_app() -> FastAPI:
@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
     app.include_router(favorites.router)
     app.include_router(auth.router)
     app.include_router(privacy.router)
+    app.include_router(qa.router)
 
     return app
 

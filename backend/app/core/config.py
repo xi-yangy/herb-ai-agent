@@ -33,6 +33,15 @@ class Settings(BaseSettings):
     # 百度相似品种 top-k 数量（供"低置信度降级列表"展示）
     baidu_top_k: int = 5
 
+    # 通义千问（Qwen）多模态问答凭证（经 .env 提供，不硬编码）
+    qwen_api_key: str = ""
+    # 是否启用 Qwen 问答（未配置凭证时自动降级为知识库结构化展示）
+    qwen_enabled: bool = False
+    # Qwen 模型（DashScope OpenAI 兼容协议模型名）
+    qwen_model: str = "qwen-plus"
+    # Qwen 调用超时（秒）：超时即降级，避免阻塞结果页
+    qwen_timeout: float = 10.0
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

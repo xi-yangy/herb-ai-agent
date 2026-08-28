@@ -5,6 +5,7 @@ import { showToast, showConfirmDialog } from 'vant'
 import { createHistory, addFavorite, removeFavorite, listFavorites } from '@/api/herb'
 import { useAppStore } from '@/stores/app'
 import LayeredInfoCard from '@/components/LayeredInfoCard.vue'
+import QaPanel from '@/components/QaPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -262,6 +263,9 @@ async function onClearRecognition() {
 
     <!-- 分层信息卡（F5：白话科普 + 专业药典折叠） -->
     <LayeredInfoCard v-if="herb" :herb="herb" class="mt-5" />
+
+    <!-- 多模态追问（F12/F13：文本/语音问答，Qwen 真实调用 + 知识库降级） -->
+    <QaPanel :herb="herb" :result-name="result?.name" class="mt-5" />
 
     <!-- 医疗免责声明 -->
     <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
