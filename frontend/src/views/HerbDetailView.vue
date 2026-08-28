@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { getHerb, addFavorite, removeFavorite, listFavorites } from '@/api/herb'
+import LayeredInfoCard from '@/components/LayeredInfoCard.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -107,34 +108,8 @@ async function toggleFavorite() {
         数据来源：{{ herb.source || '未标注' }}
       </p>
 
-      <!-- 知识卡片 -->
-      <section class="mt-3 space-y-3">
-        <div class="rounded-2xl bg-white p-4 shadow-sm">
-          <h3 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">性味归经</h3>
-          <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.nature_flavor }}</p>
-        </div>
-        <div class="rounded-2xl bg-white p-4 shadow-sm">
-          <h3 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">功效主治</h3>
-          <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.effects }}</p>
-        </div>
-        <div class="rounded-2xl bg-white p-4 shadow-sm">
-          <h3 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">用法用量</h3>
-          <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.usage }}</p>
-        </div>
-        <div class="rounded-2xl bg-white p-4 shadow-sm">
-          <h3 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">禁忌</h3>
-          <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.contraindications }}</p>
-        </div>
-        <div
-          class="rounded-2xl p-4 shadow-sm"
-          :class="herb.safety_level === '毒性' ? 'border border-[#E5484D]/40 bg-[#FDE9E9]' : 'bg-white'"
-        >
-          <h3 class="mb-1.5 text-sm font-semibold" :class="herb.safety_level === '毒性' ? 'text-[#E5484D]' : 'text-[#2E7D52]'">
-            毒性说明
-          </h3>
-          <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.toxicity || '常规剂量下无毒。' }}</p>
-        </div>
-      </section>
+      <!-- 分层信息卡（F5：白话科普 + 专业药典折叠） -->
+      <LayeredInfoCard :herb="herb" class="mt-3" />
 
       <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
         本内容仅供参考，不构成医疗建议。用药请遵医嘱。

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { showToast, showConfirmDialog } from 'vant'
 import { createHistory, addFavorite, removeFavorite, listFavorites } from '@/api/herb'
 import { useAppStore } from '@/stores/app'
+import LayeredInfoCard from '@/components/LayeredInfoCard.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +28,6 @@ const safetyMeta = computed(() => {
   return map[level] || map.普通
 })
 
-const safetyLevel = computed(() => result.value?.safety_level || '')
 const herb = computed(() => result.value?.herb || null)
 
 // 识别通道可读文案映射
@@ -261,56 +261,8 @@ async function onClearRecognition() {
       </div>
     </section>
 
-    <!-- 知识卡片 -->
-    <section v-if="herb" class="mt-5 space-y-3">
-      <div class="rounded-2xl bg-white p-4 shadow-sm">
-        <h2 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">性味归经</h2>
-        <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.nature_flavor }}</p>
-      </div>
-      <div class="rounded-2xl bg-white p-4 shadow-sm">
-        <h2 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">功效主治</h2>
-        <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.effects }}</p>
-      </div>
-      <div class="rounded-2xl bg-white p-4 shadow-sm">
-        <h2 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">用法用量</h2>
-        <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.usage }}</p>
-      </div>
-    </section>
-
-    <!-- 高危警示（毒性药材） -->
-    <section
-      v-if="safetyLevel === '毒性'"
-      class="danger-breathe mt-5 rounded-2xl border border-[#E5484D]/40 bg-[#FDE9E9] p-4"
-    >
-      <div class="flex items-center gap-2">
-        <van-icon name="warning-o" size="20" color="#E5484D" />
-        <h2 class="text-sm font-bold text-[#E5484D]">高风险警示</h2>
-      </div>
-      <p class="mt-2 text-sm leading-relaxed text-[#1F2A24]">
-        该药材含毒性成分，使用不当可能危及健康。请务必在专业医师指导下使用，严格控制剂量与煎煮方法，切勿自行服用。
-      </p>
-      <p class="mt-2 rounded-xl bg-white/70 p-2.5 text-xs leading-relaxed text-[#5B6B62]">
-        {{ herb?.toxicity || '毒性信息详见详情页。' }}
-      </p>
-    </section>
-
-    <!-- 慎用警示 -->
-    <section
-      v-else-if="safetyLevel === '慎用'"
-      class="mt-5 rounded-2xl border border-[#F2A33C]/40 bg-[#FDF3E4] p-4"
-    >
-      <div class="flex items-center gap-2">
-        <van-icon name="info-o" size="20" color="#F2A33C" />
-        <h2 class="text-sm font-bold text-[#E08600]">谨慎使用</h2>
-      </div>
-      <p class="mt-2 text-sm leading-relaxed text-[#1F2A24]">{{ herb?.contraindications }}</p>
-    </section>
-
-    <!-- 禁忌与毒性 -->
-    <section v-if="herb" class="mt-5 rounded-2xl bg-white p-4 shadow-sm">
-      <h2 class="mb-1.5 text-sm font-semibold text-[#2E7D52]">禁忌</h2>
-      <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.contraindications }}</p>
-    </section>
+    <!-- 分层信息卡（F5：白话科普 + 专业药典折叠） -->
+    <LayeredInfoCard v-if="herb" :herb="herb" class="mt-5" />
 
     <!-- 医疗免责声明 -->
     <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
