@@ -30,18 +30,8 @@ class Settings(BaseSettings):
     baidu_enabled: bool = False
     # 百度识别置信度阈值：低于该值不直接给结论，降级为相似品种
     baidu_confidence_threshold: float = 0.6
-
-    # ==== 本地自建模型（主通道）配置 ====
-    # 是否启用本地模型主通道（默认关闭；未配置模型文件时自动回退百度/Mock）
-    model_enabled: bool = False
-    # 模型文件路径（onnx 或 pytorch .pt/.pth）
-    model_path: str = ""
-    # 类别清单文件路径（json/txt，一行一类或 JSON 数组，顺序需与模型输出对齐）
-    model_labels: str = ""
-    # 本地模型置信度阈值：低于该值视为低置信度，触发百度兜底/相似品种降级
-    model_confidence_threshold: float = 0.6
-    # 相似品种 top-k 数量（本地与百度共用，供"低置信度降级列表"展示）
-    model_top_k: int = 5
+    # 百度相似品种 top-k 数量（供"低置信度降级列表"展示）
+    baidu_top_k: int = 5
 
     model_config = SettingsConfigDict(
         env_file=".env",

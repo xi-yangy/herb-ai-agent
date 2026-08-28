@@ -1,27 +1,20 @@
-"""可插拔识别服务（混合双通道）。
+"""可插拔识别服务（百度 + Mock 单通道）。
 
-通道编排（主通道优先）：
-- LocalModelRecognizer：本地自建模型主通道（onnx/pytorch，本轮为占位桩 Stub）；
-- BaiduRecognizer：百度植物识别兜底通道（top-k + 名称匹配知识库）；
+- BaiduRecognizer：百度植物识别（top-k + 名称匹配知识库 + 低置信降级）；
 - MockRecognizer：开发/降级保底（写死示例药材）。
 
-三者统一返回 RecognizeResult（含实际命中 channel 与相似品种 similar），
-由 HybridRecognizer 按「主通道 → 兜底 → Mock」链式调度。路由与前端契约不变。
+统一返回 RecognizeResult（含实际命中 channel 与相似品种 similar）。百度未启用/
+失败/无结果时回退 Mock，保证演示链路不中断。路由与前端契约不变。
 """
 
 from __future__ import annotations
 
-import base64
 import json
 import logging
 import time
-import urllib.error
 import urllib.parse
 import urllib.request
 from abc import ABC, abstractmethod
-from io import BytesIO
-from pathlib import Path
-from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -64,19 +57,12 @@ class RecognitionService(ABC):
         raise NotImplementedError
 
 
-def _parse_image(image_base64: str) -> bytes:
-    """剥离 data:image 前缀，返回原始图片字节。"""
-    if "," in image_base64 and image_base64.strip().lower().startswith("data:image"):
-        return base64.b64decode(image_base64.split(",", 1)[1])
-    return base64.b64decode(image_base64)
-
-
 class MockRecognizer(RecognitionService):
     """Mock 识别实现。
 
     不真正分析图片，返回写死的示例药材（默认为「附子」，覆盖高危警示展示），
     供前端打通「上传 → 识别 → 结果 → 安全警示 → 历史收藏」全链路。
-    真实引擎接入后替换本类。
+    百度未配置凭证/不可用时作为兜底。
     """
 
     channel = "mock"
@@ -97,150 +83,8 @@ class MockRecognizer(RecognitionService):
         )
 
 
-class LocalModelRecognizer(RecognitionService):
-    """本地自建模型主通道。
-
-    本轮为「完整接口 + 占位桩(Stub)」实现：加载、图像预处理、top-k 输出的代码骨架
-    均已写好，但推理内核为明确标注的占位逻辑。当未配置模型文件/类别清单时，
-    本类如实判定为「不可用」（返回 is_available=False），由 HybridRecognizer 回退
-    到百度/Mock，绝不虚标识别结果。
-
-    待用户后续提供 onnx/pytorch 模型与类别清单后，仅需替换 `_infer_topk` 的
-    推理实现（用真实引擎加载模型并输出 top-k），其余调度/映射逻辑无需改动。
-    """
-
-    channel = "local"
-
-    # 占位桩默认输出（仅用于本地模型被强制启用但无真实模型时，验证通道链路）
-    _STUB_LABELS = ["黄芪", "附子", "金银花"]
-
-    def __init__(self) -> None:
-        self._session: Any | None = None  # onnxruntime InferenceSession（惰性加载）
-        self._labels: list[str] = []
-        self._labels_loaded = False
-
-    # ---- 配置/可用性 ----
-
-    @property
-    def is_available(self) -> bool:
-        """本地模型主通道是否可用（需启用 + 配置模型文件与类别清单）。"""
-        if not settings.model_enabled:
-            return False
-        if not settings.model_path or not settings.model_labels:
-            logger.info("本地模型未配置完整（缺模型文件/类别清单），主通道不可用")
-            return False
-        return True
-
-    def _load_labels(self) -> list[str]:
-        """惰性加载类别清单（支持 txt 一行一类 或 JSON 数组）。"""
-        if self._labels_loaded:
-            return self._labels
-        self._labels_loaded = True
-        if not settings.model_labels:
-            return []
-        try:
-            text = Path(settings.model_labels).read_text(encoding="utf-8").strip()
-            if text.startswith("["):
-                self._labels = [str(x) for x in json.loads(text)]
-            else:
-                self._labels = [line.strip() for line in text.splitlines() if line.strip()]
-        except (OSError, json.JSONDecodeError) as exc:
-            logger.warning("类别清单加载失败：%s", exc)
-            self._labels = []
-        return self._labels
-
-    # ---- 图像预处理（真实模型接入时按模型输入协议调整） ----
-
-    @staticmethod
-    def _preprocess(image_bytes: bytes) -> Any:
-        """将图片字节转为模型输入张量（占位实现：仅返回原始字节）。
-
-        接入真实模型时，应使用 Pillow/numpy 完成 resize + 归一化 + HWC→CHW，
-        并返回与 onnxruntime 输入协议一致的 numpy 数组。
-        """
-        return image_bytes
-
-    # ---- 推理内核（占位桩，替换点） ----
-
-    def _infer_topk(
-        self, image_bytes: bytes, k: int, labels: list[str]
-    ) -> list[tuple[str, float]]:
-        """返回 top-k 的 (类别名, 置信度) 列表，按置信度降序。
-
-        【占位桩说明】本实现不真正分析图片，恒定返回 _STUB_LABELS 的模拟置信度，
-        仅用于验证「本地通道 → 降级/回退」链路。真实模型到位后，改为：
-        1. onnxruntime: self._session.run(...) 取 softmax 概率，取前 k 个索引映射 labels；
-        2. pytorch: 同理。labels 由 _load_labels() 提供，顺序与模型输出对齐。
-        """
-        # 占位桩：忽略 labels，返回内置示例类别（真实模型接入后按 labels 映射索引）
-        names = labels or self._STUB_LABELS
-        n = len(names)
-        probs = [(1.0 - i * 0.08) for i in range(n)]  # 模拟：首类 1.0，依次递减
-        ranked = sorted(zip(names, probs), key=lambda x: x[1], reverse=True)
-        return ranked[:k]
-
-    # ---- 识别主入口 ----
-
-    def recognize(self, image_base64: str, db: Session) -> RecognizeResult:
-        # 未配置/未启用：如实返回"主通道不可用"，由调度器回退（不虚标）
-        if not self.is_available:
-            logger.info("本地模型主通道不可用，交由调度器回退")
-            herb = db.scalar(select(Herb).where(Herb.name == self._STUB_LABELS[0]))
-            return RecognizeResult(
-                name="",
-                confidence=0.0,
-                safety_level=herb.safety_level if herb else "普通",
-                channel=self.channel,
-                similar=[],
-                low_confidence=True,
-            )
-        try:
-            image_bytes = _parse_image(image_base64)
-        except (ValueError, base64.binascii.Error) as exc:
-            logger.warning("本地模型图片解析失败：%s", exc)
-            herb = db.scalar(select(Herb).where(Herb.name == self._STUB_LABELS[0]))
-            return RecognizeResult(
-                name="",
-                confidence=0.0,
-                safety_level=herb.safety_level if herb else "普通",
-                channel=self.channel,
-                similar=[],
-                low_confidence=True,
-            )
-
-        labels = self._load_labels()
-        topk = self._infer_topk(image_bytes, settings.model_top_k, labels)
-        if not topk:
-            logger.info("本地模型无输出，交由调度器回退")
-            herb = db.scalar(select(Herb).where(Herb.name == self._STUB_LABELS[0]))
-            return RecognizeResult(
-                name="",
-                confidence=0.0,
-                safety_level=herb.safety_level if herb else "普通",
-                channel=self.channel,
-                similar=[],
-                low_confidence=True,
-            )
-
-        name, score = topk[0]
-        herb = _match_herb(db, name)
-        similar = _build_similar_from_names(db, topk)
-
-        # 低置信度：标记 low_confidence，交由前端展示"相似品种 + 引导重拍"
-        low_conf = score < settings.model_confidence_threshold or herb is None
-        return RecognizeResult(
-            name=name if herb else (name or ""),
-            confidence=round(float(score), 4),
-            safety_level=herb.safety_level if herb else "普通",
-            channel=self.channel,
-            similar=similar,
-            low_confidence=low_conf,
-            herb=HerbResponse.model_validate(herb) if herb else None,
-        )
-
-
 class BaiduRecognizer(RecognitionService):
-    """百度植物识别兜底实现。
+    """百度植物识别实现。
 
     调用百度「植物识别」接口识别图片，取 top-k 返回结果并匹配本地知识库；
     识别失败/超时/未配置凭证时回退到 MockRecognizer，保证演示链路不中断。
@@ -332,51 +176,11 @@ class BaiduRecognizer(RecognitionService):
         if not results:
             return []
         # result 按置信度降序，取前 k 条
-        k = settings.model_top_k
+        k = settings.baidu_top_k
         out: list[tuple[str, float]] = []
         for item in results[:k]:
             out.append((str(item.get("name", "")), float(item.get("score", 0.0))))
         return out
-
-
-class HybridRecognizer(RecognitionService):
-    """混合双通道调度器（主通道优先）。
-
-    链路：本地模型(主) → 百度(兜底) → Mock(保底)。本地模型不可用/低置信度/
-    未命中知识库时，自动回退百度；百度不可用时回退 Mock。
-    """
-
-    channel = "hybrid"
-
-    def __init__(self) -> None:
-        self._local = LocalModelRecognizer()
-        self._baidu = BaiduRecognizer()
-
-    def recognize(self, image_base64: str, db: Session) -> RecognizeResult:
-        # 1) 主通道：本地模型
-        if self._local.is_available:
-            local_result = self._local.recognize(image_base64, db)
-            # 命中条件：有名称、置信度达标、且命中本地知识库（未命中则视为不靠谱，交给兜底）
-            if (
-                local_result.name
-                and not local_result.low_confidence
-                and local_result.herb is not None
-            ):
-                logger.info("本地模型命中：%s (%.2f)", local_result.name, local_result.confidence)
-                return local_result
-            # 低置信度：仍优先展示本地模型的相似品种降级（不直接回退百度，给用户更贴近的候选）
-            if local_result.name and local_result.low_confidence and local_result.similar:
-                logger.info(
-                    "本地模型低置信度（%.2f），按相似品种降级展示：%s",
-                    local_result.confidence,
-                    local_result.name,
-                )
-                return local_result
-            logger.info("本地模型未命中知识库，回退百度兜底")
-
-        # 2) 兜底通道：百度
-        baidu_result = self._baidu.recognize(image_base64, db)
-        return baidu_result
 
 
 def _match_herb(db: Session, name: str) -> Herb | None:
@@ -423,5 +227,5 @@ def _build_similar_from_names(
     return out
 
 
-# 当前使用的识别服务实例：混合双通道调度器（本地模型 → 百度 → Mock）
-recognizer: RecognitionService = HybridRecognizer()
+# 当前使用的识别服务实例：百度（未启用/不可用时内部回退 Mock）
+recognizer: RecognitionService = BaiduRecognizer()

@@ -33,7 +33,6 @@ const herb = computed(() => result.value?.herb || null)
 // 识别通道可读文案映射
 const channelLabel = computed(() => {
   const map = {
-    local: '本地模型识别',
     baidu: '百度识别',
     mock: '模拟识别',
   }
