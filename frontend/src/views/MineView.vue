@@ -166,7 +166,7 @@ async function onLogout() {
               <p class="mt-0.5 text-xs text-[#5B6B62]">{{ item.desc }}</p>
             </div>
             <van-switch
-              :model-value="!!consents[item.key]"
+              :model-value="consents[item.key] !== false"
               size="24"
               active-color="#2E7D52"
               @update:model-value="toggleConsent(item.key, $event)"
