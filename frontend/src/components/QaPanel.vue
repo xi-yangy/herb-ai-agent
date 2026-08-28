@@ -42,6 +42,62 @@ const speechSupported = computed(() => {
 let recognition = null
 const listening = ref(false)
 
+// ---- 语音朗读（TTS，Web Speech API）----
+
+// 是否支持语音朗读
+const ttsSupported = computed(() => typeof window !== 'undefined' && 'speechSynthesis' in window)
+
+// 当前正在朗读的消息下标（-1 表示无）
+const speakingIdx = ref(-1)
+
+/** 选择中文语音，找不到则用默认。 */
+function pickZhVoice() {
+  const voices = window.speechSynthesis.getVoices()
+  return voices.find((v) => v.lang.toLowerCase().startsWith('zh')) || null
+}
+
+/** 切换朗读/停止指定下标的消息。 */
+function toggleSpeak(idx) {
+  if (!ttsSupported.value) {
+    showToast('当前浏览器不支持语音朗读')
+    return
+  }
+  const msg = messages.value[idx]
+  if (!msg || msg.role !== 'ai') return
+
+  // 若已正在朗读该条 → 停止
+  if (speakingIdx.value === idx) {
+    stopSpeak()
+    return
+  }
+
+  // 先取消当前朗读，再朗读新内容
+  stopSpeak(true)
+
+  const utter = new SpeechSynthesisUtterance(msg.text)
+  utter.lang = 'zh-CN'
+  const zh = pickZhVoice()
+  if (zh) utter.voice = zh
+  utter.rate = 1
+  utter.onend = () => {
+    speakingIdx.value = -1
+  }
+  utter.onerror = () => {
+    speakingIdx.value = -1
+  }
+  speakingIdx.value = idx
+  window.speechSynthesis.speak(utter)
+}
+
+/** 停止当前朗读并复位状态（silent 表示不弹提示）。 */
+function stopSpeak(silent) {
+  if (ttsSupported.value) window.speechSynthesis.cancel()
+  speakingIdx.value = -1
+  if (!silent) {
+    showToast('已停止朗读')
+  }
+}
+
 /** 组装知识库上下文透传给后端。 */
 function buildContext() {
   const h = props.herb || {}
@@ -152,11 +208,14 @@ function startVoice() {
   }
 }
 
-/** 组件卸载时停止语音识别。 */
+/** 组件卸载时停止语音识别与朗读。 */
 onBeforeUnmount(() => {
   if (recognition) {
     recognition.onend = null
     recognition.stop()
+  }
+  if (ttsSupported.value) {
+    window.speechSynthesis.cancel()
   }
 })
 </script>
@@ -240,6 +299,23 @@ onBeforeUnmount(() => {
                   已切换至本地知识库展示
                 </p>
                 <p class="whitespace-pre-line">{{ msg.text }}</p>
+
+                <!-- 朗读按钮（仅 AI 回答，点击朗读/停止） -->
+                <button
+                  v-if="msg.role === 'ai' && ttsSupported"
+                  type="button"
+                  class="mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition active:scale-95"
+                  :class="
+                    speakingIdx === idx
+                      ? 'bg-[#E5484D]/10 text-[#E5484D]'
+                      : 'bg-[#E6F4EC] text-[#2E7D52] hover:bg-[#D9EEE1]'
+                  "
+                  :aria-label="speakingIdx === idx ? '停止朗读' : '朗读该回答'"
+                  @click="toggleSpeak(idx)"
+                >
+                  <van-icon :name="speakingIdx === idx ? 'stop' : 'volume-o'" size="14" />
+                  {{ speakingIdx === idx ? '停止朗读' : '朗读' }}
+                </button>
                 <p
                   v-if="msg.role === 'ai' && msg.disclaimer"
                   class="mt-1.5 border-t border-[#F0F3F1] pt-1.5 text-[11px] leading-relaxed text-[#5B6B62]/80"
