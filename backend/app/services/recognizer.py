@@ -227,5 +227,12 @@ def _build_similar_from_names(
     return out
 
 
-# 当前使用的识别服务实例：百度（未启用/不可用时内部回退 Mock）
-recognizer: RecognitionService = BaiduRecognizer()
+# 当前使用的识别服务实例：本地优先 + 百度兜底 + Mock 保底。
+# 延迟导入 HybridRecognizer，避免未安装 torch 时在模块导入阶段报错。
+def _build_default_recognizer() -> RecognitionService:
+    from app.services.hybrid_recognizer import HybridRecognizer
+
+    return HybridRecognizer()
+
+
+recognizer: RecognitionService = _build_default_recognizer()

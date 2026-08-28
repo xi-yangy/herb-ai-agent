@@ -33,6 +33,20 @@ class Settings(BaseSettings):
     # 百度相似品种 top-k 数量（供"低置信度降级列表"展示）
     baidu_top_k: int = 5
 
+    # 本地自训练模型（PyTorch）识别配置（经 .env 提供，未启用时回退百度）
+    # 是否启用本地模型（需配置模型与类别文件路径后开启）
+    local_enabled: bool = False
+    # 训练产物 .pth 模型权重路径
+    local_model_path: str = ""
+    # 训练产物 classes.txt 类别清单路径（每行一个类别名，行号=索引）
+    local_classes_path: str = ""
+    # 本地模型置信度阈值：低于该值回退百度兜底
+    local_confidence_threshold: float = 0.6
+    # 本地模型 top-k 数量（供"相似品种列表"展示）
+    local_top_k: int = 5
+    # 本地模型推理设备：空=自动（cuda 优先，否则 cpu）；可显式指定 cuda/cpu
+    local_device: str = ""
+
     # 通义千问（Qwen）多模态问答凭证（经 .env 提供，不硬编码）
     qwen_api_key: str = ""
     # 是否启用 Qwen 问答（未配置凭证时自动降级为知识库结构化展示）
