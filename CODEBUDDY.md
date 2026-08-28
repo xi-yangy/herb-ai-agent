@@ -67,7 +67,7 @@
 | 多模态交互 | 通义千问（Qwen）API | 图文/语音问答（**两周必做**，失败回退知识库结构化展示） |
 | 语音输入 | Web Speech API | 语音转文本（**两周必做**，需联网 + Chrome 系浏览器） |
 | 后端 | Python FastAPI | 识别代理、知识库查询、历史记录接口；提供类型标注 |
-| 识别引擎 | **自训练本地模型（PyTorch ResNet50）+ 百度植物识别兜底** | 用 `training/train.py` 自训练药材分类模型作本地主通道（`LocalRecognizer` 加载，channel=local）；低置信/未启用/异常时回退百度（channel=baidu），再兜底 Mock（channel=mock），保证链路不中断 |
+| 识别引擎 | **自训练本地模型（PyTorch ResNet50）+ 百度植物识别兜底** | 用 `training/train.py` 自训练药材分类模型作本地主通道（`LocalRecognizer` 加载，channel=local）；低置信/未启用/异常时回退百度（channel=baidu），再兜底 Mock（channel=mock），保证链路不中断。**运行环境约定**：本地模型推理依赖 `torch/torchvision/pillow/numpy`，仅安装在系统 Python（`C:\Users\LENOVO\AppData\Local\Programs\Python\Python312`）；`.venv` 未装 torch。启动后端须用**系统 Python**（`python`/`py -3.12`），勿用 `.venv\Scripts\python.exe`，否则 `import torch` 报 `No module named 'torch'`、本地模型加载失败并回退百度。加载成功标志：日志出现「本地模型已加载（N 类，设备 cuda/cpu）」且识别 `channel=local` |
 | 数据存储 | SQLite（起步）→ MySQL | 表：users、herbs、recognition_history、favorites、privacy_consents |
 | 部署 | 方案一：本地 + 内网穿透；方案二：云服务器 | 演示以方案一为主，长期展示可迁移方案二 |
 

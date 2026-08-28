@@ -61,6 +61,8 @@ pip install -r requirements-dev.txt # 安装依赖（含测试）
 python run.py                       # 启动服务（默认 0.0.0.0:8001）
 ```
 
+> **重要（本地模型环境）**：如需启用自训练本地识别模型（`channel=local`），后端必须以**系统 Python**（`python` / `py -3.12`）启动，因为推理依赖 `torch/torchvision/pillow/numpy` **安装在系统 Python 环境**中，项目内的 `.venv` **未安装 torch**。若用 `.venv\Scripts\python.exe` 启动，`import torch` 会报 `No module named 'torch'`，本地模型加载失败并自动回退百度（识别结果 `channel=baidu`）。判定本地模型加载成功的标志：后端日志出现 `本地模型已加载（N 类，设备 cuda/cpu）` 且识别 `channel=local`。
+
 启动后访问：
 - 接口文档：http://127.0.0.1:8001/docs
 - 健康检查：http://127.0.0.1:8001/api/health
@@ -96,6 +98,8 @@ python train.py --data-dir <数据集根目录> --epochs 30 --out ./output
 
 训练产出 `model.pth` + `classes.txt` 后，放入 `backend/models/`，并在 `backend/.env` 启用：
 `LOCAL_ENABLED=true`、`LOCAL_MODEL_PATH=./models/model.pth`、`LOCAL_CLASSES_PATH=./models/classes.txt`。
+
+> 启用后，须以**系统 Python**（`python` / `py -3.12`）启动后端（`python run.py`）才能加载本地模型推理所需的 `torch`；`.venv` 未装 torch，用它启动会报 `No module named 'torch'` 并回退百度识别。
 
 > 提示：若 npm 安装或网络受限，需为 npm 配置代理（如本机 Clash）：
 > `npm config set proxy http://127.0.0.1:7897`、`npm config set https-proxy http://127.0.0.1:7897`
