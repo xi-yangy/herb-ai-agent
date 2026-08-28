@@ -184,10 +184,13 @@ class BaiduRecognizer(RecognitionService):
 
 
 def _match_herb(db: Session, name: str) -> Herb | None:
-    """按名称匹配本地知识库药材。
+    """按名称匹配本地知识库药材（双向归一化）。
 
-    优先精确匹配；失败时去除常见形态后缀（片/根/皮/子 等）再匹配，
-    以兼容百度返回的植物别名与本地药材命名差异。
+    匹配顺序：
+    1. 精确匹配（「枸杞子」→「枸杞子」）；
+    2. 去常见后缀匹配（如「黄芪片」→「黄芪」）；
+    3. 补常见后缀匹配（如「枸杞」→「枸杞子」，兼容识别返回简写而知识库存全称）。
+    仅做单层补全，不递归，避免过度归一化造成误匹配。
     """
     if not name:
         return None
@@ -196,12 +199,21 @@ def _match_herb(db: Session, name: str) -> Herb | None:
     if herb is not None:
         return herb
 
-    # 尝试去常见后缀后匹配（如「黄芪片」→「黄芪」）
+    # 去常见后缀后匹配（如「黄芪片」→「黄芪」）
     for suffix in _SUFFIXES:
         stripped = name[:-1] if name.endswith(suffix) else name
         if stripped == name:
             continue
         herb = db.scalar(select(Herb).where(Herb.name == stripped))
+        if herb is not None:
+            return herb
+
+    # 补常见后缀后匹配（如「枸杞」→「枸杞子」；识别返回简写、知识库存全称）
+    for suffix in _SUFFIXES:
+        expanded = f"{name}{suffix}"
+        if expanded == name:
+            continue
+        herb = db.scalar(select(Herb).where(Herb.name == expanded))
         if herb is not None:
             return herb
     return None
