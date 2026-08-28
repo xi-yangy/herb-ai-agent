@@ -15,7 +15,10 @@ import hashlib
 import hmac
 import json
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+# Python <3.11 不提供 datetime.UTC，用 timezone.utc 兼容（3.11+ 等价）
+UTC = timezone.utc
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
