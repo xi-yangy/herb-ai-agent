@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast, showConfirmDialog } from 'vant'
+
 import { listHistory, clearHistory } from '@/api/herb'
 
 const router = useRouter()
@@ -25,6 +26,15 @@ async function load() {
 function formatTime(iso) {
   if (!iso) return ''
   return new Date(iso).toLocaleString('zh-CN', { hour12: false })
+}
+
+/** 点击历史条目：关联了药材则跳转详情，否则友好提示。 */
+function goDetail(item) {
+  if (item.herb_id) {
+    router.push({ name: 'herb-detail', params: { id: item.herb_id } })
+  } else {
+    showToast('该记录暂无详情可查看')
+  }
 }
 
 async function onClear() {
@@ -70,8 +80,9 @@ async function onClear() {
       <div
         v-for="(item, idx) in history"
         :key="item.id"
-        class="slide-in flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm"
+        class="slide-in flex cursor-pointer items-center gap-3 rounded-2xl bg-white p-4 shadow-sm transition active:bg-[#F4F8F5]"
         :style="{ animationDelay: idx * 0.05 + 's' }"
+        @click="goDetail(item)"
       >
         <div
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
