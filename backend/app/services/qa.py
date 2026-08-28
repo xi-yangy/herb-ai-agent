@@ -105,6 +105,9 @@ class QwenQAService(QAService):
 
         payload = {
             "model": settings.qwen_model,
+            # 限制回答长度，避免生成冗长内容，缩短单次回答耗时
+            "max_tokens": 600,
+            "temperature": 0.7,
             "messages": [
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
