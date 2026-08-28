@@ -33,7 +33,7 @@ function agree() {
   emit('update:show', false)
 }
 
-/** 暂不使用：全部授权为 false，进入降级模式。 */
+/** 暂不授权：不写入拒绝态，拍照时放行交给浏览器按需请求权限。 */
 function decline() {
   emit('result', { consent: false })
   emit('update:show', false)
@@ -92,7 +92,7 @@ function decline() {
         class="mt-3 w-full rounded-2xl border border-[#5B6B62]/20 bg-white py-3 text-sm font-medium text-[#5B6B62] transition active:scale-95"
         @click="decline"
       >
-        暂不使用（降级模式）
+        暂不授权，稍后需要时再开启
       </button>
     </div>
   </van-popup>

@@ -36,8 +36,9 @@ onMounted(async () => {
 /** 处理首次授权结果：记录持久化状态 + 同步后端授权。 */
 async function onPrivacyResult({ consent }) {
   localStorage.setItem(PRIVACY_ACK_KEY, '1')
+  // 暂不授权也不写入拒绝态，拍照时仍放行交给浏览器 getUserMedia 判断，避免相机被误阻断
   if (!consent) {
-    showToast('已进入降级模式：可浏览百科，但需授权才能拍照识别')
+    showToast('你已了解权限说明；需要时会在拍照/上传时自动请求对应权限')
     return
   }
   try {

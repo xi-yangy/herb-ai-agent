@@ -63,13 +63,17 @@ async function handleFile(event) {
   }
 }
 
-/** 点「拍照识别」：先校验相机授权，已授权则打开相机弹层，否则降级相册选图。 */
+/**
+ * 点「拍照识别」：仅当授权记录明确拒绝（granted=false）时才降级相册；
+ * 记录缺失 / 后端不可用默认放行，交由 CameraCapture 内部 getUserMedia 做真实相机校验。
+ */
 async function triggerCapture() {
   let consented = true
   try {
     const consents = await listConsents()
     const camera = (consents || []).find((c) => c.consent_type === 'camera')
-    consented = camera ? !!camera.granted : false
+    // 记录缺失（undefined）默认放行，避免产品层授权记录与浏览器真实权限强耦合导致相机被误判
+    consented = camera ? !!camera.granted : true
   } catch (err) {
     console.error('[consents]', err)
     consented = true
