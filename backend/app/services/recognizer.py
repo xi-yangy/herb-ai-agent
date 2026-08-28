@@ -237,7 +237,9 @@ def _match_by_alias(db: Session, name: str) -> Herb | None:
     if not name:
         return None
     for herb in db.scalars(select(Herb).where(Herb.alias.like(f"%{name}%"))).all():
-        if any(name == a.strip() for a in herb.alias.split(",")):
+        # 别名可用中文顿号「、」、逗号「，」或英文逗号「,」分隔
+        tokens = [a.strip() for a in herb.alias.replace("、", ",").replace("，", ",").split(",")]
+        if name in tokens:
             return herb
     return None
 
