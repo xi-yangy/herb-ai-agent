@@ -3,7 +3,7 @@
 用法：
     python run.py
 等价于：
-    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 """
 
 import uvicorn
