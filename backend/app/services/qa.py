@@ -18,8 +18,8 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# DashScope OpenAI 兼容接口地址
-_DASHSCOPE_CHAT_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+# OpenAI 兼容接口 chat completions 子路径（base_url 由配置提供）
+_CHAT_COMPLETIONS_PATH = "/chat/completions"
 
 # 系统提示：约束回答合规（非诊断/非处方，高危药材强调遵医嘱）
 _SYSTEM_PROMPT = (
@@ -91,7 +91,7 @@ class QwenQAService(QAService):
     # ---- 内部实现 ----
 
     def _call_qwen(self, question: str, herb_name: str, herb_context: dict | None) -> str:
-        """调用 DashScope OpenAI 兼容接口，返回回答文本。"""
+        """调用 OpenAI 兼容接口，返回回答文本。"""
         ctx = herb_context or {}
         # 组织用户上下文（截断长字段，避免超长）
         context_lines = [
@@ -111,8 +111,9 @@ class QwenQAService(QAService):
             ],
         }
         body = json.dumps(payload).encode("utf-8")
+        chat_url = settings.qwen_base_url.rstrip("/") + _CHAT_COMPLETIONS_PATH
         req = urllib.request.Request(
-            _DASHSCOPE_CHAT_URL,
+            chat_url,
             data=body,
             method="POST",
             headers={

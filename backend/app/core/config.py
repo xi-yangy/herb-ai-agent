@@ -37,10 +37,12 @@ class Settings(BaseSettings):
     qwen_api_key: str = ""
     # 是否启用 Qwen 问答（未配置凭证时自动降级为知识库结构化展示）
     qwen_enabled: bool = False
-    # Qwen 模型（DashScope OpenAI 兼容协议模型名）
+    # Qwen 模型（OpenAI 兼容协议模型名；专属云可用 qwen-plus 等）
     qwen_model: str = "qwen-plus"
-    # Qwen 调用超时（秒）：超时即降级，避免阻塞结果页
-    qwen_timeout: float = 10.0
+    # Qwen OpenAI 兼容接口 base_url（默认标准 DashScope；专属云/自定义域名可覆盖）
+    qwen_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    # Qwen 调用超时（秒）：超时即降级，避免阻塞结果页（专属云首调需较长）
+    qwen_timeout: float = 30.0
 
     model_config = SettingsConfigDict(
         env_file=".env",
