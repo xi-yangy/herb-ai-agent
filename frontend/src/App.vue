@@ -42,11 +42,11 @@ async function onPrivacyResult({ consent }) {
     return
   }
   try {
-    // 默认授予相机/相册（麦克风为预留，标记未启用可授予）
+    // 默认授予相机/相册/麦克风；关闭后对应入口将受限（在「我的-隐私与授权」可重新开启）
     await Promise.all([
       updateConsent('camera', true),
       updateConsent('album', true),
-      updateConsent('microphone', false),
+      updateConsent('microphone', true),
     ])
   } catch (err) {
     console.error('[privacy consent]', err)

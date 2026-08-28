@@ -98,8 +98,26 @@ function onCameraDegrade() {
   triggerAlbum()
 }
 
-/** 触发相册。 */
-function triggerAlbum() {
+/**
+ * 触发相册：仅当相册授权记录明确拒绝（granted=false）时拦截并提示；
+ * 记录缺失 / 后端不可用默认放行，交由浏览器文件选择器做真实校验。
+ */
+async function triggerAlbum() {
+  let consented = true
+  try {
+    const consents = await listConsents()
+    const album = (consents || []).find((c) => c.consent_type === 'album')
+    // 记录缺失（undefined）默认放行，避免产品层授权记录与浏览器真实权限强耦合导致相册被误判
+    consented = album ? !!album.granted : true
+  } catch (err) {
+    console.error('[consents]', err)
+    consented = true
+  }
+
+  if (!consented) {
+    showToast('未获得相册授权，可在「我的-隐私与授权」中开启')
+    return
+  }
   document.getElementById('album-input')?.click()
 }
 </script>

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { showToast } from 'vant'
 import { askQuestion } from '@/api/qa'
+import { listConsents } from '@/api/privacy'
 
 /**
  * 多模态问答追问组件（PRD F12/F13）。
@@ -171,10 +172,28 @@ function onKeyup(e) {
 
 // ---- 语音输入（Web Speech API）----
 
-/** 启动语音识别，识别结果填充输入框。 */
-function startVoice() {
+/**
+ * 启动语音识别，识别结果填充输入框。
+ * 仅当麦克风授权记录明确拒绝（granted=false）时拦截并提示；
+ * 记录缺失 / 后端不可用默认放行，交由浏览器真实权限把关。
+ */
+async function startVoice() {
   if (!speechSupported.value) {
     showToast('当前浏览器不支持语音输入，请使用文本')
+    return
+  }
+  let consented = true
+  try {
+    const consents = await listConsents()
+    const mic = (consents || []).find((c) => c.consent_type === 'microphone')
+    // 记录缺失（undefined）默认放行，避免产品层授权记录与浏览器真实权限强耦合导致语音被误禁
+    consented = mic ? !!mic.granted : true
+  } catch (err) {
+    console.error('[consents]', err)
+    consented = true
+  }
+  if (!consented) {
+    showToast('未获得麦克风授权，可在「我的-隐私与授权」中开启')
     return
   }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition
