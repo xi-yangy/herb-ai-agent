@@ -55,6 +55,16 @@ body {
   min-width: 1024px;
 }
 
+/* 原生按钮基础重置（tailwind preflight 已关闭，手动清除浏览器默认样式） */
+button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
 /* 内容居中限宽：桌面原生 1200px（1280 视口两侧各留 40px） */
 .page-container {
   max-width: 1200px;
