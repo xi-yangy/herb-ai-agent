@@ -50,7 +50,7 @@ async function onRemove(fav) {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-6 pb-12 pt-2">
     <div class="mb-4 flex items-center gap-3">
       <button
         type="button"
@@ -70,7 +70,7 @@ async function onRemove(fav) {
       <div
         v-for="(h, idx) in favorites"
         :key="h.id"
-        class="slide-in flex items-center gap-3 rounded-xl bg-paper-card p-4 shadow-paper"
+        class="slide-in flex items-center gap-3 rounded-xl bg-paper-card px-5 py-4 shadow-paper"
         :style="{ animationDelay: idx * 0.05 + 's' }"
       >
         <button

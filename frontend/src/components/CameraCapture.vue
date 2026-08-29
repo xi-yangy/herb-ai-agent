@@ -149,12 +149,11 @@ onBeforeUnmount(stopStream)
 <template>
   <van-popup
     :show="show"
-    position="bottom"
-    round
+    position="center"
     :close-on-click-overlay="false"
     class="camera-popup"
   >
-    <div class="flex h-[86vh] flex-col">
+    <div class="flex h-[520px] w-[640px] flex-col">
       <!-- 顶部操作栏 -->
       <div class="flex items-center justify-between px-4 py-3">
         <button
@@ -235,6 +234,7 @@ onBeforeUnmount(stopStream)
 
 <style scoped>
 .camera-popup {
-  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
 }
 </style>

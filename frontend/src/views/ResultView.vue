@@ -157,7 +157,8 @@ function onClearRecognition() {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-16">
+  <div class="page-container px-6 pb-12 pt-4">
+    <div class="mx-auto max-w-[860px]">
     <!-- 固定悬浮返回按钮：滑动时始终可见，点击直接返回首页（清除识别状态） -->
     <button
       type="button"
@@ -346,6 +347,7 @@ function onClearRecognition() {
     >
       返回首页
     </button>
+    </div>
   </div>
 </template>
 

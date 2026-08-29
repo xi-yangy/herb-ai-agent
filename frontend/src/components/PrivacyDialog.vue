@@ -43,8 +43,7 @@ function decline() {
 <template>
   <van-popup
     :show="show"
-    position="bottom"
-    round
+    position="center"
     closeable
     :close-on-click-overlay="false"
     class="privacy-popup"
@@ -100,7 +99,9 @@ function decline() {
 
 <style scoped>
 .privacy-popup {
-  width: 100%;
+  width: 480px;
+  max-width: 90vw;
+  border-radius: 16px;
   max-height: 82vh;
   overflow-y: auto;
 }

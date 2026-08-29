@@ -39,7 +39,7 @@ function confirm() {
     </div>
 
     <!-- 危险信息面板（玻璃拟态） -->
-    <section class="danger-glass w-full max-w-md rounded-3xl p-6">
+    <section class="danger-glass w-full max-w-[480px] rounded-2xl p-6">
       <div class="flex items-center justify-between">
         <span class="rounded-full bg-[#E5484D]/90 px-3 py-1 text-xs font-semibold text-white">
           毒性药材 · 高风险

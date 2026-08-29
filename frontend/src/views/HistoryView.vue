@@ -55,7 +55,7 @@ async function onClear() {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-6 pb-12 pt-2">
     <header class="mb-5 flex items-center justify-between">
       <div>
         <h1 class="section-title text-[22px] text-ink">识别历史</h1>
@@ -80,7 +80,7 @@ async function onClear() {
       <div
         v-for="(item, idx) in history"
         :key="item.id"
-        class="slide-in flex cursor-pointer items-center gap-3 rounded-xl bg-paper-card p-4 shadow-paper transition active:bg-paper"
+        class="slide-in flex cursor-pointer items-center gap-3 rounded-xl bg-paper-card px-5 py-4 shadow-paper transition active:bg-paper"
         :style="{ animationDelay: idx * 0.05 + 's' }"
         @click="goDetail(item)"
       >

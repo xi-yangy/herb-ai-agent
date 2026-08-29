@@ -346,7 +346,7 @@ defineExpose({ askPreset, panelRef })
 
     <div class="border-t border-ink/10">
       <!-- 消息列表 -->
-      <div ref="listRef" class="max-h-[360px] space-y-3 overflow-y-auto bg-paper/60 px-4 py-4">
+      <div ref="listRef" class="max-h-[420px] space-y-3 overflow-y-auto bg-paper/60 px-4 py-4">
         <!-- 空态引导文案 -->
         <p v-if="messages.length === 0" class="text-center text-xs text-ink-secondary">
           你可以问我关于本药材的功效、用法、禁忌或安全性等问题

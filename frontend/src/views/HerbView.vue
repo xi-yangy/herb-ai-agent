@@ -115,11 +115,11 @@ function goDetail(id) {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-6 pb-12">
     <!-- 标题区 -->
-    <header class="mb-4">
-      <h1 class="section-title text-[22px] text-ink">药材百科</h1>
-      <p class="mt-1 text-sm text-ink-secondary">收录常见中草药，按部位分类 · 标注安全等级</p>
+    <header class="mb-5">
+      <h1 class="section-title text-[26px] text-ink">药材百科</h1>
+      <p class="mt-1 text-base text-ink-secondary">收录常见中草药，按部位分类 · 标注安全等级</p>
     </header>
 
     <!-- 搜索区 -->
@@ -145,7 +145,7 @@ function goDetail(id) {
     </div>
 
     <!-- 分类胶囊导航（横向可滚动） -->
-    <nav class="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1" style="scrollbar-width: none">
+    <nav class="mt-4 flex flex-wrap gap-2 pb-1">
       <button
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
@@ -211,9 +211,7 @@ function goDetail(id) {
       </p>
 
       <!-- 卡片网格 -->
-      <div
-        class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
-      >
+      <div class="grid grid-cols-4 gap-4">
         <button
           v-for="(h, idx) in displayedHerbs"
           :key="h.id"

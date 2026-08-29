@@ -64,7 +64,7 @@ function switchMode(next) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-paper px-6 pt-14">
+  <div class="min-h-[calc(100vh-152px)] bg-paper px-6 pt-4">
     <!-- 返回 -->
     <button
       type="button"

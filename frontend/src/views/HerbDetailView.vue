@@ -64,7 +64,8 @@ async function toggleFavorite() {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-6 pb-12 pt-4">
+    <div class="mx-auto max-w-[860px]">
     <!-- 顶部返回 -->
     <div class="mb-4 flex items-center gap-3">
       <button
@@ -119,5 +120,6 @@ async function toggleFavorite() {
         本内容仅供参考，不构成医疗建议。用药请遵医嘱。
       </p>
     </template>
+    </div>
   </div>
 </template>

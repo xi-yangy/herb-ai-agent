@@ -39,6 +39,8 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* 桌面原生：窗口缩小横向滚动而非布局崩坏 */
+  min-width: 1024px;
   /* 素雅纯宣纸底，不做晕染叠加，避免视觉过浓 */
   background-color: var(--herb-paper);
   font-family: var(--herb-font-sans);
@@ -48,18 +50,13 @@ body {
 
 #app {
   min-height: 100vh;
+  min-width: 1024px;
 }
 
-/* 内容居中限宽：移动端 720px 保持，桌面扩宽利用横向空间 */
+/* 内容居中限宽：桌面原生 1200px（1280 视口两侧各留 40px） */
 .page-container {
-  max-width: 720px;
+  max-width: 1200px;
   margin: 0 auto;
-}
-
-@media (min-width: 1024px) {
-  .page-container {
-    max-width: 1080px;
-  }
 }
 
 /* ============ 通用类（@layer components，可被 Tailwind 工具类覆盖） ============ */

@@ -69,7 +69,7 @@ async function onLogout() {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-6 pb-12 pt-2">
     <header class="mb-5">
       <h1 class="section-title text-[22px] text-ink">我的</h1>
       <p class="mt-1 text-sm text-ink-secondary">收藏、账号与隐私设置</p>
@@ -111,7 +111,7 @@ async function onLogout() {
     <div class="mt-4 overflow-hidden rounded-xl bg-paper-card shadow-paper">
       <button
         type="button"
-        class="flex w-full items-center gap-3 px-4 py-4 text-left transition active:bg-paper"
+        class="flex w-full items-center gap-3 px-5 py-4 text-left transition active:bg-paper"
         @click="router.push({ name: 'favorites' })"
       >
         <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -148,7 +148,11 @@ async function onLogout() {
     <p class="mt-6 text-center text-xs text-ink-secondary/70">灵草 · 中草药识别智能体</p>
 
     <!-- 隐私授权管理面板 -->
-    <van-popup v-model:show="showPrivacySheet" position="bottom" round>
+    <van-popup
+      v-model:show="showPrivacySheet"
+      position="center"
+      class="w-[480px] max-w-[90vw] rounded-2xl"
+    >
       <div class="px-6 pb-8 pt-6">
         <h2 class="text-center text-lg font-semibold text-ink">隐私与授权</h2>
         <p class="mt-2 text-center text-xs text-ink-secondary">
