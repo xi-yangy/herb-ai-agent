@@ -78,17 +78,22 @@ async function onPrivacyResult({ consent }) {
         <!-- 品牌：点击回首页 -->
         <button
           type="button"
-          class="flex items-center gap-2.5"
+          class="flex items-center gap-3"
           @click="router.push({ name: 'home' })"
         >
           <span
-            class="flex h-8 w-8 items-center justify-center rounded-lg"
+            class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 shadow-sm"
             style="background-color: #2f9e6b"
           >
-            <span class="section-title text-lg leading-none text-white">灵</span>
+            <span class="section-title text-xl leading-none text-white">灵</span>
           </span>
-          <span class="section-title text-[17px] text-ink">灵草 · 中草药识别</span>
+          <span class="flex flex-col items-start gap-0.5 text-left">
+            <span class="section-title text-[17px] leading-tight text-ink">灵草 · 中草药识别</span>
+            <span class="text-[10px] leading-none tracking-widest text-ink-faint">多模态识别智能体</span>
+          </span>
         </button>
+
+        <span class="h-6 w-px bg-ink/10"></span>
 
         <!-- 主导航 -->
         <nav class="flex items-center gap-1">

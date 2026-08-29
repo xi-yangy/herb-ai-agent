@@ -88,8 +88,8 @@ const activeGroupLabel = computed(() => {
 /** 当前正在展示的药材（搜索平铺 or 分组过滤）。 */
 const displayedHerbs = computed(() => (inGroupView.value ? groupHerbs.value : searchedHerbs.value))
 
-/** 关键词命中高亮：把匹配片段包一层高亮。 */
-function highlight(text) {
+/** 关键词命中高亮：把匹配片段包一层高亮（返回 [前, 命中, 后] 或原文字符串）。 */
+function highlightText(text) {
   if (!keyword.value || !text) return text
   const kw = keyword.value.toLowerCase()
   const lower = String(text).toLowerCase()
@@ -222,9 +222,9 @@ function goDetail(id) {
         >
           <div class="flex items-start justify-between gap-2">
             <p class="text-base font-semibold leading-snug text-ink">
-              <template v-if="keyword && typeof highlight(h.name) !== 'string'">
-                <span v-for="(part, i) in highlight(h.name)" :key="i">
-                  <mark v-if="i === 1" class="rounded bg-primary/15 text-primary-dark">{{ part }}</mark>
+              <template v-if="keyword && typeof highlightText(h.name) !== 'string'">
+                <span v-for="(part, i) in highlightText(h.name)" :key="i">
+                  <mark v-if="i === 1" class="rounded bg-amber-200/80 px-0.5 font-semibold text-amber-900">{{ part }}</mark>
                   <template v-else>{{ part }}</template>
                 </span>
               </template>
@@ -241,7 +241,13 @@ function goDetail(id) {
             </span>
           </div>
           <p class="mt-2 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-ink-secondary">
-            {{ h.nature_flavor || '—' }}
+            <template v-if="keyword && typeof highlightText(h.nature_flavor) !== 'string'">
+              <span v-for="(part, i) in highlightText(h.nature_flavor)" :key="i">
+                <mark v-if="i === 1" class="rounded bg-amber-200/80 px-0.5 font-semibold text-amber-900">{{ part }}</mark>
+                <template v-else>{{ part }}</template>
+              </span>
+            </template>
+            <template v-else>{{ h.nature_flavor || '—' }}</template>
           </p>
           <div class="mt-3 flex items-center gap-1 text-[11px] text-ink-faint transition group-hover:text-primary">
             <van-icon name="arrow" size="12" />

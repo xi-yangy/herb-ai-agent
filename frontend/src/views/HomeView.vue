@@ -123,7 +123,7 @@ async function triggerAlbum() {
 <template>
   <div class="page-container px-6 pb-12">
     <!-- 桌面双栏：左品牌区 + 右识别主卡；整页对称垂直居中（扣除 Header/Footer 高度） -->
-    <div class="flex min-h-[calc(100vh-152px)] items-center gap-16">
+    <div class="flex min-h-[calc(100vh-240px)] items-center gap-16">
       <!-- 品牌区 -->
       <header class="flex-1 text-left">
         <!-- 草本绿品牌印章 -->
