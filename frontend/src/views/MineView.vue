@@ -82,10 +82,10 @@ async function onLogout() {
     >
       <div class="flex items-center gap-3">
         <span
-          class="flex h-11 w-11 items-center justify-center rounded-xl text-white"
+          class="flex h-12 w-12 items-center justify-center rounded-xl text-white"
           :class="store.isLoggedIn ? 'bg-white/20' : 'bg-primary/10'"
         >
-          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#2F9E6B'" />
+          <van-icon name="user-o" size="24" :color="store.isLoggedIn ? '#fff' : '#2F9E6B'" />
         </span>
         <div v-if="store.isLoggedIn" class="flex-1">
           <p class="text-base font-semibold text-white">{{ store.user.username }}</p>
@@ -114,8 +114,8 @@ async function onLogout() {
         class="flex w-full items-center gap-3 px-4 py-4 text-left transition active:bg-paper"
         @click="router.push({ name: 'favorites' })"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-          <van-icon name="like-o" size="20" color="#2F9E6B" />
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <van-icon name="like-o" size="24" color="#2F9E6B" />
         </span>
         <span class="flex-1 text-sm font-medium text-ink">我的收藏</span>
         <span class="text-sm text-ink-secondary">{{ favoriteCount }} 味</span>
@@ -126,8 +126,8 @@ async function onLogout() {
         class="flex w-full items-center gap-3 border-t border-ink/10 px-4 py-4 text-left transition active:bg-paper"
         @click="openPrivacy"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-ochre/10">
-          <van-icon name="shield-o" size="20" color="#C08A3E" />
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <van-icon name="shield-o" size="24" color="#2F9E6B" />
         </span>
         <span class="flex-1 text-sm font-medium text-ink">隐私与授权</span>
         <van-icon name="arrow" color="#A8A39A" />
@@ -138,8 +138,8 @@ async function onLogout() {
         class="flex w-full items-center gap-3 border-t border-ink/10 px-4 py-4 text-left transition active:bg-paper"
         @click="onLogout"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-cinnabar/10">
-          <van-icon name="sign" size="20" color="#C0392B" />
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-cinnabar/10">
+          <van-icon name="sign" size="24" color="#C0392B" />
         </span>
         <span class="flex-1 text-sm font-medium text-cinnabar">退出登录</span>
       </button>
