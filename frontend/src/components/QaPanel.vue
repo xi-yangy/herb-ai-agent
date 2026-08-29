@@ -376,6 +376,13 @@ defineExpose({ askPreset, panelRef })
                 <van-icon name="photograph" size="13" />
                 已结合图片分析
               </p>
+              <!-- 视觉问答证据：识别图片缩略图预览（眼见为实，证明图片已上传给 AI 分析） -->
+              <img
+                v-if="msg.role === 'ai' && msg.vision && props.image"
+                :src="props.image"
+                alt="识别图片"
+                class="mb-1.5 mt-0.5 h-14 w-14 rounded-lg border border-[#2E7D52]/30 object-cover"
+              />
               <!-- 降级态标注 -->
               <p
                 v-if="msg.role === 'ai' && msg.fallback"

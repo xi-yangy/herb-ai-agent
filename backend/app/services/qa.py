@@ -184,7 +184,12 @@ class QwenQAService(QAService):
             f"禁忌：{str(ctx.get('contraindications') or '暂无')[:200]}",
             f"毒性/副作用：{str(ctx.get('toxicity') or '暂无')[:200]}",
         ]
-        text = "\n".join(context_lines) + f"\n\n请结合用户上传的图片与以上识别信息回答：\n{question}"
+        text = (
+            "\n".join(context_lines)
+            + "\n\n请先简要客观描述用户上传图片中的主体与特征（如药材的形态、颜色、部位等），"
+            "再结合图片与以上识别信息回答用户问题，使回答体现确实查看了图片。"
+            f"\n用户问题：{question}"
+        )
 
         # 兼容未带 data: 前缀的裸 base64：拼接 jpeg 前缀保证 image_url.url 为完整 dataURL
         image_url = image_base64
