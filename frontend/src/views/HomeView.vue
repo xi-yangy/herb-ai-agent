@@ -124,14 +124,14 @@ async function triggerAlbum() {
 
 <template>
   <div class="page-container px-4 pb-28 pt-10">
-    <!-- 桌面双栏：左品牌区 + 右识别主卡（移动端保持单栏） -->
-    <div class="lg:flex lg:items-center lg:gap-14">
+    <!-- 桌面双栏：左品牌区 + 右识别主卡；整页对称垂直居中（消除下方空白），移动端保持单栏 -->
+    <div class="lg:flex lg:min-h-[calc(100vh-50px)] lg:items-center lg:gap-14">
       <!-- 品牌区 -->
       <header class="mb-10 text-center lg:mb-0 lg:flex-1 lg:text-left">
-        <!-- 墨绿品牌印章 -->
+        <!-- 草本绿品牌印章 -->
         <div
           class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg lg:mx-0"
-          style="background-color: #2f5d46; box-shadow: 0 4px 12px rgba(47, 93, 70, 0.28)"
+          style="background-color: #357a53; box-shadow: 0 4px 12px rgba(53, 122, 83, 0.28)"
         >
           <span class="section-title text-2xl leading-none text-white">灵</span>
         </div>
@@ -176,6 +176,32 @@ async function triggerAlbum() {
         </div>
 
         <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
+
+        <!-- 桌面专属小卡：安全三原则 + 拍摄小贴士（lg 显示，移动端隐藏） -->
+        <div class="mt-6 hidden w-full lg:grid lg:grid-cols-2 lg:gap-4">
+          <div class="card-paper flex flex-col gap-2.5 p-4 text-left">
+            <div class="flex items-center gap-1.5">
+              <van-icon name="shield-o" size="15" color="#357A53" />
+              <span class="section-title text-[13px] text-ink">安全三原则</span>
+            </div>
+            <ol class="space-y-1 text-xs leading-relaxed text-ink-secondary">
+              <li>① 结果仅供参考，不构成诊断或处方</li>
+              <li>② 毒性药材务必遵医嘱，切勿自行服用</li>
+              <li>③ 如身体不适请及时就医</li>
+            </ol>
+          </div>
+          <div class="card-paper flex flex-col gap-2.5 p-4 text-left">
+            <div class="flex items-center gap-1.5">
+              <van-icon name="photograph" size="15" color="#357A53" />
+              <span class="section-title text-[13px] text-ink">拍摄小贴士</span>
+            </div>
+            <ol class="space-y-1 text-xs leading-relaxed text-ink-secondary">
+              <li>① 一次只拍一株，避免枝叶重叠</li>
+              <li>② 光线充足、背景简洁</li>
+              <li>③ 对准叶片花果特写</li>
+            </ol>
+          </div>
+        </div>
       </section>
     </div>
 

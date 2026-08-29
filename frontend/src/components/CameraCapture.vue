@@ -198,7 +198,7 @@ onBeforeUnmount(stopStream)
             :disabled="starting"
             @click="switchCamera"
           >
-            <van-icon name="replay" size="20" color="#2F5D46" />
+            <van-icon name="replay" size="20" color="#357A53" />
           </button>
           <button
             type="button"

@@ -78,7 +78,7 @@ function switchMode(next) {
     <div class="mt-8 text-center">
       <div
         class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl"
-        style="background-color: #2f5d46; box-shadow: 0 4px 12px rgba(47, 93, 70, 0.28)"
+        style="background-color: #357a53; box-shadow: 0 4px 12px rgba(53, 122, 83, 0.28)"
       >
         <span class="section-title text-[26px] leading-none text-white">灵</span>
       </div>

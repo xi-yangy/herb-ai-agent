@@ -10,12 +10,12 @@ export default {
       colors: {
         // 国风草本语义色板
         primary: {
-          DEFAULT: '#2F5D46',
-          light: '#3A6B50',
-          dark: '#1F3D2E',
+          DEFAULT: '#357A53',
+          light: '#4A9A70',
+          dark: '#21593B',
         },
         paper: {
-          DEFAULT: '#F7F3EA',
+          DEFAULT: '#FBF9F4',
           card: '#FFFDF7',
         },
         ink: {

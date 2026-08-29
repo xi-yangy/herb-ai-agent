@@ -147,25 +147,25 @@ function togglePro() {
       <!-- 白话内容 -->
       <div class="mt-4 space-y-3">
         <div class="flex items-start gap-2.5">
-          <van-icon name="fire-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <van-icon name="fire-o" size="18" color="#357A53" class="mt-0.5 shrink-0" />
           <p class="text-sm leading-relaxed text-ink">
             <span class="font-semibold text-primary">它有什么用：</span>{{ plainUse }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="clock-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <van-icon name="clock-o" size="18" color="#357A53" class="mt-0.5 shrink-0" />
           <p class="text-sm leading-relaxed text-ink">
             <span class="font-semibold text-primary">该怎么用：</span>{{ plainUsage }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="like-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <van-icon name="like-o" size="18" color="#357A53" class="mt-0.5 shrink-0" />
           <p class="text-sm leading-relaxed text-ink">
             <span class="font-semibold text-primary">适合哪些人：</span>{{ plainFit }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="friends-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <van-icon name="friends-o" size="18" color="#357A53" class="mt-0.5 shrink-0" />
           <p class="text-sm leading-relaxed text-ink">
             <span class="font-semibold text-primary">哪些人要小心：</span>{{ plainNotice }}
           </p>
@@ -182,7 +182,7 @@ function togglePro() {
         @click="togglePro"
       >
         <span class="flex items-center gap-2">
-          <van-icon name="bookmark-o" size="18" color="#2F5D46" />
+          <van-icon name="bookmark-o" size="18" color="#357A53" />
           <span class="text-sm font-semibold text-ink">查看专业内容（药典）</span>
         </span>
         <van-icon
