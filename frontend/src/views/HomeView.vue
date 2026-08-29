@@ -151,26 +151,26 @@ async function triggerAlbum() {
 
       <!-- 识别主卡 -->
       <section class="card-paper flex flex-col items-center px-6 py-7 lg:flex-1">
-        <p class="section-title text-lg text-ink">识别一株草药</p>
-        <p class="mt-1 text-sm text-ink-secondary">拍摄或上传清晰照片，马上得到结果</p>
+        <p class="section-title text-lg text-ink lg:text-3xl">识别一株草药</p>
+        <p class="mt-2 text-sm text-ink-secondary lg:text-lg">拍摄或上传清晰照片，马上得到结果</p>
 
-        <div class="mt-5 grid w-full grid-cols-2 gap-4">
+        <div class="mt-6 grid w-full grid-cols-2 gap-4">
           <button
             type="button"
-            class="btn-primary h-12 w-full"
+            class="btn-primary h-12 w-full gap-2 lg:h-16 lg:text-lg"
             :disabled="recognizing"
             @click="triggerCapture"
           >
-            <van-icon name="photograph" size="18" />
+            <van-icon name="photograph" size="22" />
             拍照识别
           </button>
           <button
             type="button"
-            class="btn-outline h-12 w-full"
+            class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-light text-[15px] font-medium text-white transition hover:bg-[#3F8A60] active:scale-95 disabled:opacity-50 lg:h-16 lg:text-lg"
             :disabled="recognizing"
             @click="triggerAlbum"
           >
-            <van-icon name="photo" size="18" />
+            <van-icon name="photo" size="22" />
             相册上传
           </button>
         </div>
@@ -178,24 +178,24 @@ async function triggerAlbum() {
         <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
 
         <!-- 桌面专属小卡：安全三原则 + 拍摄小贴士（lg 显示，移动端隐藏） -->
-        <div class="mt-4 hidden w-full lg:grid lg:grid-cols-2 lg:gap-3">
-          <div class="card-paper flex flex-col gap-2 p-3.5 text-left">
+        <div class="mt-5 hidden w-full lg:grid lg:grid-cols-2 lg:gap-4">
+          <div class="card-paper flex flex-col gap-2 p-3.5 text-left lg:p-4">
             <div class="flex items-center gap-1.5">
-              <van-icon name="shield-o" size="15" color="#357A53" />
-              <span class="section-title text-[13px] text-ink">安全三原则</span>
+              <van-icon name="shield-o" size="18" color="#357A53" />
+              <span class="section-title text-[13px] text-ink lg:text-base">安全三原则</span>
             </div>
-            <ol class="space-y-1 text-xs leading-snug text-ink-secondary">
+            <ol class="space-y-1 text-xs leading-snug text-ink-secondary lg:text-[15px]">
               <li>① 结果仅供参考，不构成诊断或处方</li>
               <li>② 毒性药材务必遵医嘱，切勿自行服用</li>
               <li>③ 如身体不适请及时就医</li>
             </ol>
           </div>
-          <div class="card-paper flex flex-col gap-2 p-3.5 text-left">
+          <div class="card-paper flex flex-col gap-2 p-3.5 text-left lg:p-4">
             <div class="flex items-center gap-1.5">
-              <van-icon name="photograph" size="15" color="#357A53" />
-              <span class="section-title text-[13px] text-ink">拍摄小贴士</span>
+              <van-icon name="photograph" size="18" color="#357A53" />
+              <span class="section-title text-[13px] text-ink lg:text-base">拍摄小贴士</span>
             </div>
-            <ol class="space-y-1 text-xs leading-snug text-ink-secondary">
+            <ol class="space-y-1 text-xs leading-snug text-ink-secondary lg:text-[15px]">
               <li>① 一次只拍一株，避免枝叶重叠</li>
               <li>② 光线充足、背景简洁</li>
               <li>③ 对准叶片花果特写</li>
