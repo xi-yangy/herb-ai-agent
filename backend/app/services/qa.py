@@ -63,10 +63,11 @@ class QAService(ABC):
         herb_name: str,
         herb_context: dict | None,
         image_base64: str | None = None,
-    ) -> tuple[str, bool]:
-        """回答问题，返回 (answer, fallback)。
+    ) -> tuple[str, bool, bool]:
+        """回答问题，返回 (answer, fallback, vision)。
 
         fallback 为 True 表示当前回答为知识库降级内容（非 Qwen 生成）。
+        vision 为 True 表示当前回答为 Qwen 视觉图文问答（结合了上传图片）。
         image_base64 为可选识别原图，有图时优先走视觉图文问答。
         """
         raise NotImplementedError
@@ -84,21 +85,22 @@ class QwenQAService(QAService):
         herb_name: str,
         herb_context: dict | None,
         image_base64: str | None = None,
-    ) -> tuple[str, bool]:
+    ) -> tuple[str, bool, bool]:
         """多级降级链（链路不中断）：
         有图+视觉可用 → 视觉图文问答 → 失败/空 → 纯文本上下文问答 → 失败/空 → 知识库兜底。
         无图 → 直接纯文本上下文问答 → 失败/空 → 知识库兜底。
+        返回 (answer, fallback, vision)：vision 标记是否成功走了视觉图文问答。
         """
         if not (settings.qwen_enabled and settings.qwen_api_key):
             logger.info("Qwen 未启用，问答降级为知识库展示")
-            return build_fallback_answer(herb_name, herb_context), True
+            return build_fallback_answer(herb_name, herb_context), True, False
 
         # 第一层：视觉图文问答（仅在提供了图片时尝试）
         if image_base64:
             try:
                 answer = self._call_qwen_vision(question, herb_name, herb_context, image_base64)
                 if answer:
-                    return answer, False
+                    return answer, False, True
                 logger.info("Qwen 视觉返回空，降级纯文本问答")
             except Exception as exc:  # noqa: BLE001  视觉异常降级纯文本，不中断链路
                 logger.warning("Qwen 视觉调用失败，降级纯文本问答：%s", exc)
@@ -108,13 +110,13 @@ class QwenQAService(QAService):
             answer = self._call_qwen(question, herb_name, herb_context)
         except Exception as exc:  # noqa: BLE001  网络/接口异常统一降级
             logger.warning("Qwen 调用失败，降级知识库展示：%s", exc)
-            return build_fallback_answer(herb_name, herb_context), True
+            return build_fallback_answer(herb_name, herb_context), True, False
 
         if not answer:
             logger.info("Qwen 返回空，降级知识库展示")
-            return build_fallback_answer(herb_name, herb_context), True
+            return build_fallback_answer(herb_name, herb_context), True, False
 
-        return answer, False
+        return answer, False, False
 
     # ---- 内部实现 ----
 

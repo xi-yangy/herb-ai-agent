@@ -68,6 +68,8 @@ def test_qa_with_image_falls_back_without_qwen(client: TestClient) -> None:
     data = resp.json()
     assert data["answer"]
     assert data["fallback"] is True
+    # Qwen 未启用时未走视觉，vision 应为 False
+    assert data["vision"] is False
     assert "附子" in data["answer"]
     assert "不构成诊断或处方" in data["disclaimer"]
 
@@ -91,15 +93,17 @@ def test_qa_service_vision_to_text_to_kb_fallback() -> None:
     """
     from app.services.qa import qa_service
 
-    # 无图：直接走纯文本层，未启用则降级知识库
-    answer_no_img, fb_no_img = qa_service.ask("怎么用", "黄芪", None)
+    # 无图：直接走纯文本层，未启用则降级知识库；vision 应为 False
+    answer_no_img, fb_no_img, vision_no_img = qa_service.ask("怎么用", "黄芪", None)
     assert fb_no_img is True and answer_no_img
+    assert vision_no_img is False
 
-    # 有图：先尝试视觉层，未启用则降级知识库
-    answer_img, fb_img = qa_service.ask(
+    # 有图：先尝试视觉层，未启用则降级知识库；vision 应为 False
+    answer_img, fb_img, vision_img = qa_service.ask(
         "图里是什么部位",
         "附子",
         {"effects": "回阳救逆"},
         "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
     )
     assert fb_img is True and answer_img
+    assert vision_img is False

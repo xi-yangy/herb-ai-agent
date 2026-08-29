@@ -27,9 +27,11 @@ class QAResponse(BaseModel):
     """问答响应。
 
     fallback 标记是否触发知识库降级展示（前端据此标注「已切换至本地知识库展示」）。
+    vision 标记是否成功走了 Qwen 视觉图文问答（结合了上传图片，前端据此标注「已结合图片分析」）。
     disclaimer 为每条回答强制附带的免责声明。
     """
 
     answer: str
     fallback: bool = False
+    vision: bool = False
     disclaimer: str = "以上内容仅供参考，不构成诊断或处方，如有不适请咨询执业医师/药师。"

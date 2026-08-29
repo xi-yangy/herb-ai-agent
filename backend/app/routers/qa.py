@@ -19,15 +19,16 @@ router = APIRouter(tags=["qa"])
 @router.post("/api/qa", response_model=QAResponse)
 def ask(req: QARequest) -> QAResponse:
     """多模态问答：结合识别结果上下文回答问题。"""
-    answer, fallback = qa_service.ask(
+    answer, fallback, vision = qa_service.ask(
         req.question,
         req.herb_name,
         req.herb_context,
         req.image_base64,
     )
     logger.info(
-        "问答完成：药材 %s，通道 %s",
+        "问答完成：药材 %s，通道 %s%s",
         req.herb_name,
         "fallback" if fallback else "qwen",
+        "(vision)" if vision else "",
     )
-    return QAResponse(answer=answer, fallback=fallback)
+    return QAResponse(answer=answer, fallback=fallback, vision=vision)

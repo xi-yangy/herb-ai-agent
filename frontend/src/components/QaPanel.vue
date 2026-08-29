@@ -184,6 +184,7 @@ async function send(text) {
       role: 'ai',
       text: res.answer,
       fallback: !!res.fallback,
+      vision: !!res.vision,
       disclaimer: res.disclaimer,
     })
   } catch (err) {
@@ -347,6 +348,14 @@ onBeforeUnmount(() => {
                     : 'rounded-bl-sm border border-[#E4EAE6] bg-white text-[#1F2A24]'
                 "
               >
+                <!-- 视觉图文模式标注（Qwen 结合上传图片作答） -->
+                <p
+                  v-if="msg.role === 'ai' && msg.vision"
+                  class="mb-1 flex items-center gap-1 text-[11px] font-semibold text-[#2E7D52]"
+                >
+                  <van-icon name="photograph" size="13" />
+                  已结合图片分析
+                </p>
                 <!-- 降级态标注 -->
                 <p
                   v-if="msg.role === 'ai' && msg.fallback"
