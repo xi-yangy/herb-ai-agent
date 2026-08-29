@@ -39,12 +39,8 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* 素雅纯宣纸底，不做晕染叠加，避免视觉过浓 */
   background-color: var(--herb-paper);
-  /* 宣纸质感：极轻的双色晕染模拟纸面肌理，不引入图片资源 */
-  background-image:
-    radial-gradient(circle at 12% 15%, rgba(169, 102, 63, 0.05) 0%, transparent 42%),
-    radial-gradient(circle at 88% 82%, rgba(47, 93, 70, 0.06) 0%, transparent 48%);
-  background-attachment: fixed;
   font-family: var(--herb-font-sans);
   color: var(--herb-ink);
   -webkit-font-smoothing: antialiased;
@@ -54,10 +50,16 @@ body {
   min-height: 100vh;
 }
 
-/* 桌面端内容居中限宽 */
+/* 内容居中限宽：移动端 720px 保持，桌面扩宽利用横向空间 */
 .page-container {
   max-width: 720px;
   margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    max-width: 1080px;
+  }
 }
 
 /* ============ 通用类（@layer components，可被 Tailwind 工具类覆盖） ============ */

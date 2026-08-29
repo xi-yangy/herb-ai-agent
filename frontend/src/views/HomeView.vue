@@ -124,57 +124,60 @@ async function triggerAlbum() {
 
 <template>
   <div class="page-container px-4 pb-28 pt-10">
-    <!-- 品牌区 -->
-    <header class="mb-10 text-center">
-      <!-- 朱砂印章 -->
-      <div
-        class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg"
-        style="background-color: #c0392b; box-shadow: 0 4px 12px rgba(192, 57, 43, 0.28)"
-      >
-        <span class="section-title text-2xl leading-none text-white">灵</span>
-      </div>
-      <h1 class="section-title mt-5 text-[22px] text-ink">灵草 · 中草药识别</h1>
-      <p class="mt-2 text-sm text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
-      <!-- 连通状态 -->
-      <div class="mt-3 inline-flex items-center gap-1.5 text-xs">
-        <span
-          class="inline-block h-2 w-2 rounded-full"
-          :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
-        ></span>
-        <span class="text-ink-secondary">
-          {{ checking ? '检测中…' : store.backendOnline ? '服务正常' : '服务未连接' }}
-        </span>
-      </div>
-    </header>
-
-    <!-- 识别主卡 -->
-    <section class="card-paper flex flex-col items-center px-6 py-10">
-      <p class="section-title text-lg text-ink">识别一株草药</p>
-      <p class="mt-1 text-sm text-ink-secondary">拍摄或上传清晰照片，马上得到结果</p>
-
-      <div class="mt-7 grid w-full grid-cols-2 gap-4">
-        <button
-          type="button"
-          class="btn-primary h-12 w-full"
-          :disabled="recognizing"
-          @click="triggerCapture"
+    <!-- 桌面双栏：左品牌区 + 右识别主卡（移动端保持单栏） -->
+    <div class="lg:flex lg:items-center lg:gap-14">
+      <!-- 品牌区 -->
+      <header class="mb-10 text-center lg:mb-0 lg:flex-1 lg:text-left">
+        <!-- 墨绿品牌印章 -->
+        <div
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg lg:mx-0"
+          style="background-color: #2f5d46; box-shadow: 0 4px 12px rgba(47, 93, 70, 0.28)"
         >
-          <van-icon name="photograph" size="18" />
-          拍照识别
-        </button>
-        <button
-          type="button"
-          class="btn-outline h-12 w-full"
-          :disabled="recognizing"
-          @click="triggerAlbum"
-        >
-          <van-icon name="photo" size="18" />
-          相册上传
-        </button>
-      </div>
+          <span class="section-title text-2xl leading-none text-white">灵</span>
+        </div>
+        <h1 class="section-title mt-5 text-[22px] text-ink">灵草 · 中草药识别</h1>
+        <p class="mt-2 text-sm text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
+        <!-- 连通状态 -->
+        <div class="mt-3 inline-flex items-center gap-1.5 text-xs">
+          <span
+            class="inline-block h-2 w-2 rounded-full"
+            :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
+          ></span>
+          <span class="text-ink-secondary">
+            {{ checking ? '检测中…' : store.backendOnline ? '服务正常' : '服务未连接' }}
+          </span>
+        </div>
+      </header>
 
-      <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
-    </section>
+      <!-- 识别主卡 -->
+      <section class="card-paper flex flex-col items-center px-6 py-10 lg:flex-1">
+        <p class="section-title text-lg text-ink">识别一株草药</p>
+        <p class="mt-1 text-sm text-ink-secondary">拍摄或上传清晰照片，马上得到结果</p>
+
+        <div class="mt-7 grid w-full grid-cols-2 gap-4">
+          <button
+            type="button"
+            class="btn-primary h-12 w-full"
+            :disabled="recognizing"
+            @click="triggerCapture"
+          >
+            <van-icon name="photograph" size="18" />
+            拍照识别
+          </button>
+          <button
+            type="button"
+            class="btn-outline h-12 w-full"
+            :disabled="recognizing"
+            @click="triggerAlbum"
+          >
+            <van-icon name="photo" size="18" />
+            相册上传
+          </button>
+        </div>
+
+        <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
+      </section>
+    </div>
 
     <!-- 隐藏的相册 file 输入 -->
     <input id="album-input" type="file" accept="image/*" class="hidden" @change="handleFile" />
