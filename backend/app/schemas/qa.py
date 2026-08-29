@@ -17,6 +17,10 @@ class QARequest(BaseModel):
     question: str = Field(..., min_length=1, description="用户问题")
     herb_name: str = Field(..., description="识别结果药材名称")
     herb_context: dict | None = Field(default=None, description="药材知识库上下文字段")
+    image_base64: str | None = Field(
+        default=None,
+        description="识别原图（可选，前端压缩后的 base64，可含 data:image 前缀）。有图时后端走视觉图文问答；为空走纯文本问答。",
+    )
 
 
 class QAResponse(BaseModel):

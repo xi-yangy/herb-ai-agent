@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     qwen_enabled: bool = False
     # Qwen 模型（OpenAI 兼容协议模型名；默认用更快的 qwen-turbo 以降低回答耗时）
     qwen_model: str = "qwen-turbo"
+    # Qwen 视觉模型（图文联合问答用；默认 qwen-vl-plus，须在百炼开通对应免费/付费额度）
+    # 独立于文本模型，视觉额度不足或失败时自动降级回纯文本问答
+    qwen_vision_model: str = "qwen-vl-plus"
     # Qwen OpenAI 兼容接口 base_url（默认标准 DashScope；专属云/自定义域名可覆盖）
     qwen_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     # Qwen 调用超时（秒）：超时即降级，避免阻塞结果页（专属云首调需较长）

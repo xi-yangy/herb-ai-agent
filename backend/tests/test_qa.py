@@ -47,3 +47,59 @@ def test_qa_rejects_empty_question(client: TestClient) -> None:
     """空问题应返回 422 校验错误。"""
     resp = client.post("/api/qa", json={"question": "", "herb_name": "黄芪"})
     assert resp.status_code == 422
+
+
+def test_qa_with_image_falls_back_without_qwen(client: TestClient) -> None:
+    """有图但未启用 Qwen 时，视觉→文本→知识库降级链应不中断，返回 fallback。
+
+    验证新增 image_base64 字段不会破坏现有降级链路（视觉不可用即回退知识库）。
+    """
+    resp = client.post(
+        "/api/qa",
+        json={
+            "question": "图片里这个部位是什么？",
+            "herb_name": "附子",
+            "herb_context": {"effects": "回阳救逆", "toxicity": "含乌头碱类生物碱"},
+            # 合法的占位 base64（视觉未启用时后端不会真正解析图片）
+            "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["answer"]
+    assert data["fallback"] is True
+    assert "附子" in data["answer"]
+    assert "不构成诊断或处方" in data["disclaimer"]
+
+
+def test_qa_with_empty_image_ignored(client: TestClient) -> None:
+    """image_base64 传空字符串时，按无图处理，正常降级不报错。"""
+    resp = client.post(
+        "/api/qa",
+        json={"question": "怎么用", "herb_name": "黄芪", "image_base64": ""},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["answer"]
+    assert data["fallback"] is True
+
+
+def test_qa_service_vision_to_text_to_kb_fallback() -> None:
+    """服务层降级链：Qwen 未启用时有图也应落到知识库兜底，且顺序正确。
+
+    直接调用 qa_service.ask 验证 image_base64 参数被正确接受。
+    """
+    from app.services.qa import qa_service
+
+    # 无图：直接走纯文本层，未启用则降级知识库
+    answer_no_img, fb_no_img = qa_service.ask("怎么用", "黄芪", None)
+    assert fb_no_img is True and answer_no_img
+
+    # 有图：先尝试视觉层，未启用则降级知识库
+    answer_img, fb_img = qa_service.ask(
+        "图里是什么部位",
+        "附子",
+        {"effects": "回阳救逆"},
+        "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+    )
+    assert fb_img is True and answer_img

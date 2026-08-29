@@ -21,6 +21,11 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  // 识别原图（base64，可含 data:image 前缀）。有图时携带到后端走视觉图文问答
+  image: {
+    type: String,
+    default: '',
+  },
 })
 
 const expanded = ref(false)
@@ -112,6 +117,32 @@ function buildContext() {
   }
 }
 
+/**
+ * 压缩图片到 maxSide 以内并输出 dataURL（视觉问答用，省额度、防超时）。
+ * 复用识别链路的 canvas 压缩思路；结果页传入的 image 通常已 ≤1MB，
+ * 这里再压到 512px 以适配视觉 API 体积限制与降低额度消耗。
+ */
+function compressImage(dataUrl, maxSide = 512) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      let { width, height } = img
+      if (width > maxSide || height > maxSide) {
+        const ratio = Math.min(maxSide / width, maxSide / height)
+        width = Math.round(width * ratio)
+        height = Math.round(height * ratio)
+      }
+      const c = document.createElement('canvas')
+      c.width = width
+      c.height = height
+      c.getContext('2d').drawImage(img, 0, 0, width, height)
+      resolve(c.toDataURL('image/jpeg', 0.8))
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
+}
+
 /** 展开问答区并滚动到底部。 */
 function toggleExpand() {
   expanded.value = !expanded.value
@@ -136,11 +167,18 @@ async function send(text) {
   sending.value = true
   scrollToBottom()
 
+  // 有识别原图时压缩后携带，供后端视觉图文问答（无图则后端走纯文本）
+  let imageBase64 = props.image || ''
+  if (imageBase64) {
+    imageBase64 = await compressImage(imageBase64)
+  }
+
   try {
     const res = await askQuestion({
       question: q,
       herb_name: props.resultName || props.herb?.name || '该药材',
       herb_context: buildContext(),
+      image_base64: imageBase64 || undefined,
     })
     messages.value.push({
       role: 'ai',

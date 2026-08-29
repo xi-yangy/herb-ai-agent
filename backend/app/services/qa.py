@@ -57,10 +57,17 @@ class QAService(ABC):
     """问答服务抽象接口。"""
 
     @abstractmethod
-    def ask(self, question: str, herb_name: str, herb_context: dict | None) -> tuple[str, bool]:
+    def ask(
+        self,
+        question: str,
+        herb_name: str,
+        herb_context: dict | None,
+        image_base64: str | None = None,
+    ) -> tuple[str, bool]:
         """回答问题，返回 (answer, fallback)。
 
         fallback 为 True 表示当前回答为知识库降级内容（非 Qwen 生成）。
+        image_base64 为可选识别原图，有图时优先走视觉图文问答。
         """
         raise NotImplementedError
 
@@ -71,11 +78,32 @@ class QwenQAService(QAService):
     未启用 / 凭证缺失 / 调用异常 / 超时 / 返回空时，降级为知识库结构化展示。
     """
 
-    def ask(self, question: str, herb_name: str, herb_context: dict | None) -> tuple[str, bool]:
+    def ask(
+        self,
+        question: str,
+        herb_name: str,
+        herb_context: dict | None,
+        image_base64: str | None = None,
+    ) -> tuple[str, bool]:
+        """多级降级链（链路不中断）：
+        有图+视觉可用 → 视觉图文问答 → 失败/空 → 纯文本上下文问答 → 失败/空 → 知识库兜底。
+        无图 → 直接纯文本上下文问答 → 失败/空 → 知识库兜底。
+        """
         if not (settings.qwen_enabled and settings.qwen_api_key):
             logger.info("Qwen 未启用，问答降级为知识库展示")
             return build_fallback_answer(herb_name, herb_context), True
 
+        # 第一层：视觉图文问答（仅在提供了图片时尝试）
+        if image_base64:
+            try:
+                answer = self._call_qwen_vision(question, herb_name, herb_context, image_base64)
+                if answer:
+                    return answer, False
+                logger.info("Qwen 视觉返回空，降级纯文本问答")
+            except Exception as exc:  # noqa: BLE001  视觉异常降级纯文本，不中断链路
+                logger.warning("Qwen 视觉调用失败，降级纯文本问答：%s", exc)
+
+        # 第二层：纯文本上下文问答（现有逻辑）
         try:
             answer = self._call_qwen(question, herb_name, herb_context)
         except Exception as exc:  # noqa: BLE001  网络/接口异常统一降级
@@ -111,6 +139,70 @@ class QwenQAService(QAService):
             "messages": [
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
+            ],
+        }
+        body = json.dumps(payload).encode("utf-8")
+        chat_url = settings.qwen_base_url.rstrip("/") + _CHAT_COMPLETIONS_PATH
+        req = urllib.request.Request(
+            chat_url,
+            data=body,
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {settings.qwen_api_key}",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=settings.qwen_timeout) as resp:  # noqa: S310
+            data = json.loads(resp.read().decode("utf-8"))
+
+        choices = data.get("choices") or []
+        if not choices:
+            return ""
+        message = choices[0].get("message") or {}
+        return str(message.get("content") or "").strip()
+
+    def _call_qwen_vision(
+        self,
+        question: str,
+        herb_name: str,
+        herb_context: dict | None,
+        image_base64: str,
+    ) -> str:
+        """调用 OpenAI 兼容视觉接口（图文联合问答），返回回答文本。
+
+        user 消息 content 采用视觉数组格式：
+            [{type:text}, {type:image_url, image_url:{url: <dataURL>}}]
+        图片 base64 需带 data:image 前缀的完整 dataURL，供 DashScope 兼容协议解析。
+        """
+        ctx = herb_context or {}
+        context_lines = [
+            f"药材名称：{herb_name}",
+            f"功效主治：{str(ctx.get('effects') or '暂无')[:200]}",
+            f"用法用量：{str(ctx.get('usage') or '暂无')[:200]}",
+            f"禁忌：{str(ctx.get('contraindications') or '暂无')[:200]}",
+            f"毒性/副作用：{str(ctx.get('toxicity') or '暂无')[:200]}",
+        ]
+        text = "\n".join(context_lines) + f"\n\n请结合用户上传的图片与以上识别信息回答：\n{question}"
+
+        # 兼容未带 data: 前缀的裸 base64：拼接 jpeg 前缀保证 image_url.url 为完整 dataURL
+        image_url = image_base64
+        if "," not in image_base64:
+            image_url = "data:image/jpeg;base64," + image_base64
+
+        payload = {
+            "model": settings.qwen_vision_model,
+            # 回答长度上限：约 1000 token，兼顾内容详实与响应耗时
+            "max_tokens": 1000,
+            "temperature": 0.7,
+            "messages": [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": text},
+                        {"type": "image_url", "image_url": {"url": image_url}},
+                    ],
+                },
             ],
         }
         body = json.dumps(payload).encode("utf-8")
