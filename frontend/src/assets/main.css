@@ -41,8 +41,10 @@ body {
   padding: 0;
   /* 桌面原生：窗口缩小横向滚动而非布局崩坏 */
   min-width: 1024px;
-  /* 素雅纯宣纸底，不做晕染叠加，避免视觉过浓 */
+  /* 极淡纵向渐变：营造空气感与品质感，低对比不刺激 */
   background-color: var(--herb-paper);
+  background-image: linear-gradient(180deg, #f4f7f5 0%, var(--herb-paper) 45%, #ffffff 100%);
+  background-attachment: fixed;
   font-family: var(--herb-font-sans);
   color: var(--herb-ink);
   -webkit-font-smoothing: antialiased;

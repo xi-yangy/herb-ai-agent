@@ -75,21 +75,29 @@ async function onPrivacyResult({ consent }) {
       class="fixed inset-x-0 top-0 z-50 h-16 border-b border-ink/10 bg-paper-card"
     >
       <div class="mx-auto flex h-full max-w-[1200px] items-center gap-6 px-6">
-        <!-- 品牌：点击回首页 -->
+        <!-- 品牌：点击回首页（无边框透明融合 + 胶囊徽章） -->
         <button
           type="button"
-          class="flex items-center gap-3"
+          class="flex items-center gap-2.5"
           @click="router.push({ name: 'home' })"
         >
           <span
-            class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 shadow-sm"
+            class="flex h-9 w-9 items-center justify-center rounded-lg"
             style="background-color: #2f9e6b"
           >
             <span class="section-title text-xl leading-none text-white">灵</span>
           </span>
-          <span class="flex flex-col items-start gap-0.5 text-left">
-            <span class="section-title text-[17px] leading-tight text-ink">灵草 · 中草药识别</span>
-            <span class="text-[10px] leading-none tracking-widest text-ink-faint">多模态识别智能体</span>
+          <span class="flex flex-col items-start gap-1 text-left">
+            <span class="flex items-center gap-1.5">
+              <span class="section-title text-[17px] leading-tight text-ink">灵草</span>
+              <span
+                class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium text-white"
+                style="background: linear-gradient(135deg, #35b078, #2f9e6b); box-shadow: 0 0 6px rgba(47, 158, 107, 0.45)"
+              >
+                🤖 Agent v1.0
+              </span>
+            </span>
+            <span class="text-[11px] leading-none tracking-widest text-ink-faint">中草药识别</span>
           </span>
         </button>
 
@@ -101,7 +109,7 @@ async function onPrivacyResult({ consent }) {
             v-for="tab in tabs"
             :key="tab.name"
             type="button"
-            class="rounded-lg px-4 py-2 text-sm font-medium transition"
+            class="rounded-lg px-3.5 py-2 text-sm font-medium transition"
             :class="
               active() === tab.name
                 ? 'bg-primary/10 font-semibold text-primary'
