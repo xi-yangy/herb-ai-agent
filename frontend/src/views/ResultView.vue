@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { showToast, showConfirmDialog } from 'vant'
+import { showToast } from 'vant'
 import { createHistory, addFavorite, removeFavorite, listFavorites } from '@/api/herb'
 import { useAppStore } from '@/stores/app'
 import LayeredInfoCard from '@/components/LayeredInfoCard.vue'
@@ -147,20 +147,26 @@ function goDetail() {
   if (herb.value?.id) router.push({ name: 'herb-detail', params: { id: herb.value.id } })
 }
 
-async function onClearRecognition() {
-  await showConfirmDialog({
-    title: '返回首页',
-    message: '识别结果已写入历史，确定返回首页吗？',
-  }).then(() => {
-    store.clearRecognition()
-    router.push({ name: 'home' })
-  })
+/** 返回首页：清除识别状态后直接跳转（顶部悬浮按钮与底部按钮共用，不弹确认框）。 */
+function onClearRecognition() {
+  store.clearRecognition()
+  router.push({ name: 'home' })
 }
 
 </script>
 
 <template>
-  <div class="page-container px-4 pb-28 pt-6">
+  <div class="page-container px-4 pb-28 pt-16">
+    <!-- 固定悬浮返回按钮：滑动时始终可见，点击直接返回首页（清除识别状态） -->
+    <button
+      type="button"
+      aria-label="返回首页"
+      class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md active:scale-90"
+      @click="onClearRecognition"
+    >
+      <van-icon name="arrow-left" size="18" color="#1F2A24" />
+    </button>
+
     <!-- 鉴别防雷警报：识别命中易混淆高危药材时，顶部内嵌醒目警报卡 -->
     <section
       v-if="warning"
