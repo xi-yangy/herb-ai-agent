@@ -16,14 +16,6 @@ const props = defineProps({
   },
 })
 
-// 「你可能会关心」预设问题点击后上抛给父组件，触发底部智能问答面板（prompt 按钮）
-const emit = defineEmits(['ask'])
-
-/** 点击预设问题 → 上抛问题文本，由父组件滚动到底部问答面板并自动发送。 */
-function askPreset(question) {
-  emit('ask', question)
-}
-
 /** 专业卡是否展开。 */
 const showPro = ref(false)
 
@@ -114,29 +106,6 @@ const plainNotice = computed(() => {
   return `以下人群需特别留意：${c}。若不确属禁忌范围，也建议在医师指导下使用。`
 })
 
-/** 常见问答列表（贴合消费者画像，模板生成）。 */
-const faqList = computed(() => {
-  const list = []
-  list.push({
-    q: '它适合我这种情况吗？',
-    a: props.herb.safety_level === '毒性'
-      ? '本品属高风险药材，请务必先咨询执业医师，切勿凭感觉自行判断或使用。'
-      : '是否适合需结合个人体质与当下状况综合判断，建议咨询医师或药师，避免自行对号入座。',
-  })
-  list.push({
-    q: '怎么辨别是不是正品？',
-    a: `可结合${props.herb.category || '其入药部位'}、气味、颜色与常见特征做初步观察，但准确辨别建议请教专业药师或对照药典资料。`,
-  })
-  const u = (props.herb.usage || '').trim()
-  list.push({
-    q: '平时该怎么吃？',
-    a: u
-      ? `常规参考用量为${u}，具体做法与用量建议按医嘱或药师指导执行，不宜自行加量。`
-      : '具体用法用量建议查阅专业药典资料或咨询医师，此处不作推荐。',
-  })
-  return list
-})
-
 /** 切换专业卡展开。 */
 function togglePro() {
   showPro.value = !showPro.value
@@ -202,29 +171,6 @@ function togglePro() {
           </p>
         </div>
         <p class="pt-1 text-xs leading-relaxed text-[#5B6B62]/80">安全提示：{{ safetyTip(herb.safety_level) }}</p>
-      </div>
-
-      <!-- 常见问答（你可能会关心）：点击后跳转底部智能问答，自动发送该问题 -->
-      <div class="mt-5 rounded-2xl bg-white/70 p-3.5">
-        <p class="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#1F2A24]">
-          <van-icon name="question-o" size="16" color="#2E7D52" />
-          你可能会关心
-        </p>
-        <p class="mb-2 text-[11px] leading-relaxed text-[#5B6B62]/70">
-          点击问题，自动发送到智能问答，由 AI 结合本药材实时解答
-        </p>
-        <div class="space-y-2">
-          <button
-            v-for="faq in faqList"
-            :key="faq.q"
-            type="button"
-            class="flex w-full items-center justify-between gap-2 rounded-xl border border-[#2E7D52]/15 bg-white px-3 py-2.5 text-left transition hover:border-[#2E7D52]/40 hover:bg-[#E6F4EC] active:scale-[0.98]"
-            @click="askPreset(faq.q)"
-          >
-            <span class="text-[13px] font-medium text-[#1F2A24]">{{ faq.q }}</span>
-            <van-icon name="chat-o" size="14" color="#2E7D52" class="shrink-0" />
-          </button>
-        </div>
       </div>
     </section>
 

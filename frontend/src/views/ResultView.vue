@@ -18,9 +18,6 @@ const result = ref(null)
 const loading = ref(false)
 const isFavorite = ref(false)
 
-// 多模态问答面板 ref：供「你可能会关心」预设问题桥接调用
-const qaPanelRef = ref(null)
-
 // 安全等级样式映射
 const safetyMeta = computed(() => {
   const map = {
@@ -160,23 +157,6 @@ async function onClearRecognition() {
   })
 }
 
-/**
- * 「你可能会关心」预设问题（prompt 按钮）→ 智能问答。
- * 先调用 QaPanel 的 askPreset 展开问答区并自动发送，
- * 再平滑滚动到问答面板顶部，让用户看到回答过程。
- */
-function onPresetAsk(question) {
-  if (!qaPanelRef.value) return
-  // askPreset 内部先展开问答区（含过渡），再发送
-  qaPanelRef.value.askPreset(question)
-  // 展开动画约 300ms，待其展开后滚动定位到面板顶部
-  setTimeout(() => {
-    const el = qaPanelRef.value?.panelRef || null
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, 340)
-}
 </script>
 
 <template>
@@ -340,11 +320,10 @@ function onPresetAsk(question) {
     </section>
 
     <!-- 分层信息卡（F5：白话科普 + 专业药典折叠） -->
-    <!-- @ask：「你可能会关心」预设问题 → 触发底部智能问答面板自动发送 -->
-    <LayeredInfoCard v-if="herb" :herb="herb" class="mt-5" @ask="onPresetAsk" />
+    <LayeredInfoCard v-if="herb" :herb="herb" class="mt-5" />
 
-    <!-- 多模态追问（F12/F13：文本/语音问答，Qwen 真实调用 + 知识库降级；带图时走视觉图文问答） -->
-    <QaPanel ref="qaPanelRef" :herb="herb" :result-name="result?.name" :image="image" class="mt-5" />
+    <!-- 多模态追问（F12/F13：常驻文本/语音问答 + 分组快捷词包，Qwen 真实调用 + 知识库降级；带图时走视觉图文问答） -->
+    <QaPanel :herb="herb" :result-name="result?.name" :image="image" class="mt-5" />
 
     <!-- 医疗免责声明 -->
     <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
