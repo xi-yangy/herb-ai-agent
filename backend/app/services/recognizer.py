@@ -190,10 +190,12 @@ def _match_herb(db: Session, name: str) -> Herb | None:
     1. 精确匹配（「枸杞子」→「枸杞子」）；
     2. 去常见后缀匹配（如「黄芪片」→「黄芪」）；
     3. 补常见后缀匹配（如「枸杞」→「枸杞子」，兼容识别返回简写而知识库存全称）；
-    4. 别名兜底匹配（如百度返回植物学名「忍冬」→ 命中别名配置了「忍冬」的金银花）。
+    4. 别名兜底匹配（如百度返回植物学名「忍冬」→ 命中别名配置了「忍冬」的金银花）；
+    5. 受限包含兜底匹配（如「蒙古黄芪」→「黄芪」，endswith + 修饰词 ≤2 字 + 最长优先）。
 
     仅做单层补全，不递归，避免过度归一化造成误匹配。别名匹配用整词匹配
-    （alias 字段逗号分隔，避免「人参」误中「人参果」这类子串误判）。
+    （alias 字段逗号分隔，避免「人参」误中「人参果」这类子串误判）；包含匹配
+    仅允许前缀修饰（endswith）、限制修饰词长度并取最长名称优先，防误匹配。
     """
     if not name:
         return None
@@ -224,7 +226,35 @@ def _match_herb(db: Session, name: str) -> Herb | None:
     herb = _match_by_alias(db, name)
     if herb is not None:
         return herb
+
+    # 受限包含兜底：知识库名是识别名的后缀且修饰词不超 2 字（如「蒙古黄芪」→「黄芪」）
+    herb = _match_by_containment(db, name)
+    if herb is not None:
+        return herb
     return None
+
+
+def _match_by_containment(db: Session, name: str) -> Herb | None:
+    """受限包含兜底匹配：识别名以知识库名为后缀，且前置修饰词不超 2 字。
+
+    覆盖百度返回「产地/性状前缀 + 标准名」的模式（如「蒙古黄芪」「膜荚黄芪」→「黄芪」）。
+
+    防误匹配设计：
+    - 仅允许前缀修饰（endswith），不用 startswith，避免「人参果」误中「人参」这类后缀延伸；
+    - 长度差 ≤ 2（修饰词不超 2 字），排除「内蒙古黄芪」（差 3）等过度匹配；
+    - 多个候选命中时取名称最长者优先，避免短名误配（如返回名同时以「芪」「黄芪」结尾时取「黄芪」）。
+    """
+    if not name:
+        return None
+    # 知识库规模小（约百级），全量读取后内存过滤，代码清晰且开销可忽略
+    candidates = [
+        herb
+        for herb in db.scalars(select(Herb)).all()
+        if 0 < len(name) - len(herb.name) <= 2 and name.endswith(herb.name)
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda h: len(h.name))
 
 
 def _match_by_alias(db: Session, name: str) -> Herb | None:
