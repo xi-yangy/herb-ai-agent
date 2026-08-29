@@ -123,9 +123,9 @@ async function triggerAlbum() {
 </script>
 
 <template>
-  <div class="page-container px-4 pb-20 pt-10">
+  <div class="page-container px-4 pb-20 pt-10 lg:max-w-[960px]">
     <!-- 桌面双栏：左品牌区 + 右识别主卡；整页对称垂直居中（消除下方空白），移动端保持单栏 -->
-    <div class="lg:flex lg:min-h-[calc(100vh-50px)] lg:items-center lg:gap-14">
+    <div class="lg:flex lg:min-h-[calc(100vh-50px)] lg:items-center lg:gap-16">
       <!-- 品牌区 -->
       <header class="mb-10 text-center lg:mb-0 lg:flex-1 lg:text-left">
         <!-- 草本绿品牌印章 -->
@@ -137,14 +137,31 @@ async function triggerAlbum() {
         </div>
         <h1 class="section-title mt-5 text-[22px] text-ink lg:mt-7 lg:text-3xl">灵草 · 中草药识别</h1>
         <p class="mt-2 text-sm text-ink-secondary lg:text-lg">拍照识别草药，详解功效、禁忌与安全提示</p>
+
+        <!-- 技术亮点标签 -->
+        <div class="mt-4 flex flex-wrap gap-2 lg:mt-5">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            <van-icon name="chat-o" size="13" />
+            AI 多模态对话
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            <van-icon name="bookmark-o" size="13" />
+            100+ 药典药材库
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+            <van-icon name="shield-o" size="13" />
+            毒性与易混淆预警
+          </span>
+        </div>
+
         <!-- 连通状态 -->
-        <div class="mt-3 inline-flex items-center gap-1.5 text-xs lg:text-sm">
+        <div class="mt-4 inline-flex items-center gap-1.5 text-xs lg:text-sm">
           <span
             class="inline-block h-2 w-2 rounded-full"
             :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
           ></span>
           <span class="text-ink-secondary">
-            {{ checking ? '检测中…' : store.backendOnline ? '服务正常' : '服务未连接' }}
+            {{ checking ? '检测中…' : store.backendOnline ? '智能体系统已就绪' : '系统暂未连接' }}
           </span>
         </div>
       </header>
@@ -174,6 +191,10 @@ async function triggerAlbum() {
             相册上传
           </button>
         </div>
+
+        <p class="mt-4 text-center text-xs leading-relaxed text-ink-secondary lg:text-sm">
+          💡 提示：上传照片后，可与 AI 助手语音/文字对话，解答禁忌与用药疑问。
+        </p>
 
         <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
 
