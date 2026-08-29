@@ -16,6 +16,14 @@ const props = defineProps({
   },
 })
 
+// 「你可能会关心」预设问题点击后上抛给父组件，触发底部智能问答面板（prompt 按钮）
+const emit = defineEmits(['ask'])
+
+/** 点击预设问题 → 上抛问题文本，由父组件滚动到底部问答面板并自动发送。 */
+function askPreset(question) {
+  emit('ask', question)
+}
+
 /** 专业卡是否展开。 */
 const showPro = ref(false)
 
@@ -129,12 +137,6 @@ const faqList = computed(() => {
   return list
 })
 
-/** 当前展开的 FAQ 索引（点击切换）。 */
-const openFaq = ref(-1)
-function toggleFaq(i) {
-  openFaq.value = openFaq.value === i ? -1 : i
-}
-
 /** 切换专业卡展开。 */
 function togglePro() {
   showPro.value = !showPro.value
@@ -202,43 +204,26 @@ function togglePro() {
         <p class="pt-1 text-xs leading-relaxed text-[#5B6B62]/80">安全提示：{{ safetyTip(herb.safety_level) }}</p>
       </div>
 
-      <!-- 常见问答（你可能会关心） -->
+      <!-- 常见问答（你可能会关心）：点击后跳转底部智能问答，自动发送该问题 -->
       <div class="mt-5 rounded-2xl bg-white/70 p-3.5">
         <p class="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#1F2A24]">
           <van-icon name="question-o" size="16" color="#2E7D52" />
           你可能会关心
         </p>
-        <div
-          v-for="(faq, i) in faqList"
-          :key="faq.q"
-          class="border-t border-[#2E7D52]/10 pt-2.5 first:border-t-0 first:pt-0"
-        >
+        <p class="mb-2 text-[11px] leading-relaxed text-[#5B6B62]/70">
+          点击问题，自动发送到智能问答，由 AI 结合本药材实时解答
+        </p>
+        <div class="space-y-2">
           <button
+            v-for="faq in faqList"
+            :key="faq.q"
             type="button"
-            class="flex w-full items-center justify-between gap-2 py-1 text-left"
-            @click="toggleFaq(i)"
+            class="flex w-full items-center justify-between gap-2 rounded-xl border border-[#2E7D52]/15 bg-white px-3 py-2.5 text-left transition hover:border-[#2E7D52]/40 hover:bg-[#E6F4EC] active:scale-[0.98]"
+            @click="askPreset(faq.q)"
           >
             <span class="text-[13px] font-medium text-[#1F2A24]">{{ faq.q }}</span>
-            <van-icon
-              name="arrow-down"
-              size="14"
-              color="#5B6B62"
-              class="shrink-0 transition-transform duration-200"
-              :class="{ 'rotate-180': openFaq === i }"
-            />
+            <van-icon name="chat-o" size="14" color="#2E7D52" class="shrink-0" />
           </button>
-          <transition
-            enter-active-class="transition-[max-height,opacity] duration-200 ease-out"
-            enter-from-class="max-h-0 opacity-0"
-            enter-to-class="max-h-[500px] opacity-100"
-            leave-active-class="transition-[max-height,opacity] duration-150 ease-in"
-            leave-from-class="max-h-[500px] opacity-100"
-            leave-to-class="max-h-0 opacity-0"
-          >
-            <p v-if="openFaq === i" class="max-h-[500px] pb-1 text-xs leading-relaxed text-[#5B6B62]">
-              {{ faq.a }}
-            </p>
-          </transition>
         </div>
       </div>
     </section>

@@ -32,6 +32,8 @@ const expanded = ref(false)
 const input = ref('')
 const sending = ref(false)
 const listRef = ref(null)
+// 根元素 ref：供父组件 scrollIntoView 平滑滚动到本问答面板
+const panelRef = ref(null)
 
 // 消息列表：{ role: 'user' | 'ai', text, fallback, disclaimer }
 const messages = ref([])
@@ -276,10 +278,34 @@ onBeforeUnmount(() => {
     window.speechSynthesis.cancel()
   }
 })
+
+/**
+ * 对外暴露：接收预设问题（「你可能会关心」prompt 按钮）。
+ * 展开问答区 → 等待渲染与展开动画 → 发送问题（走 send() 链路，Qwen 一次返回）。
+ * 展开过渡约 300ms，这里用 nextTick + 短延时确保问答区可见后再滚动定位与发送，
+ * 避免滚到未展开的高度导致定位偏差。
+ */
+async function askPreset(question) {
+  const q = (question || '').trim()
+  if (!q) return
+  expanded.value = true
+  await nextTick()
+  // 等待展开动画基本完成，保证滚动定位到已展开的高度
+  await new Promise((resolve) => setTimeout(resolve, 320))
+  send(q)
+  // 发送后再滚动到底部，让用户看到「思考中…」与后续回答
+  await nextTick()
+  if (listRef.value) {
+    listRef.value.scrollTop = listRef.value.scrollHeight
+  }
+}
+
+/** 对外暴露方法，供父组件（ResultView）桥接调用。 */
+defineExpose({ askPreset, panelRef })
 </script>
 
 <template>
-  <section class="mt-5 overflow-hidden rounded-3xl bg-white shadow-sm">
+  <section ref="panelRef" class="mt-5 overflow-hidden rounded-3xl bg-white shadow-sm">
     <!-- 追问卡片入口 -->
     <button
       type="button"
