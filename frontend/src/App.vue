@@ -75,7 +75,7 @@ async function onPrivacyResult({ consent }) {
       v-if="!hideTabbar"
       :model-value="active()"
       route
-      active-color="#357A53"
+      active-color="#2F9E6B"
       inactive-color="#6B6B63"
     >
       <van-tabbar-item

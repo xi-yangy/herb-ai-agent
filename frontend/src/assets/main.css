@@ -5,9 +5,9 @@
 /* ============ 国风草本设计令牌（单一来源） ============ */
 :root {
   /* 色板 */
-  --herb-primary: #357a53;          /* 草本绿主色（品牌/主按钮，鲜活） */
-  --herb-primary-light: #4a9a70;    /* 草本绿浅（辅助强调） */
-  --herb-primary-dark: #21593b;     /* 草本绿深（按压/标题） */
+  --herb-primary: #2f9e6b;          /* 鲜亮草绿主色（品牌/主按钮） */
+  --herb-primary-light: #35b078;    /* 草绿浅（hover 强调） */
+  --herb-primary-dark: #28895c;     /* 草绿深（按压/标题） */
   --herb-paper: #fbf9f4;            /* 宣纸白（页面底，淡一档） */
   --herb-paper-card: #fffdf7;       /* 宣纸白卡（卡片） */
   --herb-ink: #2a2a28;              /* 墨色（主文本） */
@@ -28,10 +28,10 @@
   --herb-font-sans: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
 
   /* Vant 主题化（tabbar / 主色 / 弹层） */
-  --van-primary-color: #357a53;
+  --van-primary-color: #2f9e6b;
   --van-tabbar-background: #fffdf7;
   --van-tabbar-item-text-color: #6b6b63;
-  --van-tabbar-item-active-color: #357a53;
+  --van-tabbar-item-active-color: #2f9e6b;
   --van-popup-round-radius: 16px;
 }
 
@@ -162,7 +162,7 @@ body {
 
 /* 品牌渐变：收敛为含蓄的深墨绿渐变，仅用于品牌元素与主 CTA */
 .brand-gradient {
-  background: linear-gradient(135deg, #21593b 0%, #357a53 55%, #4a9a70 100%);
+  background: linear-gradient(135deg, #28895c 0%, #2f9e6b 55%, #35b078 100%);
 }
 }
 

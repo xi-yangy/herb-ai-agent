@@ -131,7 +131,7 @@ async function triggerAlbum() {
         <!-- 草本绿品牌印章 -->
         <div
           class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl lg:mx-0 lg:h-24 lg:w-24"
-          style="background-color: #357a53; box-shadow: 0 8px 20px rgba(53, 122, 83, 0.3)"
+          style="background-color: #2f9e6b; box-shadow: 0 8px 20px rgba(47, 158, 107, 0.3)"
         >
           <span class="section-title text-2xl leading-none text-white lg:text-4xl">灵</span>
         </div>
@@ -157,7 +157,7 @@ async function triggerAlbum() {
         <div class="mt-6 grid w-full grid-cols-2 gap-4">
           <button
             type="button"
-            class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2F9E6B] text-[15px] font-medium text-white transition hover:bg-[#35B078] active:scale-95 active:bg-[#28895C] disabled:opacity-50 lg:h-16 lg:text-lg"
+            class="btn-primary h-12 w-full gap-2 lg:h-16 lg:text-lg"
             :disabled="recognizing"
             @click="triggerCapture"
           >
@@ -166,7 +166,7 @@ async function triggerAlbum() {
           </button>
           <button
             type="button"
-            class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-light text-[15px] font-medium text-white transition hover:bg-[#3F8A60] active:scale-95 disabled:opacity-50 lg:h-16 lg:text-lg"
+            class="btn-primary h-12 w-full gap-2 lg:h-16 lg:text-lg"
             :disabled="recognizing"
             @click="triggerAlbum"
           >
@@ -181,7 +181,7 @@ async function triggerAlbum() {
         <div class="mt-5 hidden w-full lg:grid lg:grid-cols-2 lg:gap-4">
           <div class="card-paper flex flex-col gap-2 p-3.5 text-left lg:p-4">
             <div class="flex items-center gap-1.5">
-              <van-icon name="shield-o" size="18" color="#357A53" />
+              <van-icon name="shield-o" size="18" color="#2F9E6B" />
               <span class="section-title text-[13px] text-ink lg:text-base">安全三原则</span>
             </div>
             <ol class="space-y-1 text-xs leading-snug text-ink-secondary lg:text-[15px]">
@@ -192,7 +192,7 @@ async function triggerAlbum() {
           </div>
           <div class="card-paper flex flex-col gap-2 p-3.5 text-left lg:p-4">
             <div class="flex items-center gap-1.5">
-              <van-icon name="photograph" size="18" color="#357A53" />
+              <van-icon name="photograph" size="18" color="#2F9E6B" />
               <span class="section-title text-[13px] text-ink lg:text-base">拍摄小贴士</span>
             </div>
             <ol class="space-y-1 text-xs leading-snug text-ink-secondary lg:text-[15px]">

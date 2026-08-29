@@ -85,7 +85,7 @@ async function onLogout() {
           class="flex h-11 w-11 items-center justify-center rounded-xl text-white"
           :class="store.isLoggedIn ? 'bg-white/20' : 'bg-primary/10'"
         >
-          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#357A53'" />
+          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#2F9E6B'" />
         </span>
         <div v-if="store.isLoggedIn" class="flex-1">
           <p class="text-base font-semibold text-white">{{ store.user.username }}</p>
@@ -115,7 +115,7 @@ async function onLogout() {
         @click="router.push({ name: 'favorites' })"
       >
         <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-          <van-icon name="like-o" size="20" color="#357A53" />
+          <van-icon name="like-o" size="20" color="#2F9E6B" />
         </span>
         <span class="flex-1 text-sm font-medium text-ink">我的收藏</span>
         <span class="text-sm text-ink-secondary">{{ favoriteCount }} 味</span>
@@ -168,7 +168,7 @@ async function onLogout() {
             <van-switch
               :model-value="consents[item.key] !== false"
               size="24"
-              active-color="#357A53"
+              active-color="#2F9E6B"
               @update:model-value="toggleConsent(item.key, $event)"
             />
           </div>
