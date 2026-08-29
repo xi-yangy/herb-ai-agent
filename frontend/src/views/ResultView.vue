@@ -204,8 +204,8 @@ function onClearRecognition() {
       </div>
 
       <!-- 安全提示区 -->
-      <div class="mt-3 rounded-xl border border-ochre/40 bg-ochre/10 px-3.5 py-3">
-        <p class="text-xs leading-relaxed text-ochre">
+      <div class="mt-3 rounded-xl border border-amber-300/60 bg-amber-100/95 px-3.5 py-3">
+        <p class="text-xs leading-relaxed text-amber-900">
           <van-icon name="warning-o" size="14" class="mr-1 align-[-2px]" />
           高危易混淆，宁严勿松。切勿仅凭外观自行采摘、辨认或服用，请交由专业药师/医师核对。
         </p>
