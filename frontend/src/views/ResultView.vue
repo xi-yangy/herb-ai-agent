@@ -18,12 +18,12 @@ const result = ref(null)
 const loading = ref(false)
 const isFavorite = ref(false)
 
-// 安全等级样式映射
+// 安全等级样式映射（国风语义色）
 const safetyMeta = computed(() => {
   const map = {
-    普通: { color: '#2E7D52', bg: '#E6F4EC', label: '普通药材', tip: '常规使用相对安全，仍建议按剂量服用' },
-    慎用: { color: '#F2A33C', bg: '#FDF3E4', label: '慎用', tip: '需谨慎使用，特定人群应避免或减量' },
-    毒性: { color: '#E5484D', bg: '#FDE9E9', label: '毒性药材 · 高风险', tip: '含有毒性成分，务必遵医嘱并严格按剂量使用' },
+    普通: { color: '#4A7C59', bg: '#EAF1EC', label: '普通药材', tip: '常规使用相对安全，仍建议按剂量服用' },
+    慎用: { color: '#C08A3E', bg: '#F7EFDF', label: '慎用', tip: '需谨慎使用，特定人群应避免或减量' },
+    毒性: { color: '#C0392B', bg: '#FAE9E7', label: '毒性药材 · 高风险', tip: '含有毒性成分，务必遵医嘱并严格按剂量使用' },
   }
   const level = result.value?.safety_level || ''
   return map[level] || map.普通
@@ -34,10 +34,11 @@ const herb = computed(() => result.value?.herb || null)
 // 识别通道可读文案映射
 const channelLabel = computed(() => {
   const map = {
+    local: '本地识别',
     baidu: '百度识别',
-    mock: '模拟识别',
+    mock: '演示数据',
   }
-  return map[result.value?.channel] || result.value?.channel || '未知通道'
+  return map[result.value?.channel] || '未知通道'
 })
 
 // 是否低置信度（后端判定：不直接给结论，改判相似品种 + 引导重拍）
@@ -62,9 +63,9 @@ function retake() {
 /** 相似品种安全等级小标签样式。 */
 function similarTagMeta(level) {
   const map = {
-    普通: { color: '#2E7D52', bg: '#E6F4EC' },
-    慎用: { color: '#F2A33C', bg: '#FDF3E4' },
-    毒性: { color: '#E5484D', bg: '#FDE9E9' },
+    普通: { color: '#4A7C59', bg: '#EAF1EC' },
+    慎用: { color: '#C08A3E', bg: '#F7EFDF' },
+    毒性: { color: '#C0392B', bg: '#FAE9E7' },
   }
   return map[level] || map.普通
 }
@@ -161,16 +162,16 @@ function onClearRecognition() {
     <button
       type="button"
       aria-label="返回首页"
-      class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md active:scale-90"
+      class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
       @click="onClearRecognition"
     >
-      <van-icon name="arrow-left" size="18" color="#1F2A24" />
+      <van-icon name="arrow-left" size="18" color="#2A2A28" />
     </button>
 
     <!-- 鉴别防雷警报：识别命中易混淆高危药材时，顶部内嵌醒目警报卡 -->
     <section
       v-if="warning"
-      class="anti-deception-card mt-1 overflow-hidden rounded-3xl border border-[#E5484D]/30 bg-gradient-to-br from-[#7A0C12] via-[#B4330F] to-[#E5484D] p-5 shadow-lg shadow-[#E5484D]/20"
+      class="anti-deception-card mt-1 overflow-hidden rounded-2xl border border-cinnabar/30 bg-gradient-to-br from-[#7A0C12] via-[#B4330F] to-[#E5484D] p-5 shadow-lg shadow-cinnabar/20"
     >
       <!-- 头部：警示图标 + 标题 -->
       <div class="flex items-center gap-3">
@@ -178,7 +179,7 @@ function onClearRecognition() {
           <van-icon name="shield-o" size="26" color="#FFF" />
         </div>
         <div>
-          <h2 class="text-lg font-bold leading-tight text-white">鉴别防雷警报</h2>
+          <h2 class="section-title text-lg leading-tight text-white">鉴别防雷警报</h2>
           <p class="mt-0.5 text-xs text-white/75">该药材易与高危品种混淆，务必辨认后再使用</p>
         </div>
       </div>
@@ -194,7 +195,7 @@ function onClearRecognition() {
         <div class="rounded-xl bg-white/10 px-3.5 py-2.5">
           <div class="flex items-center justify-between">
             <span class="text-xs text-white/70">易混淆高危品种</span>
-            <span class="rounded-full bg-[#E5484D] px-2.5 py-0.5 text-sm font-semibold text-white">
+            <span class="rounded-full bg-cinnabar px-2.5 py-0.5 text-sm font-semibold text-white">
               {{ warning.label }}
             </span>
           </div>
@@ -203,8 +204,8 @@ function onClearRecognition() {
       </div>
 
       <!-- 安全提示区 -->
-      <div class="mt-3 rounded-xl border border-[#F2A33C]/40 bg-[#FDF3E4]/90 px-3.5 py-3">
-        <p class="text-xs leading-relaxed text-[#B45309]">
+      <div class="mt-3 rounded-xl border border-ochre/40 bg-ochre/10 px-3.5 py-3">
+        <p class="text-xs leading-relaxed text-ochre">
           <van-icon name="warning-o" size="14" class="mr-1 align-[-2px]" />
           高危易混淆，宁严勿松。切勿仅凭外观自行采摘、辨认或服用，请交由专业药师/医师核对。
         </p>
@@ -218,7 +219,7 @@ function onClearRecognition() {
 
     <!-- 顶部安全等级色条 -->
     <div
-      class="flex items-center gap-3 rounded-2xl px-4 py-3.5"
+      class="flex items-center gap-3 rounded-xl px-4 py-3.5"
       :style="{ backgroundColor: safetyMeta.bg }"
     >
       <span
@@ -229,20 +230,20 @@ function onClearRecognition() {
         <p class="text-sm font-semibold" :style="{ color: safetyMeta.color }">
           {{ safetyMeta.label }}
         </p>
-        <p class="mt-0.5 text-xs" style="color: #5b6b62">{{ safetyMeta.tip }}</p>
+        <p class="mt-0.5 text-xs text-ink-secondary">{{ safetyMeta.tip }}</p>
       </div>
     </div>
 
     <!-- 低置信度降级：相似品种 + 引导重拍（PRD 硬性要求：低于阈值不直接给结论） -->
     <section
       v-if="lowConfidence"
-      class="mt-5 rounded-2xl border border-[#F2A33C]/40 bg-[#FDF3E4] p-4"
+      class="mt-5 rounded-xl border border-ochre/40 bg-ochre/10 p-4"
     >
       <div class="flex items-center gap-2">
-        <van-icon name="warning-o" size="20" color="#F2A33C" />
-        <h2 class="text-sm font-bold text-[#B45309]">识别置信度较低，请核对</h2>
+        <van-icon name="warning-o" size="20" color="#C08A3E" />
+        <h2 class="text-sm font-bold text-ochre">识别置信度较低，请核对</h2>
       </div>
-      <p class="mt-2 text-xs leading-relaxed text-[#5B6B62]">
+      <p class="mt-2 text-xs leading-relaxed text-ink-secondary">
         系统未能高置信度确认该药材，以下为相似品种候选，请对照实物或调整拍摄后重试。
       </p>
 
@@ -250,9 +251,9 @@ function onClearRecognition() {
         <li
           v-for="(item, idx) in similarList"
           :key="idx"
-          class="flex items-center justify-between rounded-xl bg-white/80 px-3 py-2.5"
+          class="flex items-center justify-between rounded-xl bg-paper-card px-3 py-2.5"
         >
-          <span class="text-sm font-medium text-[#1F2A24]">{{ item.name }}</span>
+          <span class="text-sm font-medium text-ink">{{ item.name }}</span>
           <span class="flex items-center gap-2">
             <span
               class="rounded px-1.5 py-0.5 text-[11px]"
@@ -260,7 +261,7 @@ function onClearRecognition() {
             >
               {{ item.safety_level }}
             </span>
-            <span class="text-xs text-[#5B6B62]">
+            <span class="text-xs text-ink-secondary">
               {{ ((item.confidence || 0) * 100).toFixed(0) }}%
             </span>
           </span>
@@ -269,29 +270,29 @@ function onClearRecognition() {
 
       <button
         type="button"
-        class="mt-4 w-full rounded-2xl bg-[#2E7D52] py-3 text-sm font-medium text-white transition active:scale-95"
+        class="btn-primary mt-4 w-full"
         @click="retake"
       >
-        <van-icon name="photograph" size="16" class="mr-1 align-[-2px]" />
+        <van-icon name="photograph" size="16" class="align-[-2px]" />
         重新拍摄
       </button>
-      <p class="mt-3 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+      <p class="mt-3 text-center text-xs leading-relaxed text-ink-secondary/70">
         本结果为软件自动识别，仅供参考，不构成诊断或处方建议。
       </p>
     </section>
 
     <!-- 药材主体 -->
-    <section class="mt-5 overflow-hidden rounded-3xl bg-white shadow-sm">
+    <section class="card-paper mt-5 overflow-hidden">
       <!-- 图片预览 -->
-      <div v-if="image" class="flex h-52 items-center justify-center bg-[#F4F8F5]">
+      <div v-if="image" class="flex h-52 items-center justify-center bg-paper">
         <img :src="image" alt="识别图片" class="h-full w-full object-cover" />
       </div>
 
       <div class="p-5">
         <div class="flex items-start justify-between">
           <div>
-            <h1 class="text-[22px] font-semibold text-[#1F2A24]">{{ result?.name || '识别中…' }}</h1>
-            <p class="mt-1 text-xs text-[#5B6B62]">
+            <h1 class="section-title text-[22px] text-ink">{{ result?.name || '识别中…' }}</h1>
+            <p class="mt-1 text-xs text-ink-secondary">
               置信度 {{ ((result?.confidence || 0) * 100).toFixed(0) }}% ·
               识别通道 {{ channelLabel }}
             </p>
@@ -299,7 +300,7 @@ function onClearRecognition() {
           <button
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-full transition active:scale-90"
-            :class="isFavorite ? 'text-[#E5484D]' : 'text-[#5B6B62]'"
+            :class="isFavorite ? 'text-cinnabar' : 'text-ink-faint'"
             @click="toggleFavorite"
           >
             <van-icon :name="isFavorite ? 'like' : 'like-o'" size="22" />
@@ -307,17 +308,17 @@ function onClearRecognition() {
         </div>
 
         <!-- 已收录：展示描述；未收录：降级提示 -->
-        <p v-if="herb" class="mt-2 text-sm leading-relaxed text-[#5B6B62]">
+        <p v-if="herb" class="mt-2 text-sm leading-relaxed text-ink-secondary">
           {{ herb.description || result.name + '：请以知识库详情为准。' }}
         </p>
-        <div v-else-if="notInKb" class="mt-3 rounded-xl bg-[#FDF3E4] p-3 text-xs leading-relaxed text-[#B45309]">
+        <div v-else-if="notInKb" class="mt-3 rounded-xl bg-ochre/10 p-3 text-xs leading-relaxed text-ochre">
           识别到「{{ result?.name }}」，但该品种暂未收录本地知识库。识别结果仅供参考，请勿作为用药依据。
         </div>
 
         <button
           v-if="herb"
           type="button"
-          class="mt-4 w-full rounded-2xl border border-[#2E7D52]/20 bg-white py-3 text-sm font-medium text-[#2E7D52] transition active:scale-95"
+          class="btn-outline mt-4 w-full"
           @click="goDetail"
         >
           查看完整药材详情
@@ -332,7 +333,7 @@ function onClearRecognition() {
     <QaPanel :herb="herb" :result-name="result?.name" :image="image" class="mt-5" />
 
     <!-- 医疗免责声明 -->
-    <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+    <p class="mt-6 text-center text-xs leading-relaxed text-ink-secondary/70">
       本结果为软件自动识别，仅供参考，不构成医疗建议。<br />
       如身体不适请及时就医，遵医嘱用药。
     </p>
@@ -340,7 +341,7 @@ function onClearRecognition() {
     <!-- 返回 -->
     <button
       type="button"
-      class="mt-6 w-full rounded-2xl bg-white py-3.5 text-sm font-medium text-[#2E7D52] shadow-sm transition active:scale-95"
+      class="btn-outline mt-6 w-full"
       @click="onClearRecognition"
     >
       返回首页
@@ -365,7 +366,7 @@ function onClearRecognition() {
   }
 }
 
-/* 警示图标呼吸辉光 */
+/* 警示图标呼吸辉光（高危场景保留） */
 .deception-halo {
   box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45);
   animation: deception-halo-breathe 1.8s ease-in-out infinite;

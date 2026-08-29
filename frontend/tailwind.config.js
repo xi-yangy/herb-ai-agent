@@ -8,24 +8,39 @@ export default {
   theme: {
     extend: {
       colors: {
+        // 国风草本语义色板
         primary: {
-          DEFAULT: '#2E7D32',
-          light: '#388E3C',
-          lighter: '#A5D6A7',
+          DEFAULT: '#2F5D46',
+          light: '#3A6B50',
+          dark: '#1F3D2E',
         },
-        danger: '#D32F2F',
-        warning: '#F57C00',
+        paper: {
+          DEFAULT: '#F7F3EA',
+          card: '#FFFDF7',
+        },
+        ink: {
+          DEFAULT: '#2A2A28',
+          secondary: '#6B6B63',
+          faint: '#A8A39A',
+        },
+        jade: '#4A7C59',
+        ochre: '#C08A3E',
+        cinnabar: '#C0392B',
+        accent: '#A9663F',
+        danger: '#C0392B',
+        warning: '#C08A3E',
+      },
+      fontFamily: {
+        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        serif: ['"Noto Serif SC"', 'SimSun', 'Songti SC', 'serif'],
       },
       maxWidth: {
-        content: '1200px',
+        content: '720px',
       },
       screens: {
         mobile: '375px',
         tablet: '768px',
         desktop: '1024px',
-      },
-      fontFamily: {
-        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
     },
   },

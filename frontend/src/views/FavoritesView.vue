@@ -8,7 +8,7 @@ const router = useRouter()
 const favorites = ref([])
 const loading = ref(true)
 
-const safetyColor = { 普通: '#2E7D52', 慎用: '#F2A33C', 毒性: '#E5484D' }
+const safetyColor = { 普通: '#4A7C59', 慎用: '#C08A3E', 毒性: '#C0392B' }
 
 onMounted(load)
 
@@ -54,15 +54,15 @@ async function onRemove(fav) {
     <div class="mb-4 flex items-center gap-3">
       <button
         type="button"
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm active:scale-90"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
         @click="router.back()"
       >
-        <van-icon name="arrow-left" size="18" color="#1F2A24" />
+        <van-icon name="arrow-left" size="18" color="#2A2A28" />
       </button>
-      <h1 class="text-[22px] font-semibold text-[#1F2A24]">我的收藏</h1>
+      <h1 class="section-title text-[22px] text-ink">我的收藏</h1>
     </div>
 
-    <div v-if="loading" class="py-20 text-center text-sm text-[#5B6B62]">加载中…</div>
+    <div v-if="loading" class="py-20 text-center text-sm text-ink-secondary">加载中…</div>
 
     <van-empty v-else-if="favorites.length === 0" description="还没有收藏，去识别并收藏药材吧" />
 
@@ -70,7 +70,7 @@ async function onRemove(fav) {
       <div
         v-for="(h, idx) in favorites"
         :key="h.id"
-        class="slide-in flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm"
+        class="slide-in flex items-center gap-3 rounded-xl bg-paper-card p-4 shadow-paper"
         :style="{ animationDelay: idx * 0.05 + 's' }"
       >
         <button
@@ -78,24 +78,24 @@ async function onRemove(fav) {
           class="min-w-0 flex-1 text-left"
           @click="router.push({ name: 'herb-detail', params: { id: h.id } })"
         >
-          <p class="text-base font-semibold text-[#1F2A24]">{{ h.name }}</p>
-          <p class="mt-1 line-clamp-1 text-xs text-[#5B6B62]">{{ h.nature_flavor }}</p>
+          <p class="text-base font-semibold text-ink">{{ h.name }}</p>
+          <p class="mt-1 line-clamp-1 text-xs text-ink-secondary">{{ h.nature_flavor }}</p>
         </button>
         <span
           class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
           :style="{
-            color: safetyColor[h.safety_level] || '#2E7D52',
-            backgroundColor: (safetyColor[h.safety_level] || '#2E7D52') + '1A',
+            color: safetyColor[h.safety_level] || '#4A7C59',
+            backgroundColor: (safetyColor[h.safety_level] || '#4A7C59') + '1A',
           }"
         >
           {{ h.safety_level }}
         </span>
         <button
           type="button"
-          class="shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-[#FDE9E9] active:scale-90"
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cinnabar/10 active:scale-90"
           @click="onRemove(h)"
         >
-          <van-icon name="like" size="18" color="#E5484D" />
+          <van-icon name="like" size="18" color="#C0392B" />
         </button>
       </div>
     </div>

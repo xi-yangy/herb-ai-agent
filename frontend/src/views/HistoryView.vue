@@ -58,13 +58,13 @@ async function onClear() {
   <div class="page-container px-4 pb-28 pt-6">
     <header class="mb-5 flex items-center justify-between">
       <div>
-        <h1 class="text-[22px] font-semibold text-[#1F2A24]">识别历史</h1>
-        <p class="mt-1 text-sm text-[#5B6B62]">记录你的每一次识别</p>
+        <h1 class="section-title text-[22px] text-ink">识别历史</h1>
+        <p class="mt-1 text-sm text-ink-secondary">记录你的每一次识别</p>
       </div>
       <button
         v-if="history.length > 0"
         type="button"
-        class="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs text-[#5B6B62] shadow-sm active:scale-95"
+        class="btn-ghost gap-1 text-xs"
         @click="onClear"
       >
         <van-icon name="delete-o" size="14" />
@@ -72,7 +72,7 @@ async function onClear() {
       </button>
     </header>
 
-    <div v-if="loading" class="py-20 text-center text-sm text-[#5B6B62]">加载中…</div>
+    <div v-if="loading" class="py-20 text-center text-sm text-ink-secondary">加载中…</div>
 
     <van-empty v-else-if="history.length === 0" description="暂无识别记录，去识别一株草药吧" />
 
@@ -80,24 +80,24 @@ async function onClear() {
       <div
         v-for="(item, idx) in history"
         :key="item.id"
-        class="slide-in flex cursor-pointer items-center gap-3 rounded-2xl bg-white p-4 shadow-sm transition active:bg-[#F4F8F5]"
+        class="slide-in flex cursor-pointer items-center gap-3 rounded-xl bg-paper-card p-4 shadow-paper transition active:bg-paper"
         :style="{ animationDelay: idx * 0.05 + 's' }"
         @click="goDetail(item)"
       >
         <div
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
-          :class="item.safety_level === '毒性' ? 'bg-[#FDE9E9]' : 'bg-[#E6F4EC]'"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+          :class="item.safety_level === '毒性' ? 'bg-cinnabar/10' : 'bg-primary/10'"
         >
-          <van-icon name="medal-o" size="22" :color="item.safety_level === '毒性' ? '#E5484D' : '#2E7D52'" />
+          <van-icon name="medal-o" size="22" :color="item.safety_level === '毒性' ? '#C0392B' : '#2F5D46'" />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-base font-semibold text-[#1F2A24]">{{ item.result_name }}</p>
-          <p class="mt-0.5 text-xs text-[#5B6B62]">
+          <p class="text-base font-semibold text-ink">{{ item.result_name }}</p>
+          <p class="mt-0.5 text-xs text-ink-secondary">
             {{ formatTime(item.created_at) }} · 置信度
             {{ ((item.confidence || 0) * 100).toFixed(0) }}%
           </p>
         </div>
-        <van-icon name="arrow" color="#C0C8C3" />
+        <van-icon name="arrow" color="#A8A39A" />
       </div>
     </div>
   </div>

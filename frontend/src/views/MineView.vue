@@ -71,21 +71,21 @@ async function onLogout() {
 <template>
   <div class="page-container px-4 pb-28 pt-6">
     <header class="mb-5">
-      <h1 class="text-[22px] font-semibold text-[#1F2A24]">我的</h1>
-      <p class="mt-1 text-sm text-[#5B6B62]">收藏、账号与隐私设置</p>
+      <h1 class="section-title text-[22px] text-ink">我的</h1>
+      <p class="mt-1 text-sm text-ink-secondary">收藏、账号与隐私设置</p>
     </header>
 
     <!-- 用户信息 / 登录入口 -->
     <section
-      class="overflow-hidden rounded-2xl bg-white p-4 shadow-sm"
-      :class="store.isLoggedIn ? 'brand-gradient' : ''"
+      class="overflow-hidden rounded-xl p-4"
+      :class="store.isLoggedIn ? 'brand-gradient' : 'bg-paper-card shadow-paper'"
     >
       <div class="flex items-center gap-3">
         <span
-          class="flex h-11 w-11 items-center justify-center rounded-2xl text-white"
-          :class="store.isLoggedIn ? 'bg-white/20' : 'bg-[#E6F4EC]'"
+          class="flex h-11 w-11 items-center justify-center rounded-xl text-white"
+          :class="store.isLoggedIn ? 'bg-white/20' : 'bg-primary/10'"
         >
-          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#2E7D52'" />
+          <van-icon name="user-o" size="22" :color="store.isLoggedIn ? '#fff' : '#2F5D46'" />
         </span>
         <div v-if="store.isLoggedIn" class="flex-1">
           <p class="text-base font-semibold text-white">{{ store.user.username }}</p>
@@ -93,12 +93,12 @@ async function onLogout() {
         </div>
         <template v-else>
           <div class="flex-1">
-            <p class="text-base font-semibold text-[#1F2A24]">未登录</p>
-            <p class="mt-0.5 text-xs text-[#5B6B62]">登录后同步识别历史与收藏</p>
+            <p class="text-base font-semibold text-ink">未登录</p>
+            <p class="mt-0.5 text-xs text-ink-secondary">登录后同步识别历史与收藏</p>
           </div>
           <button
             type="button"
-            class="rounded-full border border-[#2E7D52]/30 bg-[#E6F4EC] px-4 py-1.5 text-sm font-medium text-[#2E7D52] transition active:scale-95"
+            class="btn-outline h-9 rounded-full px-4 text-sm"
             @click="router.push({ name: 'login' })"
           >
             登录 / 注册
@@ -108,50 +108,50 @@ async function onLogout() {
     </section>
 
     <!-- 功能入口 -->
-    <div class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div class="mt-4 overflow-hidden rounded-xl bg-paper-card shadow-paper">
       <button
         type="button"
-        class="flex w-full items-center gap-3 px-4 py-4 text-left transition active:bg-[#F4F8F5]"
+        class="flex w-full items-center gap-3 px-4 py-4 text-left transition active:bg-paper"
         @click="router.push({ name: 'favorites' })"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E6F4EC]">
-          <van-icon name="like-o" size="20" color="#2E7D52" />
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+          <van-icon name="like-o" size="20" color="#2F5D46" />
         </span>
-        <span class="flex-1 text-sm font-medium text-[#1F2A24]">我的收藏</span>
-        <span class="text-sm text-[#5B6B62]">{{ favoriteCount }} 味</span>
-        <van-icon name="arrow" color="#C0C8C3" />
+        <span class="flex-1 text-sm font-medium text-ink">我的收藏</span>
+        <span class="text-sm text-ink-secondary">{{ favoriteCount }} 味</span>
+        <van-icon name="arrow" color="#A8A39A" />
       </button>
       <button
         type="button"
-        class="flex w-full items-center gap-3 border-t border-[#F0F3F1] px-4 py-4 text-left transition active:bg-[#F4F8F5]"
+        class="flex w-full items-center gap-3 border-t border-ink/10 px-4 py-4 text-left transition active:bg-paper"
         @click="openPrivacy"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FDF3E4]">
-          <van-icon name="shield-o" size="20" color="#F2A33C" />
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-ochre/10">
+          <van-icon name="shield-o" size="20" color="#C08A3E" />
         </span>
-        <span class="flex-1 text-sm font-medium text-[#1F2A24]">隐私与授权</span>
-        <van-icon name="arrow" color="#C0C8C3" />
+        <span class="flex-1 text-sm font-medium text-ink">隐私与授权</span>
+        <van-icon name="arrow" color="#A8A39A" />
       </button>
       <button
         v-if="store.isLoggedIn"
         type="button"
-        class="flex w-full items-center gap-3 border-t border-[#F0F3F1] px-4 py-4 text-left transition active:bg-[#F4F8F5]"
+        class="flex w-full items-center gap-3 border-t border-ink/10 px-4 py-4 text-left transition active:bg-paper"
         @click="onLogout"
       >
-        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FDE9E9]">
-          <van-icon name="sign" size="20" color="#E5484D" />
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-cinnabar/10">
+          <van-icon name="sign" size="20" color="#C0392B" />
         </span>
-        <span class="flex-1 text-sm font-medium text-[#E5484D]">退出登录</span>
+        <span class="flex-1 text-sm font-medium text-cinnabar">退出登录</span>
       </button>
     </div>
 
-    <p class="mt-6 text-center text-xs text-[#5B6B62]/70">灵草 · 中草药识别智能体</p>
+    <p class="mt-6 text-center text-xs text-ink-secondary/70">灵草 · 中草药识别智能体</p>
 
     <!-- 隐私授权管理面板 -->
     <van-popup v-model:show="showPrivacySheet" position="bottom" round>
       <div class="px-6 pb-8 pt-6">
-        <h2 class="text-center text-lg font-semibold text-[#1F2A24]">隐私与授权</h2>
-        <p class="mt-2 text-center text-xs text-[#5B6B62]">
+        <h2 class="text-center text-lg font-semibold text-ink">隐私与授权</h2>
+        <p class="mt-2 text-center text-xs text-ink-secondary">
           管理本设备的功能权限，关闭后对应功能将受限
         </p>
 
@@ -159,22 +159,22 @@ async function onLogout() {
           <div
             v-for="item in consentMeta"
             :key="item.key"
-            class="flex items-center justify-between rounded-2xl bg-[#F4F8F5] px-4 py-3.5"
+            class="flex items-center justify-between rounded-xl bg-paper px-4 py-3.5"
           >
             <div>
-              <p class="text-sm font-semibold text-[#1F2A24]">{{ item.title }}</p>
-              <p class="mt-0.5 text-xs text-[#5B6B62]">{{ item.desc }}</p>
+              <p class="text-sm font-semibold text-ink">{{ item.title }}</p>
+              <p class="mt-0.5 text-xs text-ink-secondary">{{ item.desc }}</p>
             </div>
             <van-switch
               :model-value="consents[item.key] !== false"
               size="24"
-              active-color="#2E7D52"
+              active-color="#2F5D46"
               @update:model-value="toggleConsent(item.key, $event)"
             />
           </div>
         </div>
 
-        <p class="mt-4 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+        <p class="mt-4 text-center text-xs leading-relaxed text-ink-secondary/70">
           图片数据仅用于本次识别，前端完成后即清除。
         </p>
       </div>

@@ -159,12 +159,12 @@ onBeforeUnmount(stopStream)
       <div class="flex items-center justify-between px-4 py-3">
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F8F5] active:scale-90"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-paper active:scale-90"
           @click="close"
         >
-          <van-icon name="cross" size="18" color="#1F2A24" />
+          <van-icon name="cross" size="18" color="#2A2A28" />
         </button>
-        <span class="text-[15px] font-semibold text-[#1F2A24]">拍摄识别</span>
+        <span class="section-title text-[15px] text-ink">拍摄识别</span>
         <span class="w-9"></span>
       </div>
 
@@ -194,15 +194,15 @@ onBeforeUnmount(stopStream)
         <template v-if="!shot">
           <button
             type="button"
-            class="flex h-11 w-11 items-center justify-center rounded-full bg-[#F4F8F5] transition active:scale-90"
+            class="flex h-11 w-11 items-center justify-center rounded-full bg-paper transition active:scale-90"
             :disabled="starting"
             @click="switchCamera"
           >
-            <van-icon name="replay" size="20" color="#2E7D52" />
+            <van-icon name="replay" size="20" color="#2F5D46" />
           </button>
           <button
             type="button"
-            class="h-16 w-16 rounded-full border-4 border-white bg-[#2E7D52] shadow-lg transition active:scale-95"
+            class="h-16 w-16 rounded-full border-4 border-paper-card bg-primary shadow-lg transition active:scale-95"
             :disabled="starting"
             @click="capture"
           ></button>
@@ -212,14 +212,14 @@ onBeforeUnmount(stopStream)
         <template v-else>
           <button
             type="button"
-            class="h-12 rounded-2xl border border-[#5B6B62]/30 bg-white px-8 text-sm font-medium text-[#5B6B62] transition active:scale-95"
+            class="h-12 rounded-xl border border-ink/20 bg-paper-card px-8 text-sm font-medium text-ink-secondary transition active:scale-95"
             @click="retake"
           >
             重拍
           </button>
           <button
             type="button"
-            class="brand-gradient h-12 rounded-2xl px-8 text-sm font-semibold text-white shadow-lg transition active:scale-95"
+            class="btn-primary h-12 px-8 text-sm"
             @click="confirm"
           >
             确认识别

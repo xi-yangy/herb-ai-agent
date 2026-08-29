@@ -126,59 +126,54 @@ async function triggerAlbum() {
   <div class="page-container px-4 pb-28 pt-10">
     <!-- 品牌区 -->
     <header class="mb-10 text-center">
+      <!-- 朱砂印章 -->
       <div
-        class="brand-gradient mx-auto flex h-16 w-16 items-center justify-center rounded-3xl shadow-lg"
+        class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg"
+        style="background-color: #c0392b; box-shadow: 0 4px 12px rgba(192, 57, 43, 0.28)"
       >
-        <van-icon name="flower-o" size="32" color="#fff" />
+        <span class="section-title text-2xl leading-none text-white">灵</span>
       </div>
-      <h1 class="mt-4 text-[22px] font-semibold text-[#1F2A24]">灵草 · 中草药识别</h1>
-      <p class="mt-2 text-sm text-[#5B6B62]">拍照识别草药，详解功效、禁忌与安全提示</p>
+      <h1 class="section-title mt-5 text-[22px] text-ink">灵草 · 中草药识别</h1>
+      <p class="mt-2 text-sm text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
       <!-- 连通状态 -->
       <div class="mt-3 inline-flex items-center gap-1.5 text-xs">
         <span
           class="inline-block h-2 w-2 rounded-full"
-          :class="store.backendOnline ? 'bg-[#2E7D52]' : 'bg-[#E5484D]'"
+          :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
         ></span>
-        <span class="text-[#5B6B62]">
+        <span class="text-ink-secondary">
           {{ checking ? '检测中…' : store.backendOnline ? '服务正常' : '服务未连接' }}
         </span>
       </div>
     </header>
 
-    <!-- 大尺寸识别入口 -->
-    <section class="glass-card flex flex-col items-center px-6 py-10">
-      <button
-        type="button"
-        class="brand-gradient flex h-24 w-24 items-center justify-center rounded-full shadow-xl transition active:scale-95"
-        :disabled="recognizing"
-        @click="triggerCapture"
-      >
-        <van-icon name="photograph" size="40" color="#fff" />
-      </button>
-      <p class="mt-5 text-base font-medium text-[#1F2A24]">点击拍摄，识别中草药</p>
+    <!-- 识别主卡 -->
+    <section class="card-paper flex flex-col items-center px-6 py-10">
+      <p class="section-title text-lg text-ink">识别一株草药</p>
+      <p class="mt-1 text-sm text-ink-secondary">拍摄或上传清晰照片，马上得到结果</p>
 
-      <div class="mt-6 grid w-full grid-cols-2 gap-4">
+      <div class="mt-7 grid w-full grid-cols-2 gap-4">
         <button
           type="button"
-          class="flex items-center justify-center gap-2 rounded-2xl border border-[#2E7D52]/20 bg-white/80 py-3.5 text-sm font-medium text-[#2E7D52] transition active:scale-95"
+          class="btn-primary h-12 w-full"
           :disabled="recognizing"
           @click="triggerCapture"
         >
-          <van-icon name="photograph" size="20" />
+          <van-icon name="photograph" size="18" />
           拍照识别
         </button>
         <button
           type="button"
-          class="flex items-center justify-center gap-2 rounded-2xl border border-[#2E7D52]/20 bg-white/80 py-3.5 text-sm font-medium text-[#2E7D52] transition active:scale-95"
+          class="btn-outline h-12 w-full"
           :disabled="recognizing"
           @click="triggerAlbum"
         >
-          <van-icon name="photo" size="20" />
+          <van-icon name="photo" size="18" />
           相册上传
         </button>
       </div>
 
-      <p v-if="recognizing" class="mt-4 text-xs text-[#5B6B62]">正在分析图片特征…</p>
+      <p v-if="recognizing" class="mt-4 text-xs text-ink-secondary">正在辨识这株草药…</p>
     </section>
 
     <!-- 隐藏的相册 file 输入 -->
@@ -192,7 +187,7 @@ async function triggerAlbum() {
     />
 
     <!-- 安全提示 -->
-    <p class="mt-8 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+    <p class="mt-8 text-center text-xs leading-relaxed text-ink-secondary/70">
       识别结果仅供参考，不构成诊断或处方建议。<br />
       有毒草药请务必遵医嘱使用。
     </p>

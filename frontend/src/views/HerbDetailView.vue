@@ -15,9 +15,9 @@ const isFavorite = ref(false)
 
 const safetyMeta = computed(() => {
   const map = {
-    普通: { color: '#2E7D52', bg: '#E6F4EC', label: '普通药材' },
-    慎用: { color: '#F2A33C', bg: '#FDF3E4', label: '慎用' },
-    毒性: { color: '#E5484D', bg: '#FDE9E9', label: '毒性药材 · 高风险' },
+    普通: { color: '#4A7C59', bg: '#EAF1EC', label: '普通药材' },
+    慎用: { color: '#C08A3E', bg: '#F7EFDF', label: '慎用' },
+    毒性: { color: '#C0392B', bg: '#FAE9E7', label: '毒性药材 · 高风险' },
   }
   return map[herb.value?.safety_level || ''] || map.普通
 })
@@ -69,20 +69,20 @@ async function toggleFavorite() {
     <div class="mb-4 flex items-center gap-3">
       <button
         type="button"
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm active:scale-90"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
         @click="router.back()"
       >
-        <van-icon name="arrow-left" size="18" color="#1F2A24" />
+        <van-icon name="arrow-left" size="18" color="#2A2A28" />
       </button>
-      <h1 class="text-[22px] font-semibold text-[#1F2A24]">药材详情</h1>
+      <h1 class="section-title text-[22px] text-ink">药材详情</h1>
     </div>
 
-    <div v-if="loading" class="py-20 text-center text-sm text-[#5B6B62]">加载中…</div>
+    <div v-if="loading" class="py-20 text-center text-sm text-ink-secondary">加载中…</div>
 
     <template v-else-if="herb">
       <!-- 头部 -->
       <section
-        class="flex items-center justify-between rounded-3xl p-5"
+        class="flex items-center justify-between rounded-xl p-5"
         :style="{ backgroundColor: safetyMeta.bg }"
       >
         <div>
@@ -96,8 +96,8 @@ async function toggleFavorite() {
         </div>
         <button
           type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 active:scale-90"
-          :class="isFavorite ? 'text-[#E5484D]' : 'text-[#5B6B62]'"
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-paper-card/70 active:scale-90"
+          :class="isFavorite ? 'text-cinnabar' : 'text-ink-secondary'"
           @click="toggleFavorite"
         >
           <van-icon :name="isFavorite ? 'like' : 'like-o'" size="22" />
@@ -105,7 +105,7 @@ async function toggleFavorite() {
       </section>
 
       <!-- 来源标注 -->
-      <p class="mt-3 text-right text-xs text-[#5B6B62]/70">
+      <p class="mt-3 text-right text-xs text-ink-secondary/70">
         数据来源：{{ herb.source || '未标注' }}
       </p>
 
@@ -115,7 +115,7 @@ async function toggleFavorite() {
       <!-- 多模态追问（F12/F13：常驻文本/语音问答 + 分组快捷词包，Qwen 真实调用 + 知识库降级） -->
       <QaPanel :herb="herb" :result-name="herb.name" class="mt-5" />
 
-      <p class="mt-6 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+      <p class="mt-6 text-center text-xs leading-relaxed text-ink-secondary/70">
         本内容仅供参考，不构成医疗建议。用药请遵医嘱。
       </p>
     </template>

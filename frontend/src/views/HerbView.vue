@@ -9,7 +9,7 @@ const herbs = ref([])
 const loading = ref(true)
 
 /** 安全等级配色（普通/慎用/毒性，全站统一语义色）。 */
-const safetyColor = { 普通: '#2E7D52', 慎用: '#F2A33C', 毒性: '#E5484D' }
+const safetyColor = { 普通: '#4A7C59', 慎用: '#C08A3E', 毒性: '#C0392B' }
 
 /**
  * 分类聚合映射：把数据库里 22 种细碎 category 归并为有序大类。
@@ -118,18 +118,18 @@ function goDetail(id) {
   <div class="page-container px-4 pb-28 pt-6">
     <!-- 标题区 -->
     <header class="mb-4">
-      <h1 class="text-[22px] font-semibold text-[#1F2A24]">药材百科</h1>
-      <p class="mt-1 text-sm text-[#5B6B62]">收录常见中草药，按部位分类 · 标注安全等级</p>
+      <h1 class="section-title text-[22px] text-ink">药材百科</h1>
+      <p class="mt-1 text-sm text-ink-secondary">收录常见中草药，按部位分类 · 标注安全等级</p>
     </header>
 
     <!-- 搜索区 -->
     <div
-      class="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-sm transition focus-within:shadow-md focus-within:ring-2 focus-within:ring-[#2E7D52]/20"
+      class="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper-card px-3.5 py-2.5 transition focus-within:border-primary focus-within:shadow-paper"
     >
-      <van-icon name="search" size="16" color="#5B6B62" />
+      <van-icon name="search" size="16" color="#6B6B63" />
       <input
         type="text"
-        class="min-w-0 flex-1 bg-transparent text-sm text-[#1F2A24] outline-none placeholder:text-[#A8B4AC]"
+        class="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
         placeholder="搜索药材名 / 性味 / 功效"
         :value="keyword"
         @input="onInput($event.target.value)"
@@ -137,10 +137,10 @@ function goDetail(id) {
       <button
         v-if="keyword"
         type="button"
-        class="flex h-5 w-5 items-center justify-center rounded-full bg-[#E9EFEB] active:scale-90"
+        class="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 active:scale-90"
         @click="clearSearch"
       >
-        <van-icon name="cross" size="11" color="#5B6B62" />
+        <van-icon name="cross" size="11" color="#6B6B63" />
       </button>
     </div>
 
@@ -149,13 +149,13 @@ function goDetail(id) {
       <button
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
-        :class="activeGroup === ALL_KEY ? 'brand-gradient text-white shadow' : 'bg-white text-[#5B6B62] shadow-sm'"
+        :class="activeGroup === ALL_KEY ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
         @click="activeGroup = ALL_KEY"
       >
         全部
         <span
           class="rounded-full px-1.5 text-[11px]"
-          :class="activeGroup === ALL_KEY ? 'bg-white/25' : 'bg-[#E9EFEB] text-[#5B6B62]'"
+          :class="activeGroup === ALL_KEY ? 'bg-white/25' : 'bg-primary/10 text-ink-secondary'"
         >{{ herbs.length }}</span>
       </button>
 
@@ -164,13 +164,13 @@ function goDetail(id) {
         :key="g.key"
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
-        :class="activeGroup === g.key ? 'brand-gradient text-white shadow' : 'bg-white text-[#5B6B62] shadow-sm'"
+        :class="activeGroup === g.key ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
         @click="activeGroup = g.key"
       >
         {{ g.label }}
         <span
           class="rounded-full px-1.5 text-[11px]"
-          :class="activeGroup === g.key ? 'bg-white/25' : 'bg-[#E9EFEB] text-[#5B6B62]'"
+          :class="activeGroup === g.key ? 'bg-white/25' : 'bg-primary/10 text-ink-secondary'"
         >{{ groupStats[g.key] || 0 }}</span>
       </button>
 
@@ -178,19 +178,19 @@ function goDetail(id) {
         v-if="groupStats['other'] > 0"
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
-        :class="activeGroup === OTHER_GROUP.key ? 'brand-gradient text-white shadow' : 'bg-white text-[#5B6B62] shadow-sm'"
+        :class="activeGroup === OTHER_GROUP.key ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
         @click="activeGroup = OTHER_GROUP.key"
       >
         其他
         <span
           class="rounded-full px-1.5 text-[11px]"
-          :class="activeGroup === OTHER_GROUP.key ? 'bg-white/25' : 'bg-[#E9EFEB] text-[#5B6B62]'"
+          :class="activeGroup === OTHER_GROUP.key ? 'bg-white/25' : 'bg-primary/10 text-ink-secondary'"
         >{{ groupStats['other'] || 0 }}</span>
       </button>
     </nav>
 
     <!-- 加载态 -->
-    <div v-if="loading" class="py-20 text-center text-sm text-[#5B6B62]">加载中…</div>
+    <div v-if="loading" class="py-20 text-center text-sm text-ink-secondary">加载中…</div>
 
     <!-- 数据空态 -->
     <van-empty v-else-if="herbs.length === 0" description="暂无药材数据" />
@@ -203,10 +203,10 @@ function goDetail(id) {
     <template v-else>
       <!-- 分组标题 -->
       <div v-if="inGroupView" class="mt-6 mb-3 flex items-end justify-between">
-        <h2 class="text-lg font-semibold text-[#1F2A24]">{{ activeGroupLabel }}</h2>
-        <span class="text-xs text-[#5B6B62]">{{ displayedHerbs.length }} 味药材</span>
+        <h2 class="section-title text-lg text-ink">{{ activeGroupLabel }}</h2>
+        <span class="text-xs text-ink-secondary">{{ displayedHerbs.length }} 味药材</span>
       </div>
-      <p v-else-if="keyword" class="mt-6 mb-3 text-xs text-[#5B6B62]">
+      <p v-else-if="keyword" class="mt-6 mb-3 text-xs text-ink-secondary">
         找到 {{ displayedHerbs.length }} 味相关药材
       </p>
 
@@ -218,15 +218,15 @@ function goDetail(id) {
           v-for="(h, idx) in displayedHerbs"
           :key="h.id"
           type="button"
-          class="slide-in group flex flex-col rounded-2xl bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+          class="slide-in group flex flex-col rounded-xl bg-paper-card p-4 text-left shadow-paper transition hover:-translate-y-0.5 hover:shadow-card active:scale-95"
           :style="{ animationDelay: idx * 0.04 + 's' }"
           @click="goDetail(h.id)"
         >
           <div class="flex items-start justify-between gap-2">
-            <p class="text-base font-semibold leading-snug text-[#1F2A24]">
+            <p class="text-base font-semibold leading-snug text-ink">
               <template v-if="keyword && typeof highlight(h.name) !== 'string'">
                 <span v-for="(part, i) in highlight(h.name)" :key="i">
-                  <mark v-if="i === 1" class="rounded bg-[#2E7D52]/15 text-[#1B5E3A]">{{ part }}</mark>
+                  <mark v-if="i === 1" class="rounded bg-primary/15 text-primary-dark">{{ part }}</mark>
                   <template v-else>{{ part }}</template>
                 </span>
               </template>
@@ -235,17 +235,17 @@ function goDetail(id) {
             <span
               class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
               :style="{
-                color: safetyColor[h.safety_level] || '#2E7D52',
-                backgroundColor: (safetyColor[h.safety_level] || '#2E7D52') + '1A',
+                color: safetyColor[h.safety_level] || '#4A7C59',
+                backgroundColor: (safetyColor[h.safety_level] || '#4A7C59') + '1A',
               }"
             >
               {{ h.safety_level }}
             </span>
           </div>
-          <p class="mt-2 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-[#5B6B62]">
+          <p class="mt-2 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-ink-secondary">
             {{ h.nature_flavor || '—' }}
           </p>
-          <div class="mt-3 flex items-center gap-1 text-[11px] text-[#A8B4AC] transition group-hover:text-[#2E7D52]">
+          <div class="mt-3 flex items-center gap-1 text-[11px] text-ink-faint transition group-hover:text-primary">
             <van-icon name="arrow" size="12" />
             查看详情
           </div>

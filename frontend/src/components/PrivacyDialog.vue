@@ -50,8 +50,8 @@ function decline() {
     class="privacy-popup"
   >
     <div class="px-6 pb-8 pt-6">
-      <h2 class="text-center text-lg font-semibold text-[#1F2A24]">隐私与权限说明</h2>
-      <p class="mt-2 text-center text-xs leading-relaxed text-[#5B6B62]">
+      <h2 class="section-title text-center text-lg text-ink">隐私与权限说明</h2>
+      <p class="mt-2 text-center text-xs leading-relaxed text-ink-secondary">
         为了正常使用拍照识别功能，我们需要你了解以下权限用途与数据规则
       </p>
 
@@ -60,36 +60,36 @@ function decline() {
         <div
           v-for="item in items"
           :key="item.title"
-          class="flex items-start gap-3 rounded-2xl bg-[#F4F8F5] p-3.5"
+          class="flex items-start gap-3 rounded-xl bg-paper p-3.5"
         >
-          <span class="brand-gradient flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary">
             <van-icon :name="item.icon" size="18" color="#fff" />
           </span>
           <div>
-            <p class="text-sm font-semibold text-[#1F2A24]">{{ item.title }}</p>
-            <p class="mt-0.5 text-xs leading-relaxed text-[#5B6B62]">{{ item.desc }}</p>
+            <p class="text-sm font-semibold text-ink">{{ item.title }}</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-ink-secondary">{{ item.desc }}</p>
           </div>
         </div>
       </div>
 
       <!-- 数据规则 -->
-      <div class="mt-4 rounded-2xl border border-[#2E7D52]/20 bg-[#E6F4EC] p-3.5">
-        <p class="text-xs font-semibold text-[#2E7D52]">图片数据使用规则</p>
-        <p class="mt-1 text-xs leading-relaxed text-[#5B6B62]">
+      <div class="mt-4 rounded-xl border border-primary/20 bg-primary/10 p-3.5">
+        <p class="text-xs font-semibold text-primary">图片数据使用规则</p>
+        <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
           你上传的图片仅用于本次识别，前端处理完成后即清除，服务端不持久化原始图片；不用于模型训练。
         </p>
       </div>
 
       <button
         type="button"
-        class="brand-gradient mt-6 w-full rounded-2xl py-3.5 text-sm font-semibold text-white shadow-lg transition active:scale-95"
+        class="btn-primary mt-6 w-full"
         @click="agree"
       >
         同意并继续
       </button>
       <button
         type="button"
-        class="mt-3 w-full rounded-2xl border border-[#5B6B62]/20 bg-white py-3 text-sm font-medium text-[#5B6B62] transition active:scale-95"
+        class="btn-outline mt-3 w-full"
         @click="decline"
       >
         暂不授权，稍后需要时再开启

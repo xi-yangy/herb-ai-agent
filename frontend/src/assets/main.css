@@ -2,25 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 全局基础样式（Vant 已做基础重置，这里补充项目级约定） */
+/* ============ 国风草本设计令牌（单一来源） ============ */
 :root {
-  --herb-primary: #2e7d52;
-  --herb-primary-light: #3fa776;
-  --herb-primary-dark: #1b5e3a;
-  --herb-bg: #f4f8f5;
-  --herb-danger: #e5484d;
-  --herb-warning: #f2a33c;
-  --herb-text: #1f2a24;
-  --herb-text-secondary: #5b6b62;
+  /* 色板 */
+  --herb-primary: #2f5d46;          /* 墨绿主色（品牌/主按钮） */
+  --herb-primary-light: #3a6b50;    /* 墨绿浅（辅助强调） */
+  --herb-primary-dark: #1f3d2e;     /* 墨绿深（按压/标题） */
+  --herb-paper: #f7f3ea;            /* 宣纸米白（页面底） */
+  --herb-paper-card: #fffdf7;       /* 宣纸白卡（卡片） */
+  --herb-ink: #2a2a28;              /* 墨色（主文本） */
+  --herb-ink-secondary: #6b6b63;    /* 次级文本 */
+  --herb-ink-faint: #a8a39a;        /* 弱化文本 */
+  --herb-jade: #4a7c59;             /* 普通药材/成功 */
+  --herb-ochre: #c08a3e;            /* 慎用/警告 */
+  --herb-cinnabar: #c0392b;         /* 毒性/危险 */
+  --herb-accent: #a9663f;           /* 赭石点缀 */
+
+  /* 圆角 */
+  --herb-radius-sm: 10px;
+  --herb-radius-md: 12px;
+  --herb-radius-lg: 16px;
+
+  /* 字体 */
+  --herb-font-serif: 'Noto Serif SC', 'SimSun', 'Songti SC', serif;
+  --herb-font-sans: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Vant 主题化（tabbar / 主色 / 弹层） */
+  --van-primary-color: #2f5d46;
+  --van-tabbar-background: #fffdf7;
+  --van-tabbar-item-text-color: #6b6b63;
+  --van-tabbar-item-active-color: #2f5d46;
+  --van-popup-round-radius: 16px;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--herb-bg);
-  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
-  color: var(--herb-text);
+  background-color: var(--herb-paper);
+  /* 宣纸质感：极轻的双色晕染模拟纸面肌理，不引入图片资源 */
+  background-image:
+    radial-gradient(circle at 12% 15%, rgba(169, 102, 63, 0.05) 0%, transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(47, 93, 70, 0.06) 0%, transparent 48%);
+  background-attachment: fixed;
+  font-family: var(--herb-font-sans);
+  color: var(--herb-ink);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -34,24 +60,118 @@ body {
   margin: 0 auto;
 }
 
-/* 玻璃态卡片 */
-.glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 24px rgba(46, 125, 82, 0.08);
-  border-radius: 20px;
+/* ============ 通用类（@layer components，可被 Tailwind 工具类覆盖） ============ */
+
+@layer components {
+/* 宋体标题 */
+.section-title {
+  font-family: var(--herb-font-serif);
+  font-weight: 600;
 }
 
-/* 高危警示呼吸描边 */
+/* 宣纸卡片（替代原玻璃态 glass-card） */
+.card-paper {
+  background-color: var(--herb-paper-card);
+  border: 1px solid rgba(42, 42, 40, 0.06);
+  border-radius: var(--herb-radius-lg);
+  box-shadow: 0 1px 2px rgba(42, 42, 40, 0.06);
+}
+
+/* 按钮系统：主 / 次 / 文字（固定高度，移动端触控达标） */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: var(--herb-radius-md);
+  background-color: var(--herb-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: var(--herb-primary-light);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+  background-color: var(--herb-primary-dark);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--herb-radius-md);
+  border: 1px solid rgba(47, 93, 70, 0.3);
+  background-color: var(--herb-paper-card);
+  color: var(--herb-primary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-outline:hover {
+  background-color: #f3f0e6;
+}
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--herb-radius-sm);
+  background: transparent;
+  color: var(--herb-primary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-ghost:hover {
+  background-color: rgba(47, 93, 70, 0.06);
+}
+.btn-ghost:active {
+  transform: scale(0.97);
+}
+
+/* 标签胶囊 */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 品牌渐变：收敛为含蓄的深墨绿渐变，仅用于品牌元素与主 CTA */
+.brand-gradient {
+  background: linear-gradient(135deg, #1f3d2e 0%, #2f5d46 55%, #3a6b50 100%);
+}
+}
+
+/* 高危警示呼吸描边（合规场景保留） */
 @keyframes danger-breathe {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.4);
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(229, 72, 77, 0.12);
+    box-shadow: 0 0 0 6px rgba(192, 57, 43, 0.12);
   }
 }
 .danger-breathe {
@@ -71,9 +191,4 @@ body {
 }
 .slide-in {
   animation: slide-in 0.35s ease-out both;
-}
-
-/* 品牌渐变 */
-.brand-gradient {
-  background: linear-gradient(135deg, #2e7d52 0%, #3fa776 100%);
 }

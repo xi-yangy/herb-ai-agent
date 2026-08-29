@@ -68,7 +68,7 @@ function confirm() {
     <!-- 唯一确认按钮（无关闭/跳过入口） -->
     <button
       type="button"
-      class="danger-confirm mt-8 w-full max-w-md rounded-2xl py-4 text-base font-bold text-[#7A0C12] transition active:scale-95"
+      class="danger-confirm mt-8 w-full max-w-md rounded-xl py-4 text-base font-bold text-[#7A0C12] transition active:scale-95"
       @click="confirm"
     >
       我已了解风险

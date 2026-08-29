@@ -64,42 +64,43 @@ function switchMode(next) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F5F7F4] px-6 pt-14">
+  <div class="min-h-screen bg-paper px-6 pt-14">
     <!-- 返回 -->
     <button
       type="button"
-      class="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm active:scale-90"
+      class="flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
       @click="router.back()"
     >
-      <van-icon name="arrow-left" size="18" color="#1F2A24" />
+      <van-icon name="arrow-left" size="18" color="#2A2A28" />
     </button>
 
     <!-- 品牌区 -->
     <div class="mt-8 text-center">
       <div
-        class="brand-gradient mx-auto flex h-16 w-16 items-center justify-center rounded-3xl shadow-lg"
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl"
+        style="background-color: #c0392b; box-shadow: 0 4px 12px rgba(192, 57, 43, 0.28)"
       >
-        <van-icon name="flower-o" size="32" color="#fff" />
+        <span class="section-title text-[26px] leading-none text-white">灵</span>
       </div>
-      <h1 class="mt-4 text-[22px] font-semibold text-[#1F2A24]">灵草 · 中草药识别</h1>
-      <p class="mt-2 text-sm text-[#5B6B62]">登录后同步你的识别历史与收藏</p>
+      <h1 class="section-title mt-4 text-[22px] text-ink">灵草 · 中草药识别</h1>
+      <p class="mt-2 text-sm text-ink-secondary">登录后同步你的识别历史与收藏</p>
     </div>
 
     <!-- 登录/注册卡片 -->
-    <section class="glass-card mx-auto mt-8 max-w-md p-6">
-      <div class="mb-6 flex rounded-xl bg-[#EFF4F0] p-1">
+    <section class="card-paper mx-auto mt-8 max-w-md p-6">
+      <div class="mb-6 flex rounded-xl bg-paper p-1">
         <button
           type="button"
-          class="flex-1 rounded-lg py-2 text-sm font-medium transition"
-          :class="mode === 'login' ? 'brand-gradient text-white shadow' : 'text-[#5B6B62]'"
+          class="h-10 flex-1 rounded-lg text-sm font-medium transition"
+          :class="mode === 'login' ? 'bg-primary text-white' : 'text-ink-secondary'"
           @click="switchMode('login')"
         >
           登录
         </button>
         <button
           type="button"
-          class="flex-1 rounded-lg py-2 text-sm font-medium transition"
-          :class="mode === 'register' ? 'brand-gradient text-white shadow' : 'text-[#5B6B62]'"
+          class="h-10 flex-1 rounded-lg text-sm font-medium transition"
+          :class="mode === 'register' ? 'bg-primary text-white' : 'text-ink-secondary'"
           @click="switchMode('register')"
         >
           注册
@@ -126,14 +127,14 @@ function switchMode(next) {
 
       <button
         type="button"
-        class="brand-gradient mt-6 w-full rounded-2xl py-3.5 text-sm font-semibold text-white shadow-lg transition active:scale-95"
+        class="btn-primary mt-6 w-full"
         :disabled="submitting"
         @click="handleSubmit"
       >
         {{ submitting ? '处理中…' : mode === 'login' ? '登 录' : '注 册' }}
       </button>
 
-      <p class="mt-4 text-center text-xs leading-relaxed text-[#5B6B62]/70">
+      <p class="mt-4 text-center text-xs leading-relaxed text-ink-secondary/70">
         登录后，匿名识别记录与收藏将同步到你的账号。
       </p>
     </section>

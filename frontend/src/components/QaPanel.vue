@@ -332,23 +332,23 @@ defineExpose({ askPreset, panelRef })
 </script>
 
 <template>
-  <section ref="panelRef" class="mt-5 overflow-hidden rounded-3xl bg-white shadow-sm">
+  <section ref="panelRef" class="card-paper mt-5 overflow-hidden">
     <!-- 常驻面板头部 -->
     <div class="flex items-center gap-3 px-5 pt-4">
-      <span class="brand-gradient flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary">
         <van-icon name="chat-o" size="20" color="#fff" />
       </span>
       <div>
-        <p class="text-sm font-semibold text-[#1F2A24]">对这味药还有什么想了解？</p>
-        <p class="mt-0.5 text-xs text-[#5B6B62]">点击词包或直接输入，AI 结合本药材实时解答</p>
+        <p class="section-title text-sm text-ink">对这味药还有什么想了解？</p>
+        <p class="mt-0.5 text-xs text-ink-secondary">对这味药有疑问？直接提问，或点击下方快捷词条</p>
       </div>
     </div>
 
-    <div class="border-t border-[#F0F3F1]">
+    <div class="border-t border-ink/10">
       <!-- 消息列表 -->
-      <div ref="listRef" class="max-h-[360px] space-y-3 overflow-y-auto bg-[#F8FAF8] px-4 py-4">
+      <div ref="listRef" class="max-h-[360px] space-y-3 overflow-y-auto bg-paper/60 px-4 py-4">
         <!-- 空态引导文案 -->
-        <p v-if="messages.length === 0" class="text-center text-xs text-[#5B6B62]">
+        <p v-if="messages.length === 0" class="text-center text-xs text-ink-secondary">
           你可以问我关于本药材的功效、用法、禁忌或安全性等问题
         </p>
 
@@ -361,35 +361,35 @@ defineExpose({ askPreset, panelRef })
             :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
           >
             <div
-              class="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed"
+              class="max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed"
               :class="
                 msg.role === 'user'
-                  ? 'rounded-br-sm bg-[#2E7D52] text-white'
-                  : 'rounded-bl-sm border border-[#E4EAE6] bg-white text-[#1F2A24]'
+                  ? 'rounded-br-sm bg-primary text-white'
+                  : 'rounded-bl-sm border border-ink/10 bg-white text-ink'
               "
             >
-              <!-- 视觉图文模式标注（Qwen 结合上传图片作答） -->
+              <!-- 视觉图文模式标注（结合上传图片作答） -->
               <p
                 v-if="msg.role === 'ai' && msg.vision"
-                class="mb-1 flex items-center gap-1 text-[11px] font-semibold text-[#2E7D52]"
+                class="mb-1 flex items-center gap-1 text-[11px] font-semibold text-primary"
               >
                 <van-icon name="photograph" size="13" />
-                已结合图片分析
+                已结合你所拍的图片回答
               </p>
-              <!-- 视觉问答证据：识别图片缩略图预览（眼见为实，证明图片已上传给 AI 分析） -->
+              <!-- 视觉问答证据：识别图片缩略图预览 -->
               <img
                 v-if="msg.role === 'ai' && msg.vision && props.image"
                 :src="props.image"
                 alt="识别图片"
-                class="mb-1.5 mt-0.5 h-14 w-14 rounded-lg border border-[#2E7D52]/30 object-cover"
+                class="mb-1.5 mt-0.5 h-14 w-14 rounded-lg border border-primary/30 object-cover"
               />
               <!-- 降级态标注 -->
               <p
                 v-if="msg.role === 'ai' && msg.fallback"
-                class="mb-1 flex items-center gap-1 text-[11px] font-medium text-[#B45309]"
+                class="mb-1 flex items-center gap-1 text-[11px] font-medium text-ochre"
               >
                 <van-icon name="info-o" size="12" />
-                已切换至本地知识库展示
+                已根据药典资料为你整理
               </p>
               <p class="whitespace-pre-line">{{ msg.text }}</p>
 
@@ -400,8 +400,8 @@ defineExpose({ askPreset, panelRef })
                 class="mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition active:scale-95"
                 :class="
                   speakingIdx === idx
-                    ? 'bg-[#E5484D]/10 text-[#E5484D]'
-                    : 'bg-[#E6F4EC] text-[#2E7D52] hover:bg-[#D9EEE1]'
+                    ? 'bg-cinnabar/10 text-cinnabar'
+                    : 'bg-primary/10 text-primary hover:bg-primary/15'
                 "
                 :aria-label="speakingIdx === idx ? '停止朗读' : '朗读该回答'"
                 @click="toggleSpeak(idx)"
@@ -411,7 +411,7 @@ defineExpose({ askPreset, panelRef })
               </button>
               <p
                 v-if="msg.role === 'ai' && msg.disclaimer"
-                class="mt-1.5 border-t border-[#F0F3F1] pt-1.5 text-[11px] leading-relaxed text-[#5B6B62]/80"
+                class="mt-1.5 border-t border-ink/10 pt-1.5 text-[11px] leading-relaxed text-ink-secondary/80"
               >
                 {{ msg.disclaimer }}
               </p>
@@ -420,22 +420,22 @@ defineExpose({ askPreset, panelRef })
 
           <!-- 加载态：思考中占位气泡 -->
           <div v-if="sending" class="flex justify-start">
-            <div class="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-[#E4EAE6] bg-white px-4 py-3">
-              <span class="dot-pulse flex gap-1">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#2E7D52]"></span>
-                <span class="h-1.5 w-1.5 rounded-full bg-[#2E7D52]"></span>
-                <span class="h-1.5 w-1.5 rounded-full bg-[#2E7D52]"></span>
+            <div class="flex items-center gap-2 rounded-xl rounded-bl-sm border border-ink/10 bg-white px-4 py-3">
+              <span class="flex gap-1">
+                <span class="h-1.5 w-1.5 rounded-full bg-primary/40"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-primary/60"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
               </span>
-              <span class="text-xs text-[#5B6B62]">思考中…</span>
+              <span class="text-xs text-ink-secondary">思考中…</span>
             </div>
           </div>
         </template>
       </div>
 
       <!-- 分组快捷词包（按药材动态选中 1-2 组，点击即发送） -->
-      <div class="space-y-3.5 border-t border-[#F0F3F1] bg-[#F8FAF8] px-4 py-3.5">
+      <div class="space-y-3.5 border-t border-ink/10 bg-paper/60 px-4 py-3.5">
         <div v-for="pack in selectedPacks" :key="pack.id">
-          <p class="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[#2E7D52]">
+          <p class="mb-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
             <van-icon :name="pack.icon" size="14" />
             {{ pack.title }}
           </p>
@@ -444,7 +444,7 @@ defineExpose({ askPreset, panelRef })
               v-for="q in pack.questions"
               :key="q"
               type="button"
-              class="rounded-full border border-[#2E7D52]/30 bg-white px-3.5 py-1.5 text-xs font-medium text-[#2E7D52] transition hover:border-[#2E7D52]/50 hover:bg-[#E6F4EC] active:scale-95 disabled:opacity-50"
+              class="h-8 rounded-full border border-primary/30 bg-white px-3.5 text-xs font-medium text-primary transition hover:border-primary/50 hover:bg-primary/10 active:scale-95 disabled:opacity-50"
               :disabled="sending"
               @click="send(q)"
             >
@@ -455,19 +455,19 @@ defineExpose({ askPreset, panelRef })
       </div>
 
       <!-- 底部输入栏 -->
-      <div class="flex items-end gap-2 border-t border-[#F0F3F1] bg-white px-3 py-3">
+      <div class="flex items-center gap-2 border-t border-ink/10 bg-white px-3 py-3">
         <input
           v-model="input"
           type="text"
           placeholder="输入你的问题…"
-          class="min-w-0 flex-1 rounded-2xl border border-[#E4EAE6] bg-[#F8FAF8] px-3.5 py-2.5 text-sm text-[#1F2A24] outline-none transition focus:border-[#2E7D52]"
+          class="h-11 min-w-0 flex-1 rounded-xl border border-ink/10 bg-paper px-3.5 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-primary"
           @keyup="onKeyup"
         />
         <!-- 语音按钮 -->
         <button
           type="button"
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-          :class="listening ? 'voice-pulse bg-[#E5484D] text-white' : 'bg-[#E6F4EC] text-[#2E7D52]'"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95"
+          :class="listening ? 'bg-cinnabar text-white' : 'bg-primary/10 text-primary'"
           @click="startVoice"
         >
           <van-icon name="microphone" size="18" />
@@ -475,7 +475,7 @@ defineExpose({ askPreset, panelRef })
         <!-- 发送按钮 -->
         <button
           type="button"
-          class="brand-gradient flex h-10 w-16 shrink-0 items-center justify-center rounded-2xl text-sm font-medium text-white transition active:scale-95 disabled:opacity-50"
+          class="btn-primary h-11 shrink-0 px-5 text-sm"
           :disabled="sending || !input.trim()"
           @click="send()"
         >
@@ -487,38 +487,5 @@ defineExpose({ askPreset, panelRef })
 </template>
 
 <style scoped>
-.dot-pulse span {
-  animation: dot-bounce 1.2s infinite ease-in-out;
-}
-.dot-pulse span:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.dot-pulse span:nth-child(3) {
-  animation-delay: 0.3s;
-}
-@keyframes dot-bounce {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-  30% {
-    transform: translateY(-3px);
-    opacity: 1;
-  }
-}
-
-.voice-pulse {
-  animation: voice-ring 1.2s infinite ease-in-out;
-}
-@keyframes voice-ring {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(229, 72, 77, 0);
-  }
-}
+/* 装饰性动画已移除：思考中用静态圆点，语音收听以静态红底标识，避免廉价脉冲 */
 </style>

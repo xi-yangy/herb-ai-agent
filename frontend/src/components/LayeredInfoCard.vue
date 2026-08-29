@@ -22,9 +22,9 @@ const showPro = ref(false)
 /** 安全等级映射（色条 + 图标 + 文案）。 */
 const safetyMeta = computed(() => {
   const map = {
-    普通: { color: '#2E7D52', bg: '#E6F4EC', label: '普通药材', icon: 'smile-o' },
-    慎用: { color: '#F2A33C', bg: '#FDF3E4', label: '慎用', icon: 'warning-o' },
-    毒性: { color: '#E5484D', bg: '#FDE9E9', label: '毒性药材 · 高风险', icon: 'warning-o' },
+    普通: { color: '#4A7C59', bg: '#EAF1EC', label: '普通药材', icon: 'smile-o' },
+    慎用: { color: '#C08A3E', bg: '#F7EFDF', label: '慎用', icon: 'warning-o' },
+    毒性: { color: '#C0392B', bg: '#FAE9E7', label: '毒性药材 · 高风险', icon: 'warning-o' },
   }
   return map[props.herb.safety_level || ''] || map.普通
 })
@@ -116,7 +116,7 @@ function togglePro() {
   <div class="space-y-3">
     <!-- 白话科普卡 -->
     <section
-      class="overflow-hidden rounded-3xl p-5"
+      class="overflow-hidden rounded-xl p-5"
       :style="{ backgroundColor: safetyMeta.bg }"
     >
       <!-- 安全等级色条 -->
@@ -133,13 +133,13 @@ function togglePro() {
       <!-- 毒性强制警示条（不可折叠隐藏） -->
       <div
         v-if="herb.safety_level === '毒性'"
-        class="danger-breathe mt-3 rounded-2xl border border-[#E5484D]/40 bg-white/80 p-3.5"
+        class="danger-breathe mt-3 rounded-xl border border-cinnabar/40 bg-paper-card/80 p-3.5"
       >
         <div class="flex items-center gap-2">
-          <van-icon name="warning-o" size="18" color="#E5484D" />
-          <p class="text-sm font-bold text-[#E5484D]">高风险警示</p>
+          <van-icon name="warning-o" size="18" color="#C0392B" />
+          <p class="text-sm font-bold text-cinnabar">高风险警示</p>
         </div>
-        <p class="mt-1.5 text-xs leading-relaxed text-[#1F2A24]">
+        <p class="mt-1.5 text-xs leading-relaxed text-ink">
           该药材含毒性成分，使用不当可能危及健康。请务必在专业医师指导下使用，严格控制剂量与煎煮方法，切勿自行服用。
         </p>
       </div>
@@ -147,48 +147,48 @@ function togglePro() {
       <!-- 白话内容 -->
       <div class="mt-4 space-y-3">
         <div class="flex items-start gap-2.5">
-          <van-icon name="fire-o" size="18" color="#2E7D52" class="mt-0.5 shrink-0" />
-          <p class="text-sm leading-relaxed text-[#1F2A24]">
-            <span class="font-semibold text-[#2E7D52]">它有什么用：</span>{{ plainUse }}
+          <van-icon name="fire-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <p class="text-sm leading-relaxed text-ink">
+            <span class="font-semibold text-primary">它有什么用：</span>{{ plainUse }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="clock-o" size="18" color="#2E7D52" class="mt-0.5 shrink-0" />
-          <p class="text-sm leading-relaxed text-[#1F2A24]">
-            <span class="font-semibold text-[#2E7D52]">该怎么用：</span>{{ plainUsage }}
+          <van-icon name="clock-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <p class="text-sm leading-relaxed text-ink">
+            <span class="font-semibold text-primary">该怎么用：</span>{{ plainUsage }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="like-o" size="18" color="#2E7D52" class="mt-0.5 shrink-0" />
-          <p class="text-sm leading-relaxed text-[#1F2A24]">
-            <span class="font-semibold text-[#2E7D52]">适合哪些人：</span>{{ plainFit }}
+          <van-icon name="like-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <p class="text-sm leading-relaxed text-ink">
+            <span class="font-semibold text-primary">适合哪些人：</span>{{ plainFit }}
           </p>
         </div>
         <div class="flex items-start gap-2.5">
-          <van-icon name="friends-o" size="18" color="#2E7D52" class="mt-0.5 shrink-0" />
-          <p class="text-sm leading-relaxed text-[#1F2A24]">
-            <span class="font-semibold text-[#2E7D52]">哪些人要小心：</span>{{ plainNotice }}
+          <van-icon name="friends-o" size="18" color="#2F5D46" class="mt-0.5 shrink-0" />
+          <p class="text-sm leading-relaxed text-ink">
+            <span class="font-semibold text-primary">哪些人要小心：</span>{{ plainNotice }}
           </p>
         </div>
-        <p class="pt-1 text-xs leading-relaxed text-[#5B6B62]/80">安全提示：{{ safetyTip(herb.safety_level) }}</p>
+        <p class="pt-1 text-xs leading-relaxed text-ink-secondary/80">安全提示：{{ safetyTip(herb.safety_level) }}</p>
       </div>
     </section>
 
     <!-- 专业药典卡（点击展开/收起） -->
-    <section class="overflow-hidden rounded-3xl bg-white shadow-sm">
+    <section class="overflow-hidden rounded-xl bg-paper-card shadow-paper">
       <button
         type="button"
-        class="flex w-full items-center justify-between px-5 py-4 text-left transition active:bg-[#F4F8F5]"
+        class="flex w-full items-center justify-between px-5 py-4 text-left transition active:bg-paper"
         @click="togglePro"
       >
         <span class="flex items-center gap-2">
-          <van-icon name="bookmark-o" size="18" color="#2E7D52" />
-          <span class="text-sm font-semibold text-[#1F2A24]">查看专业内容（药典）</span>
+          <van-icon name="bookmark-o" size="18" color="#2F5D46" />
+          <span class="text-sm font-semibold text-ink">查看专业内容（药典）</span>
         </span>
         <van-icon
           name="arrow-down"
           size="16"
-          color="#5B6B62"
+          color="#6B6B63"
           class="transition-transform duration-200"
           :class="{ 'rotate-180': showPro }"
         />
@@ -203,30 +203,30 @@ function togglePro() {
         leave-to-class="max-h-0 opacity-0"
       >
         <div v-if="showPro" class="max-h-[2000px] space-y-3 px-5 pb-5">
-          <div class="rounded-2xl bg-[#F4F8F5] p-3.5">
-            <h4 class="mb-1 text-xs font-semibold text-[#2E7D52]">性味归经</h4>
-            <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.nature_flavor || '—' }}</p>
+          <div class="rounded-xl bg-paper p-3.5">
+            <h4 class="mb-1 text-xs font-semibold text-primary">性味归经</h4>
+            <p class="text-sm leading-relaxed text-ink">{{ herb.nature_flavor || '—' }}</p>
           </div>
-          <div class="rounded-2xl bg-[#F4F8F5] p-3.5">
-            <h4 class="mb-1 text-xs font-semibold text-[#2E7D52]">功效主治</h4>
-            <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.effects || '—' }}</p>
+          <div class="rounded-xl bg-paper p-3.5">
+            <h4 class="mb-1 text-xs font-semibold text-primary">功效主治</h4>
+            <p class="text-sm leading-relaxed text-ink">{{ herb.effects || '—' }}</p>
           </div>
-          <div class="rounded-2xl bg-[#F4F8F5] p-3.5">
-            <h4 class="mb-1 text-xs font-semibold text-[#2E7D52]">用法用量</h4>
-            <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.usage || '—' }}</p>
+          <div class="rounded-xl bg-paper p-3.5">
+            <h4 class="mb-1 text-xs font-semibold text-primary">用法用量</h4>
+            <p class="text-sm leading-relaxed text-ink">{{ herb.usage || '—' }}</p>
           </div>
-          <div class="rounded-2xl bg-[#F4F8F5] p-3.5">
-            <h4 class="mb-1 text-xs font-semibold text-[#2E7D52]">禁忌</h4>
-            <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.contraindications || '—' }}</p>
+          <div class="rounded-xl bg-paper p-3.5">
+            <h4 class="mb-1 text-xs font-semibold text-primary">禁忌</h4>
+            <p class="text-sm leading-relaxed text-ink">{{ herb.contraindications || '—' }}</p>
           </div>
           <div
-            class="rounded-2xl p-3.5"
-            :class="herb.safety_level === '毒性' ? 'border border-[#E5484D]/40 bg-[#FDE9E9]' : 'bg-[#F4F8F5]'"
+            class="rounded-xl p-3.5"
+            :class="herb.safety_level === '毒性' ? 'border border-cinnabar/40 bg-cinnabar/10' : 'bg-paper'"
           >
-            <h4 class="mb-1 text-xs font-semibold" :class="herb.safety_level === '毒性' ? 'text-[#E5484D]' : 'text-[#2E7D52]'">
+            <h4 class="mb-1 text-xs font-semibold" :class="herb.safety_level === '毒性' ? 'text-cinnabar' : 'text-primary'">
               毒性说明
             </h4>
-            <p class="text-sm leading-relaxed text-[#1F2A24]">{{ herb.toxicity || '常规剂量下无毒。' }}</p>
+            <p class="text-sm leading-relaxed text-ink">{{ herb.toxicity || '常规剂量下无毒。' }}</p>
           </div>
         </div>
       </transition>

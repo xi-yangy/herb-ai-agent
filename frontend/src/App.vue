@@ -71,7 +71,13 @@ async function onPrivacyResult({ consent }) {
     </main>
 
     <!-- 底部导航（子页面隐藏） -->
-    <van-tabbar v-if="!hideTabbar" :model-value="active()" route>
+    <van-tabbar
+      v-if="!hideTabbar"
+      :model-value="active()"
+      route
+      active-color="#2F5D46"
+      inactive-color="#6B6B63"
+    >
       <van-tabbar-item
         v-for="tab in tabs"
         :key="tab.name"
@@ -98,5 +104,11 @@ async function onPrivacyResult({ consent }) {
   flex: 1;
   /* 为底部 tabbar 预留空间 */
   padding-bottom: 50px;
+}
+
+/* 国风底部导航：宣纸白底 + 顶部细描边，去默认厚重感 */
+:deep(.van-tabbar) {
+  background-color: #fffdf7;
+  border-top: 1px solid rgba(42, 42, 40, 0.06);
 }
 </style>
