@@ -130,15 +130,15 @@ async function triggerAlbum() {
       <header class="mb-10 text-center lg:mb-0 lg:flex-1 lg:text-left">
         <!-- 草本绿品牌印章 -->
         <div
-          class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl lg:mx-0 lg:h-20 lg:w-20"
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl lg:mx-0 lg:h-24 lg:w-24"
           style="background-color: #357a53; box-shadow: 0 8px 20px rgba(53, 122, 83, 0.3)"
         >
-          <span class="section-title text-2xl leading-none text-white lg:text-3xl">灵</span>
+          <span class="section-title text-2xl leading-none text-white lg:text-4xl">灵</span>
         </div>
-        <h1 class="section-title mt-5 text-[22px] text-ink lg:mt-6">灵草 · 中草药识别</h1>
-        <p class="mt-2 text-sm text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
+        <h1 class="section-title mt-5 text-[22px] text-ink lg:mt-7 lg:text-3xl">灵草 · 中草药识别</h1>
+        <p class="mt-2 text-sm text-ink-secondary lg:text-lg">拍照识别草药，详解功效、禁忌与安全提示</p>
         <!-- 连通状态 -->
-        <div class="mt-3 inline-flex items-center gap-1.5 text-xs">
+        <div class="mt-3 inline-flex items-center gap-1.5 text-xs lg:text-sm">
           <span
             class="inline-block h-2 w-2 rounded-full"
             :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
@@ -157,7 +157,7 @@ async function triggerAlbum() {
         <div class="mt-6 grid w-full grid-cols-2 gap-4">
           <button
             type="button"
-            class="btn-primary h-12 w-full gap-2 lg:h-16 lg:text-lg"
+            class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2F9E6B] text-[15px] font-medium text-white transition hover:bg-[#35B078] active:scale-95 active:bg-[#28895C] disabled:opacity-50 lg:h-16 lg:text-lg"
             :disabled="recognizing"
             @click="triggerCapture"
           >
