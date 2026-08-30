@@ -126,7 +126,7 @@ function goDetail(id) {
     <div
       class="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper-card px-3.5 py-2.5 transition focus-within:border-primary focus-within:shadow-paper"
     >
-      <van-icon name="search" size="16" color="#6B6B63" />
+      <van-icon name="search" size="16" color="#4A4A4A" />
       <input
         type="text"
         class="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
@@ -140,7 +140,7 @@ function goDetail(id) {
         class="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 active:scale-90"
         @click="clearSearch"
       >
-        <van-icon name="cross" size="11" color="#6B6B63" />
+        <van-icon name="cross" size="11" color="#4A4A4A" />
       </button>
     </div>
 

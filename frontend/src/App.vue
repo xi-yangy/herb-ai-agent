@@ -83,7 +83,7 @@ async function onPrivacyResult({ consent }) {
         >
           <span
             class="flex h-9 w-9 items-center justify-center rounded-full"
-            style="background: linear-gradient(135deg, #35b078, #2f9e6b)"
+            style="background: linear-gradient(135deg, #35785c, #2d6b4f)"
           >
             <span class="section-title text-lg leading-none text-white">灵</span>
           </span>
@@ -91,7 +91,7 @@ async function onPrivacyResult({ consent }) {
             <span class="section-title text-[17px] leading-tight text-ink">灵草</span>
             <span
               class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium text-white"
-              style="background: linear-gradient(135deg, #35b078, #2f9e6b); box-shadow: 0 0 6px rgba(47, 158, 107, 0.45)"
+              style="background: linear-gradient(135deg, #35785c, #2d6b4f); box-shadow: 0 0 6px rgba(45, 107, 79, 0.45)"
             >
               🤖 Agent v1.0
             </span>

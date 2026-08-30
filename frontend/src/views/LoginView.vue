@@ -71,14 +71,14 @@ function switchMode(next) {
       class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
       @click="router.back()"
     >
-      <van-icon name="arrow-left" size="18" color="#2F9E6B" />
+      <van-icon name="arrow-left" size="18" color="#2D6B4F" />
     </button>
 
     <!-- 品牌区 -->
     <div class="mt-8 text-center">
       <div
         class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl"
-        style="background-color: #2f9e6b; box-shadow: 0 4px 12px rgba(47, 158, 107, 0.28)"
+        style="background-color: #2d6b4f; box-shadow: 0 4px 12px rgba(45, 107, 79, 0.28)"
       >
         <span class="section-title text-[26px] leading-none text-white">灵</span>
       </div>

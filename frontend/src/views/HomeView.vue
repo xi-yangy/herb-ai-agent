@@ -129,7 +129,7 @@ async function triggerAlbum() {
         <!-- 草本绿品牌印章 -->
         <div
           class="flex h-24 w-24 items-center justify-center rounded-xl"
-          style="background-color: #2f9e6b; box-shadow: 0 8px 20px rgba(47, 158, 107, 0.3)"
+          style="background-color: #2d6b4f; box-shadow: 0 8px 20px rgba(45, 107, 79, 0.3)"
         >
           <span class="section-title text-4xl leading-none text-white">灵</span>
         </div>
@@ -189,7 +189,7 @@ async function triggerAlbum() {
         <div class="mt-5 grid w-full grid-cols-2 gap-4">
           <div class="card-paper flex flex-col gap-2 p-4 text-left">
             <div class="flex items-center gap-1.5">
-              <van-icon name="shield-o" size="18" color="#2F9E6B" />
+              <van-icon name="shield-o" size="18" color="#2D6B4F" />
               <span class="section-title text-base text-ink">安全三原则</span>
             </div>
             <ol class="space-y-1.5 text-[15px] leading-relaxed text-ink-secondary">
@@ -200,7 +200,7 @@ async function triggerAlbum() {
           </div>
           <div class="card-paper flex flex-col gap-2 p-4 text-left">
             <div class="flex items-center gap-1.5">
-              <van-icon name="photo-o" size="18" color="#2F9E6B" />
+              <van-icon name="photo-o" size="18" color="#2D6B4F" />
               <span class="section-title text-base text-ink">拍摄小贴士</span>
             </div>
             <ol class="space-y-1.5 text-[15px] leading-relaxed text-ink-secondary">

@@ -85,7 +85,7 @@ async function onLogout() {
           class="flex h-12 w-12 items-center justify-center rounded-xl text-white"
           :class="store.isLoggedIn ? 'bg-white/20' : 'bg-primary/10'"
         >
-          <van-icon name="user-o" size="24" :color="store.isLoggedIn ? '#fff' : '#2F9E6B'" />
+          <van-icon name="user-o" size="24" :color="store.isLoggedIn ? '#fff' : '#2D6B4F'" />
         </span>
         <div v-if="store.isLoggedIn" class="flex-1">
           <p class="text-base font-semibold text-white">{{ store.user.username }}</p>
@@ -115,11 +115,11 @@ async function onLogout() {
         @click="router.push({ name: 'favorites' })"
       >
         <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <van-icon name="like-o" size="24" color="#2F9E6B" />
+          <van-icon name="like-o" size="24" color="#2D6B4F" />
         </span>
         <span class="flex-1 text-sm font-medium text-ink">我的收藏</span>
         <span class="text-sm text-ink-secondary">{{ favoriteCount }} 味</span>
-        <van-icon name="arrow" color="#A8A39A" />
+        <van-icon name="arrow" color="#8C8C8C" />
       </button>
       <button
         type="button"
@@ -127,10 +127,10 @@ async function onLogout() {
         @click="openPrivacy"
       >
         <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <van-icon name="shield-o" size="24" color="#2F9E6B" />
+          <van-icon name="shield-o" size="24" color="#2D6B4F" />
         </span>
         <span class="flex-1 text-sm font-medium text-ink">隐私与授权</span>
-        <van-icon name="arrow" color="#A8A39A" />
+        <van-icon name="arrow" color="#8C8C8C" />
       </button>
       <button
         v-if="store.isLoggedIn"
@@ -172,7 +172,7 @@ async function onLogout() {
             <van-switch
               :model-value="consents[item.key] !== false"
               size="24"
-              active-color="#2F9E6B"
+              active-color="#2D6B4F"
               @update:model-value="toggleConsent(item.key, $event)"
             />
           </div>

@@ -88,7 +88,7 @@ async function onClear() {
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
           :class="item.safety_level === '毒性' ? 'bg-cinnabar/10' : 'bg-primary/10'"
         >
-          <van-icon name="medal-o" size="22" :color="item.safety_level === '毒性' ? '#C0392B' : '#2F9E6B'" />
+          <van-icon name="medal-o" size="22" :color="item.safety_level === '毒性' ? '#C0392B' : '#2D6B4F'" />
         </div>
         <div class="min-w-0 flex-1">
           <p class="text-base font-semibold text-ink">{{ item.result_name }}</p>
@@ -97,7 +97,7 @@ async function onClear() {
             {{ ((item.confidence || 0) * 100).toFixed(0) }}%
           </p>
         </div>
-        <van-icon name="arrow" color="#A8A39A" />
+        <van-icon name="arrow" color="#8C8C8C" />
       </div>
     </div>
   </div>

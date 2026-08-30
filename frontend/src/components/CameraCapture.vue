@@ -161,7 +161,7 @@ onBeforeUnmount(stopStream)
           class="flex h-9 w-9 items-center justify-center rounded-full bg-paper active:scale-90"
           @click="close"
         >
-          <van-icon name="cross" size="18" color="#2A2A28" />
+          <van-icon name="cross" size="18" color="#2A2A2A" />
         </button>
         <span class="section-title text-[15px] text-ink">拍摄识别</span>
         <span class="w-9"></span>
@@ -197,7 +197,7 @@ onBeforeUnmount(stopStream)
             :disabled="starting"
             @click="switchCamera"
           >
-            <van-icon name="replay" size="20" color="#2F9E6B" />
+            <van-icon name="replay" size="20" color="#2D6B4F" />
           </button>
           <button
             type="button"

@@ -166,7 +166,7 @@ function onClearRecognition() {
       class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
       @click="onClearRecognition"
     >
-      <van-icon name="arrow-left" size="18" color="#2F9E6B" />
+      <van-icon name="arrow-left" size="18" color="#2D6B4F" />
     </button>
 
     <!-- 鉴别防雷警报：识别命中易混淆高危药材时，顶部内嵌醒目警报卡 -->

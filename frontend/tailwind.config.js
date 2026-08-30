@@ -10,18 +10,18 @@ export default {
       colors: {
         // 国风草本语义色板
         primary: {
-          DEFAULT: '#2F9E6B',
-          light: '#35B078',
-          dark: '#28895C',
+          DEFAULT: '#2D6B4F',
+          light: '#35785C',
+          dark: '#245840',
         },
         paper: {
-          DEFAULT: '#FBF9F4',
-          card: '#FFFDF7',
+          DEFAULT: '#F5F0E8',
+          card: '#FAF7F0',
         },
         ink: {
-          DEFAULT: '#2A2A28',
-          secondary: '#6B6B63',
-          faint: '#A8A39A',
+          DEFAULT: '#2A2A2A',
+          secondary: '#4A4A4A',
+          faint: '#8C8C8C',
         },
         jade: '#4A7C59',
         ochre: '#C08A3E',

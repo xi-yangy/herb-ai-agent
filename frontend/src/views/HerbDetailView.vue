@@ -73,7 +73,7 @@ async function toggleFavorite() {
         class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
         @click="router.back()"
       >
-        <van-icon name="arrow-left" size="18" color="#2F9E6B" />
+        <van-icon name="arrow-left" size="18" color="#2D6B4F" />
       </button>
       <h1 class="section-title text-[22px] text-ink">药材详情</h1>
     </div>
