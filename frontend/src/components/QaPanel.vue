@@ -300,6 +300,15 @@ async function startVoice() {
   }
 }
 
+/** 停止语音识别：recognition.stop() 会触发 onend 自动复位 listening，兼容现有生命周期。 */
+function stopVoice() {
+  if (recognition) {
+    recognition.stop()
+  } else {
+    listening.value = false
+  }
+}
+
 /** 组件卸载时停止语音识别与朗读。 */
 onBeforeUnmount(() => {
   if (recognition) {
@@ -463,14 +472,17 @@ defineExpose({ askPreset, panelRef })
           class="h-11 min-w-0 flex-1 rounded-xl border border-ink/10 bg-paper px-3.5 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-primary"
           @keyup="onKeyup"
         />
-        <!-- 语音按钮 -->
+        <!-- 语音按钮：话筒图标 + 文字，实心主色；录音中红色 + 脉冲，点击停止 -->
         <button
           type="button"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95"
-          :class="listening ? 'bg-cinnabar text-white' : 'bg-primary/10 text-primary'"
-          @click="startVoice"
+          :aria-label="listening ? '停止语音输入' : '语音输入'"
+          :aria-pressed="listening ? 'true' : 'false'"
+          class="flex h-11 shrink-0 items-center gap-1.5 rounded-full px-4 shadow-md transition active:scale-95"
+          :class="listening ? 'voice-pulse bg-cinnabar text-white' : 'bg-primary text-white shadow-primary/25 hover:bg-primary-light'"
+          @click="listening ? stopVoice() : startVoice()"
         >
           <van-icon name="microphone" size="18" />
+          <span class="text-sm font-medium">{{ listening ? '停止' : '语音' }}</span>
         </button>
         <!-- 发送按钮 -->
         <button
@@ -487,5 +499,18 @@ defineExpose({ askPreset, panelRef })
 </template>
 
 <style scoped>
-/* 装饰性动画已移除：思考中用静态圆点，语音收听以静态红底标识，避免廉价脉冲 */
+/* 语音收听态红色呼吸脉冲（box-shadow 扩散）；其余场景保持静态 */
+.voice-pulse {
+  animation: voice-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(192, 57, 43, 0);
+  }
+}
 </style>
