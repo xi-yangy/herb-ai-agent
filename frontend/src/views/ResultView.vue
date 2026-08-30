@@ -159,14 +159,14 @@ function onClearRecognition() {
 <template>
   <div class="page-container px-6 pb-12 pt-4">
     <div class="mx-auto max-w-[860px]">
-    <!-- 固定悬浮返回按钮：滑动时始终可见，点击直接返回首页（清除识别状态） -->
+    <!-- 固定悬浮返回按钮：滑动时始终可见，点击直接返回首页（清除识别状态）；绿色系描边跟随主色，提升可发现性 -->
     <button
       type="button"
       aria-label="返回首页"
-      class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
+      class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
       @click="onClearRecognition"
     >
-      <van-icon name="arrow-left" size="18" color="#2A2A28" />
+      <van-icon name="arrow-left" size="18" color="#2F9E6B" />
     </button>
 
     <!-- 鉴别防雷警报：识别命中易混淆高危药材时，顶部内嵌醒目警报卡 -->
