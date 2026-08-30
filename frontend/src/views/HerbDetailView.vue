@@ -70,10 +70,10 @@ async function toggleFavorite() {
     <div class="mb-4 flex items-center gap-3">
       <button
         type="button"
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-paper-card shadow-paper active:scale-90"
+        class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
         @click="router.back()"
       >
-        <van-icon name="arrow-left" size="18" color="#2A2A28" />
+        <van-icon name="arrow-left" size="18" color="#2F9E6B" />
       </button>
       <h1 class="section-title text-[22px] text-ink">药材详情</h1>
     </div>
