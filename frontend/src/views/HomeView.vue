@@ -133,7 +133,7 @@ async function triggerAlbum() {
         >
           <span class="section-title text-4xl leading-none text-white">灵</span>
         </div>
-        <h1 class="section-title mt-7 text-[32px] leading-tight text-ink">灵草 · 中草药识别</h1>
+        <h1 class="section-title mt-7 text-[32px] leading-tight text-ink">灵草 · 多模态中草药识别</h1>
         <p class="mt-3 text-base text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
 
         <!-- 技术亮点标签 -->
