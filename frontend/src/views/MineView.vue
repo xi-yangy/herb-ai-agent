@@ -69,7 +69,7 @@ async function onLogout() {
 </script>
 
 <template>
-  <div class="page-container px-6 pb-12 pt-2">
+  <div class="mine-container px-6 pb-12 pt-2">
     <header class="mb-5">
       <h1 class="section-title text-[22px] text-ink">我的</h1>
       <p class="mt-1 text-sm text-ink-secondary">收藏、账号与隐私设置</p>
@@ -185,3 +185,11 @@ async function onLogout() {
     </van-popup>
   </div>
 </template>
+
+<style scoped>
+/* 个人中心页内容区限宽 800px 居中：两侧留等宽背景，营造大厂个人中心页面感 */
+.mine-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+</style>
