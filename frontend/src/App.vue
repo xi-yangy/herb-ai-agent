@@ -118,13 +118,14 @@ async function onPrivacyResult({ consent }) {
           </button>
         </nav>
 
-        <!-- 连通状态 -->
-        <div class="ml-auto flex items-center gap-1.5 text-xs text-ink-secondary">
+        <!-- 连通状态：状态文案 + 最近检测时间戳 -->
+        <div class="ml-auto flex items-center gap-1.5 text-sm text-ink-secondary">
           <span
             class="inline-block h-2 w-2 rounded-full"
             :class="store.backendOnline ? 'bg-primary' : 'bg-cinnabar'"
           ></span>
           {{ store.backendOnline ? '智能体系统已就绪' : '系统暂未连接' }}
+          <span v-if="store.lastCheckTime" class="text-ink-faint">· {{ store.lastCheckTime }}</span>
         </div>
       </div>
     </header>
@@ -136,10 +137,10 @@ async function onPrivacyResult({ consent }) {
 
     <!-- 底部版权/免责 Footer（正规网页结构；全屏页隐藏） -->
     <footer v-if="!hideShell" class="border-t border-ink/10 py-5">
-      <div class="mx-auto max-w-[1200px] px-6 text-center text-xs leading-relaxed text-ink-faint">
+      <div class="mx-auto max-w-[1200px] px-6 text-center text-[13px] leading-relaxed text-ink-secondary">
         灵草·中草药多模态识别智能体 | 基于大模型与中药典知识库构建 | 本系统结果仅供参考，不构成诊断或处方，如有不适请咨询执业医师/药师
       </div>
-      <div class="mx-auto max-w-[1200px] px-6 pt-1 text-center text-[11px] text-ink-faint/70">
+      <div class="mx-auto max-w-[1200px] px-6 pt-1 text-center text-xs text-ink-secondary/80">
         本系统仅供学习与科研参考
       </div>
     </footer>

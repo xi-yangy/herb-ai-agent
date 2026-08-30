@@ -133,11 +133,11 @@ async function triggerAlbum() {
         >
           <span class="section-title text-4xl leading-none text-white">灵</span>
         </div>
-        <h1 class="section-title mt-7 text-3xl text-ink">灵草 · 中草药识别</h1>
-        <p class="mt-3 text-lg text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
+        <h1 class="section-title mt-7 text-[32px] leading-tight text-ink">灵草 · 中草药识别</h1>
+        <p class="mt-3 text-base text-ink-secondary">拍照识别草药，详解功效、禁忌与安全提示</p>
 
         <!-- 技术亮点标签 -->
-        <div class="mt-5 flex flex-wrap gap-2">
+        <div class="mt-7 flex flex-wrap gap-3">
           <span class="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
             <van-icon name="chat-o" size="13" />
             AI 多模态对话
@@ -192,21 +192,21 @@ async function triggerAlbum() {
               <van-icon name="shield-o" size="18" color="#2F9E6B" />
               <span class="section-title text-base text-ink">安全三原则</span>
             </div>
-            <ol class="space-y-1 text-[15px] leading-snug text-ink-secondary">
-              <li>① 结果仅供参考，不构成诊断或处方</li>
-              <li>② 毒性药材务必遵医嘱，切勿自行服用</li>
-              <li>③ 如身体不适请及时就医</li>
+            <ol class="space-y-1.5 text-[15px] leading-relaxed text-ink-secondary">
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">①</span><span>结果仅供参考，不构成诊断或处方</span></li>
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">②</span><span>毒性药材务必遵医嘱，切勿自行服用</span></li>
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">③</span><span>如身体不适请及时就医</span></li>
             </ol>
           </div>
           <div class="card-paper flex flex-col gap-2 p-4 text-left">
             <div class="flex items-center gap-1.5">
-              <van-icon name="photograph" size="18" color="#2F9E6B" />
+              <van-icon name="photo-o" size="18" color="#2F9E6B" />
               <span class="section-title text-base text-ink">拍摄小贴士</span>
             </div>
-            <ol class="space-y-1 text-[15px] leading-snug text-ink-secondary">
-              <li>① 一次只拍一株，避免枝叶重叠</li>
-              <li>② 光线充足、背景简洁</li>
-              <li>③ 对准叶片花果特写</li>
+            <ol class="space-y-1.5 text-[15px] leading-relaxed text-ink-secondary">
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">①</span><span>一次只拍一株，避免枝叶重叠</span></li>
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">②</span><span>光线充足、背景简洁</span></li>
+              <li class="flex gap-1.5"><span class="shrink-0 font-semibold text-primary">③</span><span>对准叶片花果特写</span></li>
             </ol>
           </div>
         </div>

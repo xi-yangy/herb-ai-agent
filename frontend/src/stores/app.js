@@ -7,6 +7,8 @@ import { defineStore } from 'pinia'
 export const useAppStore = defineStore('app', {
   state: () => ({
     backendOnline: false,
+    // 最近一次后端连通性检测时间（顶栏状态时间戳展示，格式如 "14:32:05"）
+    lastCheckTime: '',
     // 最近一次识别结果：{ imageBase64, result }，由首页识别后写入
     lastRecognition: null,
     // 当前登录用户：{ id, username }，从 localStorage 恢复
@@ -18,6 +20,7 @@ export const useAppStore = defineStore('app', {
   actions: {
     setBackendOnline(online) {
       this.backendOnline = online
+      this.lastCheckTime = new Date().toLocaleTimeString('zh-CN', { hour12: false })
     },
     setLastRecognition(imageBase64, result) {
       this.lastRecognition = { imageBase64, result }
