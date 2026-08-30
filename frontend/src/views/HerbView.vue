@@ -130,12 +130,12 @@ function goDetail(id) {
 
     <!-- 搜索区 -->
     <div
-      class="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper-card px-3.5 py-3.5 transition focus-within:border-primary focus-within:shadow-paper"
+      class="flex h-12 items-center gap-2 rounded-xl border border-primary/15 bg-paper-card px-3.5 transition focus-within:border-primary focus-within:shadow-paper"
     >
       <van-icon name="search" size="18" color="#4A4A4A" />
       <input
         type="text"
-        class="min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
+        class="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
         placeholder="搜索药材名 / 性味 / 功效"
         :value="keyword"
         @input="onInput($event.target.value)"
