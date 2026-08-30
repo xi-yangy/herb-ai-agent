@@ -51,6 +51,12 @@ function clearSearch() {
   keyword.value = ''
 }
 
+/** 选择分类：若处于搜索态先清空关键词再切换分类，避免搜索词拦截分类视图。 */
+function selectGroup(key) {
+  if (keyword.value) clearSearch()
+  activeGroup.value = key
+}
+
 /** 各分类数量统计（用于导航角标）。 */
 const groupStats = computed(() => {
   const stats = {}
@@ -124,12 +130,12 @@ function goDetail(id) {
 
     <!-- 搜索区 -->
     <div
-      class="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper-card px-3.5 py-2.5 transition focus-within:border-primary focus-within:shadow-paper"
+      class="flex items-center gap-2 rounded-xl border border-ink/10 bg-paper-card px-3.5 py-3.5 transition focus-within:border-primary focus-within:shadow-paper"
     >
-      <van-icon name="search" size="16" color="#4A4A4A" />
+      <van-icon name="search" size="18" color="#4A4A4A" />
       <input
         type="text"
-        class="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
+        class="min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
         placeholder="搜索药材名 / 性味 / 功效"
         :value="keyword"
         @input="onInput($event.target.value)"
@@ -145,12 +151,12 @@ function goDetail(id) {
     </div>
 
     <!-- 分类胶囊导航（横向可滚动） -->
-    <nav class="mt-4 flex flex-wrap gap-2 pb-1">
+    <nav class="mt-6 flex flex-wrap gap-2 pb-1">
       <button
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
         :class="activeGroup === ALL_KEY ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
-        @click="activeGroup = ALL_KEY"
+        @click="selectGroup(ALL_KEY)"
       >
         全部
         <span
@@ -165,7 +171,7 @@ function goDetail(id) {
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
         :class="activeGroup === g.key ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
-        @click="activeGroup = g.key"
+        @click="selectGroup(g.key)"
       >
         {{ g.label }}
         <span
@@ -179,7 +185,7 @@ function goDetail(id) {
         type="button"
         class="flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition active:scale-95"
         :class="activeGroup === OTHER_GROUP.key ? 'bg-primary text-white' : 'bg-paper-card text-ink-secondary'"
-        @click="activeGroup = OTHER_GROUP.key"
+        @click="selectGroup(OTHER_GROUP.key)"
       >
         其他
         <span
