@@ -92,6 +92,17 @@ const listening = ref(false)
 // 停止兜底定时器句柄（识别服务异常时强制 abort 用）
 let stopVoiceTimer = null
 
+// ---- 实时音量监测（getUserMedia + AnalyserNode，仅供录音态可视化反馈）----
+const volume = ref(0)
+const volumeLevel = computed(() => {
+  if (volume.value <= 3) return 0
+  return Math.min(5, Math.ceil(volume.value / 20))
+})
+let audioContext = null
+let analyser = null
+let volumeTimer = null
+let micStream = null
+
 // ---- 语音朗读（TTS，Web Speech API）----
 
 // 是否支持语音朗读
@@ -247,6 +258,56 @@ function onKeyup(e) {
 
 // ---- 语音输入（Web Speech API）----
 
+/** 启动实时音量监测：麦克风授权后开启，说话时音量条实时波动。失败仅降级，不阻塞识别。 */
+async function startVolumeMeter() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    console.error('[voice meter] getUserMedia 不可用，音量监测降级')
+    return
+  }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    const AC = window.AudioContext || window.webkitAudioContext
+    audioContext = new AC()
+    analyser = audioContext.createAnalyser()
+    analyser.fftSize = 256
+    const source = audioContext.createMediaStreamSource(micStream)
+    source.connect(analyser)
+    const data = new Uint8Array(analyser.frequencyBinCount)
+    volumeTimer = window.setInterval(() => {
+      analyser.getByteFrequencyData(data)
+      let sum = 0
+      for (let i = 0; i < data.length; i++) sum += data[i]
+      const avg = sum / data.length / 255
+      volume.value = Math.min(100, Math.round(avg * 100))
+    }, 100)
+  } catch (err) {
+    console.error('[voice meter]', err)
+    stopVolumeMeter()
+  }
+}
+
+/** 停止音量监测并释放麦克风/音频上下文（幂等）。 */
+function stopVolumeMeter() {
+  if (volumeTimer) {
+    clearInterval(volumeTimer)
+    volumeTimer = null
+  }
+  if (audioContext) {
+    try {
+      audioContext.close()
+    } catch (err) {
+      console.error('[voice meter close]', err)
+    }
+    audioContext = null
+  }
+  analyser = null
+  if (micStream) {
+    micStream.getTracks().forEach((t) => t.stop())
+    micStream = null
+  }
+  volume.value = 0
+}
+
 /**
  * 启动语音识别，识别结果填充输入框。
  * 仅当麦克风授权记录明确拒绝（granted=false）时拦截并提示；
@@ -286,18 +347,27 @@ async function startVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition
   recognition = new SR()
   recognition.lang = 'zh-CN'
-  recognition.interimResults = false
+  recognition.interimResults = true
   recognition.maxAlternatives = 1
 
   recognition.onstart = () => {
     listening.value = true
+    // 麦克风已授权，同步开启音量监测（失败自动降级，不影响识别）
+    startVolumeMeter()
   }
   recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript
-    input.value = transcript
-    showToast('语音已识别，可直接发送')
+    // 拼接已定稿（final）与中间过程（interim）文字，说话时实时上屏
+    let final = ''
+    let interim = ''
+    for (let i = 0; i < event.results.length; i++) {
+      const r = event.results[i]
+      if (r.isFinal) final += r[0].transcript
+      else interim += r[0].transcript
+    }
+    input.value = (final + interim).trim()
   }
-  recognition.onerror = () => {
+  recognition.onerror = (event) => {
+    console.error('[voice error]', event && event.error)
     showToast('语音识别失败，请改用文本输入')
   }
   recognition.onend = () => {
@@ -305,6 +375,10 @@ async function startVoice() {
     stopVoiceTimer = null
     listening.value = false
     recognition = null
+    stopVolumeMeter()
+    if (input.value.trim()) {
+      showToast('语音已识别，可直接发送')
+    }
   }
 
   try {
@@ -344,6 +418,7 @@ function stopVoice() {
       }
       recognition = null
       listening.value = false
+      stopVolumeMeter()
     }
   }, 1500)
 }
@@ -361,6 +436,7 @@ onBeforeUnmount(() => {
     }
     recognition = null
   }
+  stopVolumeMeter()
   if (ttsSupported.value) {
     window.speechSynthesis.cancel()
   }
@@ -506,6 +582,24 @@ defineExpose({ askPreset, panelRef })
               {{ q }}
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- 录音状态栏：聆听提示 + 实时音量条（仅录音中显示） -->
+      <div v-if="listening" class="flex items-center gap-2 border-t border-ink/10 bg-cinnabar/5 px-3 py-2">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cinnabar opacity-60"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-cinnabar"></span>
+        </span>
+        <span class="text-xs text-ink-secondary">正在聆听，请靠近麦克风说话</span>
+        <div class="ml-auto flex items-end gap-0.5" :aria-label="`当前音量 ${volumeLevel} 格`">
+          <span
+            v-for="n in 5"
+            :key="n"
+            class="w-1 rounded-sm transition-all duration-150"
+            :class="n <= volumeLevel ? 'bg-cinnabar' : 'bg-ink/10'"
+            :style="{ height: 8 + n * 4 + 'px' }"
+          ></span>
         </div>
       </div>
 
