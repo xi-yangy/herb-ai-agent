@@ -210,48 +210,59 @@ function goDetail(id) {
         找到 {{ displayedHerbs.length }} 味相关药材
       </p>
 
-      <!-- 卡片网格 -->
-      <div class="grid grid-cols-4 gap-4">
+      <!-- 卡片网格：移动端 2 列、平板 3 列、桌面 4 列；items-start 保证图文/纯文字混排顶部对齐 -->
+      <div class="grid grid-cols-2 items-start gap-4 md:grid-cols-3 xl:grid-cols-4">
         <button
           v-for="(h, idx) in displayedHerbs"
           :key="h.id"
           type="button"
-          class="slide-in group flex flex-col rounded-xl bg-paper-card p-4 text-left shadow-paper transition hover:-translate-y-0.5 hover:shadow-card active:scale-95"
+          class="slide-in group flex flex-col overflow-hidden rounded-xl bg-paper-card text-left shadow-paper transition hover:-translate-y-0.5 hover:shadow-card active:scale-95"
           :style="{ animationDelay: idx * 0.04 + 's' }"
           @click="goDetail(h.id)"
         >
-          <div class="flex items-start justify-between gap-2">
-            <p class="text-base font-semibold leading-snug text-ink">
-              <template v-if="keyword && typeof highlightText(h.name) !== 'string'">
-                <span v-for="(part, i) in highlightText(h.name)" :key="i">
+          <!-- 示例缩略图（有图才显示；无图保持纯文字卡片）。16:10 更扁比例，精致不抢戏 -->
+          <img
+            v-if="h.image_url"
+            :src="h.image_url"
+            :alt="h.name"
+            loading="lazy"
+            class="aspect-[16/10] w-full object-cover"
+          />
+          <!-- 文字区：独立内边距 + 纵向间距，让性味归经等信息有呼吸空间 -->
+          <div class="flex flex-col gap-2.5 p-4">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-base font-semibold leading-snug text-ink">
+                <template v-if="keyword && typeof highlightText(h.name) !== 'string'">
+                  <span v-for="(part, i) in highlightText(h.name)" :key="i">
+                    <mark v-if="i === 1" class="rounded bg-amber-200/80 px-0.5 font-semibold text-amber-900">{{ part }}</mark>
+                    <template v-else>{{ part }}</template>
+                  </span>
+                </template>
+                <template v-else>{{ h.name }}</template>
+              </p>
+              <span
+                class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
+                :style="{
+                  color: safetyColor[h.safety_level] || '#4A7C59',
+                  backgroundColor: (safetyColor[h.safety_level] || '#4A7C59') + '1A',
+                }"
+              >
+                {{ h.safety_level }}
+              </span>
+            </div>
+            <p class="line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-ink-secondary">
+              <template v-if="keyword && typeof highlightText(h.nature_flavor) !== 'string'">
+                <span v-for="(part, i) in highlightText(h.nature_flavor)" :key="i">
                   <mark v-if="i === 1" class="rounded bg-amber-200/80 px-0.5 font-semibold text-amber-900">{{ part }}</mark>
                   <template v-else>{{ part }}</template>
                 </span>
               </template>
-              <template v-else>{{ h.name }}</template>
+              <template v-else>{{ h.nature_flavor || '—' }}</template>
             </p>
-            <span
-              class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
-              :style="{
-                color: safetyColor[h.safety_level] || '#4A7C59',
-                backgroundColor: (safetyColor[h.safety_level] || '#4A7C59') + '1A',
-              }"
-            >
-              {{ h.safety_level }}
-            </span>
-          </div>
-          <p class="mt-2 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-ink-secondary">
-            <template v-if="keyword && typeof highlightText(h.nature_flavor) !== 'string'">
-              <span v-for="(part, i) in highlightText(h.nature_flavor)" :key="i">
-                <mark v-if="i === 1" class="rounded bg-amber-200/80 px-0.5 font-semibold text-amber-900">{{ part }}</mark>
-                <template v-else>{{ part }}</template>
-              </span>
-            </template>
-            <template v-else>{{ h.nature_flavor || '—' }}</template>
-          </p>
-          <div class="mt-3 flex items-center gap-1 text-[11px] text-ink-faint transition group-hover:text-primary">
-            <van-icon name="arrow" size="12" />
-            查看详情
+            <div class="flex items-center gap-1 text-[11px] text-ink-faint transition group-hover:text-primary">
+              <van-icon name="arrow" size="12" />
+              查看详情
+            </div>
           </div>
         </button>
       </div>

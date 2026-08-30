@@ -36,5 +36,7 @@ class HerbResponse(BaseModel):
     contraindications: str
     toxicity: str
     description: str | None = None
+    # 示例缩略图 URL（由路由层按药材名填充；无图返回空串，前端降级为纯文字卡片）
+    image_url: str = ""
 
     model_config = {"from_attributes": True}

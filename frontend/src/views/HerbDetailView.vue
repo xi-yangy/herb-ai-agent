@@ -81,6 +81,14 @@ async function toggleFavorite() {
     <div v-if="loading" class="py-20 text-center text-sm text-ink-secondary">加载中…</div>
 
     <template v-else-if="herb">
+      <!-- 示例缩略图（有图才显示） -->
+      <img
+        v-if="herb.image_url"
+        :src="herb.image_url"
+        :alt="herb.name"
+        class="mb-3 aspect-[4/3] w-full rounded-xl object-cover shadow-paper"
+      />
+
       <!-- 头部 -->
       <section
         class="flex items-center justify-between rounded-xl p-5"

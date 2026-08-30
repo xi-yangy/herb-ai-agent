@@ -83,3 +83,30 @@ output/
 - **报 CUDA out of memory**：调小 `--batch-size`（如 16），或加 `--freeze` 冻结骨干。
 - **无 GPU**：脚本会自动回退 CPU，只是训练变慢，可考虑 `--model resnet18`。
 - **类别数不对**：确认 `train/` 目录下只有类别文件夹，没有多余的杂项文件（如 `.cache`、`.txt` 标注文件会被 ImageFolder 忽略，但多余的子目录会被当成新类别）。
+
+## 7. 百科页示例缩略图（辅助脚本）
+
+百科页每味药材展示一张示例缩略图（位于 `backend/static/herb_imgs/<药名>.jpg`，由后端
+`/api/static` 静态服务提供），由以下两个脚本生成：
+
+**1) `export_samples.py`：训练集选图**
+
+从训练集每类抽取 1 张代表图（固定 seed 可复现、幂等覆盖），中心裁剪 + 缩放 320px 输出：
+
+```bash
+python training/export_samples.py            # 默认读取 D:/Code/data，输出 93 张
+python training/export_samples.py --seed 7   # 换一组选图结果
+```
+
+**2) `fetch_missing_images.py`：缺图药材网络抓图**
+
+数据库 172 味药材中训练集没有对应类别的部分，通过 360 图片（主源）/ 必应 / 百度（备源）
+搜索各抓 1 张示例图。脚本自动过滤水印风险 URL、校验图片可用性，失败名单记录并可重跑：
+
+```bash
+python training/fetch_missing_images.py --probe   # 探针：只取候选不下载，验证源可用
+python training/fetch_missing_images.py           # 实际抓取（缺图名单自动计算，已存在文件跳过）
+```
+
+> **合规声明**：网络抓取图片仅用于本项目教学演示展示，来源为网络公开搜索结果，版权归原作者
+> 所有；如用于商业用途请替换为获得授权的图片。训练集图片仅每类取 1 张示例，不整集复制。

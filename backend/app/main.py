@@ -5,12 +5,14 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.base import Base
 from app.db.session import engine
 from app.routers import auth, favorites, health, herbs, history, privacy, qa, recognize
+from app.services.herb_images import HERB_IMG_DIR
 
 
 def create_app() -> FastAPI:
@@ -41,6 +43,10 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(privacy.router)
     app.include_router(qa.router)
+
+    # 药材示例图静态目录（/api/static/herb_imgs/<药名>.jpg）
+    # 挂在 /api/static 前缀：前端 axios baseURL 为 /api 且 Vite 代理只转发 /api，前端零配置
+    app.mount("/api/static", StaticFiles(directory=HERB_IMG_DIR.parent), name="static")
 
     return app
 
