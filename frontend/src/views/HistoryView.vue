@@ -28,6 +28,19 @@ function formatTime(iso) {
   return new Date(iso).toLocaleString('zh-CN', { hour12: false })
 }
 
+/** 是否非植物（百度返回的非植物名称，严重度更高）。 */
+function isNonPlant(item) {
+  return (item.result_name || '').includes('非植物')
+}
+
+/**
+ * 是否识别受限：非植物名称 / 低置信度（<0.6，与后端阈值一致）/ 未收录知识库。
+ * 受限结果打上「识别受限」标记，提示用户谨慎采信，体现识别严谨度。
+ */
+function isLimited(item) {
+  return isNonPlant(item) || (item.confidence ?? 0) < 0.6 || !item.herb_id
+}
+
 /** 点击历史条目：关联了药材则跳转详情，否则友好提示。 */
 function goDetail(item) {
   if (item.herb_id) {
@@ -55,7 +68,7 @@ async function onClear() {
 </script>
 
 <template>
-  <div class="page-container px-6 pb-12 pt-2">
+  <div class="page-container px-6 pb-12 pt-2" style="max-width: 900px; margin: 0 auto;">
     <header class="mb-5 flex items-center justify-between">
       <div>
         <h1 class="section-title text-[22px] text-ink">识别历史</h1>
@@ -91,7 +104,17 @@ async function onClear() {
           <van-icon name="medal-o" size="22" :color="item.safety_level === '毒性' ? '#C0392B' : '#2D6B4F'" />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-base font-semibold text-ink">{{ item.result_name }}</p>
+          <p class="flex flex-wrap items-center gap-x-2 text-base font-semibold text-ink">
+            <span>{{ item.result_name }}</span>
+            <span
+              v-if="isLimited(item)"
+              class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs leading-none"
+              :class="isNonPlant(item) ? 'border-cinnabar/40 bg-cinnabar/10 text-cinnabar' : 'border-ochre/40 bg-ochre/10 text-ochre'"
+            >
+              <van-icon name="warning-o" size="11" />
+              识别受限
+            </span>
+          </p>
           <p class="mt-0.5 text-xs text-ink-secondary">
             {{ formatTime(item.created_at) }} · 置信度
             {{ ((item.confidence || 0) * 100).toFixed(0) }}%
