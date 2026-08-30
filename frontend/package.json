@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:raw": "node node_modules/vite/bin/vite.js --host 0.0.0.0 --clearScreen false",
     "build": "vite build",
     "preview": "vite preview"
   },
