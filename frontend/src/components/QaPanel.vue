@@ -89,6 +89,8 @@ const speechSupported = computed(() => {
 // 语音识别实例
 let recognition = null
 const listening = ref(false)
+// 停止兜底定时器句柄（识别服务异常时强制 abort 用）
+let stopVoiceTimer = null
 
 // ---- 语音朗读（TTS，Web Speech API）----
 
@@ -269,6 +271,18 @@ async function startVoice() {
     showToast('未获得麦克风授权，可在「我的-隐私与授权」中开启')
     return
   }
+  // 清理可能残留的旧识别实例，避免新旧实例事件互相干扰
+  if (recognition) {
+    try {
+      recognition.abort()
+    } catch (err) {
+      console.error('[voice cleanup]', err)
+    }
+    recognition = null
+  }
+  clearTimeout(stopVoiceTimer)
+  stopVoiceTimer = null
+
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition
   recognition = new SR()
   recognition.lang = 'zh-CN'
@@ -287,6 +301,8 @@ async function startVoice() {
     showToast('语音识别失败，请改用文本输入')
   }
   recognition.onend = () => {
+    clearTimeout(stopVoiceTimer)
+    stopVoiceTimer = null
     listening.value = false
     recognition = null
   }
@@ -300,20 +316,50 @@ async function startVoice() {
   }
 }
 
-/** 停止语音识别：recognition.stop() 会触发 onend 自动复位 listening，兼容现有生命周期。 */
+/**
+ * 停止语音识别。
+ * - 先同步复位 UI，避免 onend 延迟导致按钮一直停在「停止」态；
+ * - 再调 stop()：正常场景仍先交付最终识别结果再触发 onend 复位；
+ * - Chromium 已知缺陷：识别服务异常时 stop() 挂起、onend 不触发，1.5s 兜底 abort() 强制终止。
+ */
 function stopVoice() {
-  if (recognition) {
-    recognition.stop()
-  } else {
+  clearTimeout(stopVoiceTimer)
+  stopVoiceTimer = null
+  if (!recognition) {
     listening.value = false
+    return
   }
+  listening.value = false
+  try {
+    recognition.stop()
+  } catch (err) {
+    console.error('[voice stop]', err)
+  }
+  stopVoiceTimer = window.setTimeout(() => {
+    if (recognition) {
+      try {
+        recognition.abort()
+      } catch (err) {
+        console.error('[voice abort]', err)
+      }
+      recognition = null
+      listening.value = false
+    }
+  }, 1500)
 }
 
 /** 组件卸载时停止语音识别与朗读。 */
 onBeforeUnmount(() => {
+  clearTimeout(stopVoiceTimer)
+  stopVoiceTimer = null
   if (recognition) {
     recognition.onend = null
-    recognition.stop()
+    try {
+      recognition.abort()
+    } catch (err) {
+      console.error('[voice cleanup]', err)
+    }
+    recognition = null
   }
   if (ttsSupported.value) {
     window.speechSynthesis.cancel()
