@@ -64,6 +64,37 @@ def test_local_low_confidence_falls_back_to_baidu() -> None:
     assert result.channel == "mock"
 
 
+def test_local_flat_distribution_rejects() -> None:
+    """本地 softmax 分布平坦（top-1/top-2 边际小于阈值）时拒识，回退百度兜底。"""
+    settings.local_enabled = True
+    settings.local_confidence_threshold = 0.6
+    settings.local_margin_threshold = 0.15
+    settings.baidu_enabled = False  # 百度禁用，最终落 Mock
+    hybrid = HybridRecognizer()
+    # top-1 超过绝对阈值，但边际 0.60 - 0.50 = 0.10 < 0.15，判为不确定
+    hybrid._local = _make_local([("黄芪", 0.60), ("甘草", 0.50), ("附子", 0.02)])
+
+    with SessionLocal() as db:
+        result = hybrid.recognize("fake", db)
+    # 拒识回退百度 → 百度禁用 → Mock
+    assert result.channel == "mock"
+
+
+def test_local_sufficient_margin_passes() -> None:
+    """top-1 达标且 top-1/top-2 边际充足时，本地结果放行。"""
+    settings.local_enabled = True
+    settings.local_confidence_threshold = 0.6
+    settings.local_margin_threshold = 0.15
+    hybrid = HybridRecognizer()
+    hybrid._local = _make_local([("黄芪", 0.72), ("甘草", 0.20), ("附子", 0.02)])
+
+    with SessionLocal() as db:
+        result = hybrid.recognize("fake", db)
+    assert result.channel == "local"
+    assert result.low_confidence is False
+    assert result.name == "黄芪"
+
+
 def test_local_exception_falls_back_to_baidu() -> None:
     """本地推理抛异常时回退百度兜底。"""
     settings.local_enabled = True

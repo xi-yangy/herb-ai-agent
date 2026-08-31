@@ -39,11 +39,12 @@ def recognize(req: RecognizeRequest, db: Session = Depends(get_db)) -> Recognize
     """图片识别：调用混合调度器返回药材结果。"""
     result = recognizer.recognize(req.image_base64, db)
     logger.info(
-        "识别完成：%s (置信度 %.2f, 通道 %s, 低置信 %s)",
+        "识别完成：%s (置信度 %.2f, 通道 %s, 低置信 %s, 未识别 %s)",
         result.name,
         result.confidence,
         result.channel,
         result.low_confidence,
+        result.unrecognized,
     )
     return RecognizeResponse(
         name=result.name,
@@ -52,6 +53,7 @@ def recognize(req: RecognizeRequest, db: Session = Depends(get_db)) -> Recognize
         safety_level=result.safety_level,
         similar=result.similar,
         low_confidence=result.low_confidence,
+        unrecognized=result.unrecognized,
         herb=result.herb,
         warning=_build_warning(result.herb, result.name),
     )

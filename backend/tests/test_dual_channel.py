@@ -98,6 +98,31 @@ def test_baidu_high_confidence_not_low() -> None:
     settings.baidu_secret_key = ""
 
 
+def test_baidu_no_result_returns_unrecognized() -> None:
+    """百度正常返回但无植物结果时，返回未识别（channel=baidu），不回退 Mock。"""
+    rec = BaiduRecognizer()
+    settings.baidu_enabled = True
+    settings.baidu_api_key = "dummy"
+    settings.baidu_secret_key = "dummy"
+
+    # 打桩内部网络调用：正常返回但 result 为空
+    def fake_call_no_result(image_base64):
+        return []
+
+    rec._call_baidu = fake_call_no_result  # type: ignore[method-assign]
+
+    with SessionLocal() as db:
+        result = rec.recognize("fake", db)
+    assert result.channel == "baidu"
+    assert result.unrecognized is True
+    assert result.name == "未识别"
+    assert result.herb is None
+
+    settings.baidu_enabled = False
+    settings.baidu_api_key = ""
+    settings.baidu_secret_key = ""
+
+
 def test_build_similar_from_names() -> None:
     """相似品种列表构建应填充知识库安全等级与来源。"""
     with SessionLocal() as db:

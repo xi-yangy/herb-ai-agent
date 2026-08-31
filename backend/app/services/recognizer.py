@@ -109,8 +109,16 @@ class BaiduRecognizer(RecognitionService):
             return self._fallback.recognize(image_base64, db)
 
         if not topk:
-            logger.info("百度识别无结果，回退 Mock")
-            return self._fallback.recognize(image_base64, db)
+            logger.info("百度植物识别无结果，返回未识别")
+            return RecognizeResult(
+                name="未识别",
+                confidence=0.0,
+                safety_level="普通",
+                channel=self.channel,
+                low_confidence=True,
+                unrecognized=True,
+                herb=None,
+            )
 
         name, score = topk[0]
         herb = _match_herb(db, name)

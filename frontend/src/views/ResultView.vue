@@ -45,6 +45,8 @@ const channelLabel = computed(() => {
 const lowConfidence = computed(() => !!result.value?.low_confidence)
 // 相似品种候选列表
 const similarList = computed(() => result.value?.similar || [])
+// 是否未识别（本地拒识回退百度后仍无植物结果：展示"未识别/疑似非药材"引导，不呈现药材信息）
+const unrecognized = computed(() => !!result.value?.unrecognized)
 
 // 鉴别防雷警报：识别命中配置了防雷字段的药材时，顶部弹出防雷警报卡
 // 仅当 herb 已收录知识库且 warning.label 非空时展示，避免低置信/未收录误触发
@@ -101,9 +103,9 @@ watch(result, (val) => {
   }
 })
 
-/** 识别成功后写一条历史。 */
+/** 识别成功后写一条历史；未识别结果不写历史。 */
 async function writeHistory(r) {
-  if (!r) return
+  if (!r || r.unrecognized) return
   try {
     await createHistory({
       result_name: r.name,
@@ -218,8 +220,39 @@ function onClearRecognition() {
       </p>
     </section>
 
-    <!-- 顶部安全等级色条 -->
+    <!-- 未识别 / 疑似非药材：本地拒识回退百度后仍无植物结果时展示，不呈现任何药材信息 -->
+    <section
+      v-if="unrecognized"
+      class="mt-1 overflow-hidden rounded-2xl border border-ochre/40 bg-ochre/10 p-5"
+    >
+      <div class="flex items-center gap-3">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ochre/15">
+          <van-icon name="question-o" size="26" color="#C08A3E" />
+        </div>
+        <div>
+          <h2 class="section-title text-lg leading-tight text-ochre">未能识别出药材</h2>
+          <p class="mt-0.5 text-xs text-ink-secondary">该图片可能不是中草药，或拍摄效果不佳</p>
+        </div>
+      </div>
+
+      <p class="mt-4 text-xs leading-relaxed text-ink-secondary">
+        系统未能在图片中确认到可信的中草药品种。请确认拍摄对象为药材本身，并保证光线充足、
+        主体清晰、避开杂物；若非药材图片，可忽略本结果。
+      </p>
+
+      <button type="button" class="btn-primary mt-4 w-full" @click="retake">
+        <van-icon name="photograph" size="16" class="align-[-2px]" />
+        重新拍摄
+      </button>
+
+      <p class="mt-3 text-center text-xs leading-relaxed text-ink-secondary/70">
+        本结果为软件自动识别，仅供参考，不构成诊断或处方建议。
+      </p>
+    </section>
+
+    <!-- 顶部安全等级色条（未识别时不展示） -->
     <div
+      v-if="!unrecognized"
       class="flex items-center gap-3 rounded-xl px-4 py-3.5"
       :style="{ backgroundColor: safetyMeta.bg }"
     >
@@ -237,7 +270,7 @@ function onClearRecognition() {
 
     <!-- 低置信度降级：相似品种 + 引导重拍（PRD 硬性要求：低于阈值不直接给结论） -->
     <section
-      v-if="lowConfidence"
+      v-if="lowConfidence && !unrecognized"
       class="mt-5 rounded-xl border border-ochre/40 bg-ochre/10 p-4"
     >
       <div class="flex items-center gap-2">
@@ -282,8 +315,8 @@ function onClearRecognition() {
       </p>
     </section>
 
-    <!-- 药材主体 -->
-    <section class="card-paper mt-5 overflow-hidden">
+    <!-- 药材主体（未识别时不展示） -->
+    <section v-if="!unrecognized" class="card-paper mt-5 overflow-hidden">
       <!-- 图片预览 -->
       <div v-if="image" class="flex h-52 items-center justify-center bg-paper">
         <img :src="image" alt="识别图片" class="h-full w-full object-cover" />
@@ -328,10 +361,10 @@ function onClearRecognition() {
     </section>
 
     <!-- 分层信息卡（F5：白话科普 + 专业药典折叠） -->
-    <LayeredInfoCard v-if="herb" :herb="herb" class="mt-5" />
+    <LayeredInfoCard v-if="herb && !unrecognized" :herb="herb" class="mt-5" />
 
     <!-- 多模态追问（F12/F13：常驻文本/语音问答 + 分组快捷词包，Qwen 真实调用 + 知识库降级；带图时走视觉图文问答） -->
-    <QaPanel :herb="herb" :result-name="result?.name" :image="image" class="mt-5" />
+    <QaPanel v-if="!unrecognized" :herb="herb" :result-name="result?.name" :image="image" class="mt-5" />
 
     <!-- 医疗免责声明 -->
     <p class="mt-6 text-center text-xs leading-relaxed text-ink-secondary/70">

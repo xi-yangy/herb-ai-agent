@@ -41,7 +41,9 @@ class Settings(BaseSettings):
     # 训练产物 classes.txt 类别清单路径（每行一个类别名，行号=索引）
     local_classes_path: str = ""
     # 本地模型置信度阈值：低于该值回退百度兜底
-    local_confidence_threshold: float = 0.6
+    local_confidence_threshold: float = 0.75
+    # 本地模型 top-1 与 top-2 概率边际阈值：分布过平坦（差距小于该值）视为不确定，回退百度兜底
+    local_margin_threshold: float = 0.15
     # 本地模型 top-k 数量（供"相似品种列表"展示）
     local_top_k: int = 5
     # 本地模型推理设备：空=自动（cuda 优先，否则 cpu）；可显式指定 cuda/cpu

@@ -39,6 +39,8 @@ class RecognizeResult(BaseModel):
     channel: str = "mock"
     similar: list[SimilarHerb] = []
     low_confidence: bool = False
+    # 未识别标记：本地拒识回退百度后仍无植物结果时置 True，前端展示"未识别"引导
+    unrecognized: bool = False
     herb: HerbResponse | None = None
     # 鉴别防雷警报（由命中药材组装，无防雷信息时为空对象）
     warning: WarningInfo = Field(default_factory=WarningInfo)
@@ -53,6 +55,8 @@ class RecognizeResponse(BaseModel):
     safety_level: str
     similar: list[SimilarHerb] = []
     low_confidence: bool = False
+    # 未识别标记：本地拒识回退百度后仍无植物结果时置 True，前端展示"未识别"引导
+    unrecognized: bool = False
     herb: HerbResponse | None = None
     # 鉴别防雷警报（由命中药材组装，无防雷信息时为空对象）
     warning: WarningInfo = Field(default_factory=WarningInfo)

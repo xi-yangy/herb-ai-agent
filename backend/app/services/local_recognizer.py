@@ -150,9 +150,23 @@ class LocalRecognizer(RecognitionService):
         herb = _match_herb(db, name)
         similar = _build_similar_from_names(db, topk)
 
-        low_conf = score < settings.local_confidence_threshold
+        # 拒识判定：top-1 置信度低于阈值，或 top-1/top-2 概率差距过小（softmax 分布平坦，
+        # 典型 OOD 特征）时判为不确定，由调度器回退百度。仅 1 个候选时无边际可算，只看绝对阈值。
+        if len(topk) > 1:
+            margin = topk[0][1] - topk[1][1]
+            low_conf = (
+                score < settings.local_confidence_threshold
+                or margin < settings.local_margin_threshold
+            )
+        else:
+            margin = 0.0
+            low_conf = score < settings.local_confidence_threshold
         if low_conf:
-            logger.info("本地模型置信度偏低（%.2f），交由调度器回退百度", score)
+            logger.info(
+                "本地模型拒识（置信度 %.2f / 边际 %.2f），交由调度器回退百度",
+                score,
+                margin,
+            )
 
         return RecognizeResult(
             name=name,
