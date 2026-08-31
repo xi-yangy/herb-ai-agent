@@ -75,7 +75,7 @@ function decline() {
       <div class="mt-4 rounded-xl border border-primary/20 bg-primary/10 p-3.5">
         <p class="text-xs font-semibold text-primary">图片数据使用规则</p>
         <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
-          你上传的图片仅用于本次识别，前端处理完成后即清除，服务端不持久化原始图片；不用于模型训练。
+          你上传的图片仅用于本次识别与历史记录回看：图片保存在你本机浏览器中，清空历史或清除浏览器数据即删除；服务端不持久化原始图片，不用于模型训练。
         </p>
       </div>
 

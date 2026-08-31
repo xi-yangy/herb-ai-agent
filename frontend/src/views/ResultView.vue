@@ -2,7 +2,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { createHistory, addFavorite, removeFavorite, listFavorites } from '@/api/herb'
+import { createHistory, addFavorite, removeFavorite, listFavorites, listHistory, getHerb } from '@/api/herb'
+import { saveImage, getImage } from '@/utils/imageStore'
 import { useAppStore } from '@/stores/app'
 import LayeredInfoCard from '@/components/LayeredInfoCard.vue'
 import QaPanel from '@/components/QaPanel.vue'
@@ -77,6 +78,12 @@ const notInKb = computed(() => !!result.value && !result.value.herb)
 
 // 初始化：识别进入优先读 store，否则按 herbId 从知识库取（简单场景从 store/query）
 onMounted(async () => {
+  // 从历史记录回看：按 historyId 取本地原图 + 历史结果组装展示（不重复写历史）
+  if (route.query.historyId) {
+    await loadFromHistory(Number(route.query.historyId))
+    return
+  }
+
   const storeResult = store.lastRecognition?.result
   const storeImage = store.lastRecognition?.imageBase64
 
@@ -103,18 +110,55 @@ watch(result, (val) => {
   }
 })
 
-/** 识别成功后写一条历史；未识别结果不写历史。 */
+/** 识别成功后写一条历史，并把原图存入本机 IndexedDB 供历史页回看；未识别结果不写历史。 */
 async function writeHistory(r) {
   if (!r || r.unrecognized) return
   try {
-    await createHistory({
+    const record = await createHistory({
       result_name: r.name,
       confidence: r.confidence,
       channel: r.channel || 'mock',
       herb_id: r.herb?.id ?? null,
     })
+    // 识别原图仅保存在本机浏览器（服务端不保存图片）；失败静默降级，不影响历史写入
+    if (record?.id) saveImage(record.id, image.value)
   } catch (err) {
     console.error('[history]', err)
+  }
+}
+
+/** 从历史记录回看：取本地原图（IndexedDB）+ 历史结果 + 药材详情组装展示。 */
+async function loadFromHistory(historyId) {
+  try {
+    const list = await listHistory()
+    const item = list.find((h) => h.id === historyId)
+    if (!item) {
+      showToast('未找到该条识别记录')
+      return
+    }
+    image.value = (await getImage(item.id)) || ''
+    let herb = null
+    if (item.herb_id) {
+      try {
+        herb = await getHerb(item.herb_id)
+      } catch (err) {
+        console.warn('[history replay] 药材详情加载失败', err)
+      }
+    }
+    result.value = {
+      name: item.result_name,
+      confidence: item.confidence,
+      safety_level: herb?.safety_level || '普通',
+      channel: item.channel || 'mock',
+      similar: [],
+      low_confidence: (item.confidence ?? 0) < 0.6,
+      unrecognized: false,
+      herb,
+    }
+    // 收藏态由 watch(result) 自动同步
+  } catch (err) {
+    console.error('[history replay]', err)
+    showToast('历史记录加载失败')
   }
 }
 

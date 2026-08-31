@@ -4,9 +4,12 @@ import { useRouter } from 'vue-router'
 import { showToast, showConfirmDialog } from 'vant'
 
 import { listHistory, clearHistory } from '@/api/herb'
+import { getImage, clearImages } from '@/utils/imageStore'
 
 const router = useRouter()
 const history = ref([])
+// 历史记录 id -> 本地识别图（IndexedDB 读取；无图时为 null，回落图标展示）
+const imageMap = ref({})
 const loading = ref(true)
 
 onMounted(load)
@@ -14,7 +17,11 @@ onMounted(load)
 async function load() {
   loading.value = true
   try {
-    history.value = await listHistory()
+    const list = await listHistory()
+    history.value = list
+    // 并行读取每条记录的本地原图，避免串行阻塞；无图返回 null 不影响列表
+    const pairs = await Promise.all(list.map(async (item) => [item.id, await getImage(item.id)]))
+    imageMap.value = Object.fromEntries(pairs)
   } catch (err) {
     console.error('[history]', err)
     showToast('加载失败')
@@ -41,13 +48,9 @@ function isLimited(item) {
   return isNonPlant(item) || (item.confidence ?? 0) < 0.6 || !item.herb_id
 }
 
-/** 点击历史条目：关联了药材则跳转详情，否则友好提示。 */
-function goDetail(item) {
-  if (item.herb_id) {
-    router.push({ name: 'herb-detail', params: { id: item.herb_id } })
-  } else {
-    showToast('该记录暂无详情可查看')
-  }
+/** 点击历史条目：跳转结果页，展示当初上传的原图与识别结果回看。 */
+function goReplay(item) {
+  router.push({ name: 'result', query: { historyId: item.id } })
 }
 
 async function onClear() {
@@ -56,7 +59,10 @@ async function onClear() {
     async () => {
       try {
         await clearHistory()
+        // 同步清除本机保存的识别图（IndexedDB），保证图片数据随历史一并删除
+        await clearImages()
         history.value = []
+        imageMap.value = {}
         showToast('已清空')
       } catch (err) {
         console.error('[clear history]', err)
@@ -95,9 +101,18 @@ async function onClear() {
         :key="item.id"
         class="slide-in flex cursor-pointer items-center gap-3 rounded-xl bg-paper-card px-5 py-4 shadow-paper transition active:bg-paper"
         :style="{ animationDelay: idx * 0.05 + 's' }"
-        @click="goDetail(item)"
+        @click="goReplay(item)"
       >
+        <!-- 实时上传识别图缩略图（本机 IndexedDB）；无图时回落图标 -->
+        <img
+          v-if="imageMap[item.id]"
+          :src="imageMap[item.id]"
+          :alt="item.result_name"
+          loading="lazy"
+          class="h-11 w-11 shrink-0 rounded-xl object-cover"
+        />
         <div
+          v-else
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
           :class="item.safety_level === '毒性' ? 'bg-cinnabar/10' : 'bg-primary/10'"
         >
