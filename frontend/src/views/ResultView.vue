@@ -48,6 +48,8 @@ const lowConfidence = computed(() => !!result.value?.low_confidence)
 const similarList = computed(() => result.value?.similar || [])
 // 是否未识别（本地拒识回退百度后仍无植物结果：展示"未识别/疑似非药材"引导，不呈现药材信息）
 const unrecognized = computed(() => !!result.value?.unrecognized)
+// 是否从历史记录回看进入（带 historyId query），决定返回目标为历史页而非首页
+const isFromHistory = computed(() => !!route.query.historyId)
 
 // 鉴别防雷警报：识别命中配置了防雷字段的药材时，顶部弹出防雷警报卡
 // 仅当 herb 已收录知识库且 warning.label 非空时展示，避免低置信/未收录误触发
@@ -197,8 +199,12 @@ function goDetail() {
   if (herb.value?.id) router.push({ name: 'herb-detail', params: { id: herb.value.id } })
 }
 
-/** 返回首页：清除识别状态后直接跳转（顶部悬浮按钮与底部按钮共用，不弹确认框）。 */
+/** 返回：从历史回看进入则返回历史页（不清识别状态）；否则清除识别状态返回首页。 */
 function onClearRecognition() {
+  if (isFromHistory.value) {
+    router.push({ name: 'history' })
+    return
+  }
   store.clearRecognition()
   router.push({ name: 'home' })
 }
@@ -208,10 +214,10 @@ function onClearRecognition() {
 <template>
   <div class="page-container px-6 pb-12 pt-4">
     <div class="mx-auto max-w-[860px]">
-    <!-- 固定悬浮返回按钮：滑动时始终可见，点击直接返回首页（清除识别状态）；绿色系描边跟随主色，提升可发现性 -->
+    <!-- 固定悬浮返回按钮：滑动时始终可见，点击返回来源页（历史回看回历史，识别回首页）；绿色系描边跟随主色 -->
     <button
       type="button"
-      aria-label="返回首页"
+      :aria-label="isFromHistory ? '返回历史' : '返回首页'"
       class="fixed left-4 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full border-2 border-primary/70 bg-primary/10 shadow-md shadow-primary/25 transition-colors duration-200 hover:bg-primary/15 active:scale-90"
       @click="onClearRecognition"
     >
@@ -436,7 +442,7 @@ function onClearRecognition() {
       class="btn-outline mt-6 w-full"
       @click="onClearRecognition"
     >
-      返回首页
+      {{ isFromHistory ? '返回历史' : '返回首页' }}
     </button>
     </div>
   </div>
