@@ -40,11 +40,18 @@ function confirm() {
 
     <!-- 危险信息面板（玻璃拟态） -->
     <section class="danger-glass w-full max-w-[480px] rounded-2xl p-6">
-      <div class="flex items-center justify-between">
+      <div>
         <span class="rounded-full bg-[#E5484D]/90 px-3 py-1 text-xs font-semibold text-white">
           毒性药材 · 高风险
         </span>
-        <span class="text-lg font-bold text-[#FFD7D9]">{{ danger?.name || '未知药材' }}</span>
+      </div>
+
+      <!-- 药材名：页面视觉焦点 -->
+      <div class="mt-4 text-center">
+        <span class="danger-name block text-[40px] font-black leading-tight tracking-widest text-white">
+          {{ danger?.name || '未知药材' }}
+        </span>
+        <div class="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-[#E5484D] to-transparent"></div>
       </div>
 
       <div class="mt-4 space-y-4">
@@ -107,6 +114,12 @@ function confirm() {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(12px);
+}
+
+.danger-name {
+  text-shadow:
+    0 0 18px rgba(229, 72, 77, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
 .danger-confirm {

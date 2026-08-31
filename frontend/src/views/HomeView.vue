@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { showLoadingToast, showToast } from 'vant'
+import { closeToast, showLoadingToast, showToast } from 'vant'
 import { checkHealth } from '@/api/health'
 import { recognize } from '@/api/herb'
 import { listConsents } from '@/api/privacy'
@@ -36,13 +36,14 @@ async function handleRecognize(base64, channel) {
   try {
     const result = await recognize(base64, channel)
     store.setLastRecognition(base64, result)
+    closeToast()
     router.push({ name: 'result' })
   } catch (err) {
     console.error('[recognize]', err)
+    closeToast()
     showToast('识别失败，请稍后重试')
   } finally {
     recognizing.value = false
-    showToast()
   }
 }
 

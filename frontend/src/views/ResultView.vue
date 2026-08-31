@@ -57,6 +57,9 @@ const warning = computed(() => {
   return w
 })
 
+// 从防雷标签（如"易与枯矾混淆"）中提取混淆品种名，用于放大高亮展示
+const confusionName = computed(() => warning.value?.label?.match(/易与(.+)混淆/)?.[1] || '')
+
 // 「重新拍摄」：清空当前识别并返回首页（相机/相册入口）
 function retake() {
   store.clearRecognition()
@@ -240,9 +243,20 @@ function onClearRecognition() {
           </span>
         </div>
         <div class="rounded-xl bg-white/10 px-3.5 py-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-white/70">易混淆高危品种</span>
-            <span class="rounded-full bg-cinnabar px-2.5 py-0.5 text-sm font-semibold text-white">
+          <span class="text-xs text-white/70">易混淆高危品种</span>
+          <!-- 混淆提醒：居中焦点 -->
+          <div class="mt-2 text-center">
+            <span
+              v-if="confusionName"
+              class="confusion-badge inline-flex items-center gap-1 rounded-full bg-cinnabar px-4 py-1.5 text-lg font-bold text-white"
+            >
+              <van-icon name="warning-o" size="18" />
+              易与「<span class="text-[22px] text-amber-300">{{ confusionName }}</span>」混淆
+            </span>
+            <span
+              v-else
+              class="confusion-badge inline-flex items-center rounded-full bg-cinnabar px-4 py-1.5 text-lg font-bold text-white"
+            >
               {{ warning.label }}
             </span>
           </div>
@@ -449,6 +463,12 @@ function onClearRecognition() {
 .deception-halo {
   box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45);
   animation: deception-halo-breathe 1.8s ease-in-out infinite;
+}
+
+/* 混淆提醒徽标：轻微泛光提升视觉权重 */
+.confusion-badge {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 14px rgba(229, 72, 77, 0.55);
 }
 
 @keyframes deception-halo-breathe {
