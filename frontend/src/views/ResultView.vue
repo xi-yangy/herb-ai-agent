@@ -159,6 +159,11 @@ async function loadFromHistory(historyId) {
       low_confidence: (item.confidence ?? 0) < 0.6,
       unrecognized: false,
       herb,
+      // 从已加载的知识库药材复原防雷警报，保证历史回看同样展示顶部警报卡
+      warning:
+        herb && herb.warning_label
+          ? { label: herb.warning_label, message: herb.warning_message, herb_name: item.result_name }
+          : null,
     }
     // 收藏态由 watch(result) 自动同步
   } catch (err) {
